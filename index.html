@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trámites en Línea — ANPAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════
+   TOKENS & RESET
+══════════════════════════════════════════════════ */
+:root{
+  --ink:#0D1B2A;
+  --ink2:#1E3148;
+  --gold:#C9A84C;
+  --gold2:#F0CC7A;
+  --cream:#F7F4EE;
+  --paper:#FDFBF7;
+  --line:#DDD8CE;
+  --muted:#7A7265;
+  --err:#C0392B;
+  --ok:#2E7D52;
+  --warn:#C47B0A;
+  --r:8px;
+  --shadow:0 4px 24px rgba(13,27,42,.10);
+  --shadow-lg:0 12px 48px rgba(13,27,42,.18);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ══════════════════════════════════════════════════
+   FONDO DECORATIVO
+══════════════════════════════════════════════════ */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(201,168,76,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 100%, rgba(13,27,42,.05) 0%, transparent 60%);
+  pointer-events:none;z-index:0;
+}
+
+/* ══════════════════════════════════════════════════
+   WRAPPER
+══════════════════════════════════════════════════ */
+.page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+.wrap{max-width:740px;margin:0 auto;padding:2.5rem 1.25rem 5rem;width:100%}
+
+/* ══════════════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════════════ */
+.hdr{
+  text-align:center;
+  padding-bottom:2.5rem;
+  margin-bottom:2.5rem;
+  border-bottom:1px solid var(--line);
+  position:relative;
+}
+.hdr::after{
+  content:'';
+  position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+  width:64px;height:3px;background:var(--gold);border-radius:2px;
+}
+.hdr-badge{
+  display:inline-flex;align-items:center;gap:.55rem;
+  background:var(--ink2);color:var(--gold2);
+  font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:.35rem 1rem;border-radius:2rem;margin-bottom:1.1rem;
+}
+.hdr-badge svg{width:13px;height:13px;fill:var(--gold2)}
+.hdr-logo{
+  font-family:'Playfair Display',serif;
+  font-size:2.6rem;font-weight:700;color:var(--ink);
+  letter-spacing:-.01em;line-height:1;
+  margin-bottom:.4rem;
+}
+.hdr-logo span{color:var(--gold)}
+.hdr-sub{
+  font-size:1rem;color:var(--muted);font-weight:400;
+  letter-spacing:.01em;
+}
+
+/* ══════════════════════════════════════════════════
+   TARJETA PRINCIPAL
+══════════════════════════════════════════════════ */
+.card{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:14px;
+  box-shadow:var(--shadow-lg);
+  overflow:hidden;
+}
+.card-top{
+  background:var(--ink2);
+  padding:1.4rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+}
+.card-ttl{
+  font-family:'Playfair Display',serif;
+  font-size:1.15rem;font-weight:600;color:#fff;
+  letter-spacing:.01em;
+}
+.folio-tag{
+  display:flex;flex-direction:column;align-items:flex-end;gap:.15rem;
+}
+.folio-lbl{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.folio-val{
+  font-family:'DM Sans',sans-serif;
+  font-size:.88rem;font-weight:600;letter-spacing:.06em;
+  color:var(--gold2);
+  background:rgba(201,168,76,.15);
+  border:1px solid rgba(201,168,76,.3);
+  border-radius:5px;padding:.2rem .75rem;
+  min-width:160px;text-align:center;
+  transition:all .3s ease;
+}
+.folio-val.ready{color:var(--gold2);border-color:var(--gold)}
+.folio-val.loading{opacity:.5}
+.card-body{padding:2rem 2rem 2.5rem}
+
+/* ══════════════════════════════════════════════════
+   FORM GRID
+══════════════════════════════════════════════════ */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.full{grid-column:1/-1}
+.fg{display:flex;flex-direction:column;gap:.35rem}
+.lbl{font-size:.78rem;font-weight:600;color:var(--ink);letter-spacing:.02em}
+.lbl.req::after{content:' *';color:var(--gold)}
+.hint{font-size:.69rem;color:var(--muted);font-weight:400}
+
+/* ══════════════════════════════════════════════════
+   INPUTS
+══════════════════════════════════════════════════ */
+input,select,textarea{
+  width:100%;padding:.6rem .85rem;
+  border:1.5px solid var(--line);
+  border-radius:var(--r);
+  background:#fff;
+  font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);
+  outline:none;appearance:none;-webkit-appearance:none;
+  transition:border-color .18s,box-shadow .18s,background .18s;
+}
+input:focus,select:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(201,168,76,.15);
+  background:#fffef9;
+}
+input.ok,select.ok{border-color:var(--ok)}
+input.bad,select.bad,textarea.bad{border-color:var(--err);box-shadow:0 0 0 3px rgba(192,57,43,.08)}
+input[readonly]{background:var(--cream);color:var(--muted);cursor:default}
+select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath fill='%237A7265' d='M5.5 7L0 0h11z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center}
+.em{font-size:.71rem;color:var(--err);font-weight:500;min-height:.9rem}
+
+/* ══════════════════════════════════════════════════
+   DIVIDER CON ETIQUETA
+══════════════════════════════════════════════════ */
+.sec-div{
+  grid-column:1/-1;
+  display:flex;align-items:center;gap:.75rem;
+  padding:.4rem 0;
+  margin:.25rem 0;
+}
+.sec-div span{
+  font-size:.69rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);white-space:nowrap;
+}
+.sec-div::before,.sec-div::after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* ══════════════════════════════════════════════════
+   SELECTOR DE LADA (misma arquitectura que AVA)
+══════════════════════════════════════════════════ */
+.tel-wr{
+  display:flex;align-items:stretch;
+  border:1.5px solid var(--line);border-radius:var(--r);
+  overflow:hidden;background:#fff;
+  transition:border-color .18s,box-shadow .18s;
+}
+.tel-wr:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15)}
+.tel-wr.ok{border-color:var(--ok)}
+.tel-wr.bad{border-color:var(--err);box-shadow:0 0 0 3px rgba(192,57,43,.08)}
+.lada-sel{
+  border:none;border-right:1.5px solid var(--line);border-radius:0;
+  background:#F5F3EE;padding:.6rem .45rem .6rem .7rem;
+  font-size:.8rem;font-weight:600;color:var(--ink2);
+  flex-shrink:0;min-width:84px;max-width:112px;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%237A7265' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .42rem center;
+  padding-right:1.5rem;outline:none;cursor:pointer;
+}
+.lada-sel:focus{background-color:#EEF0FF;box-shadow:none}
+.tel-num{
+  border:none !important;border-radius:0 !important;flex:1;
+  padding:.6rem .85rem;font-size:.88rem;
+  outline:none;background:transparent !important;min-width:0;
+  box-shadow:none !important;
+}
+.tel-wr input{border:none !important;box-shadow:none !important;border-radius:0 !important}
+
+/* ══════════════════════════════════════════════════
+   TIPO DE TRÁMITE — CARDS SELECCIONABLES
+══════════════════════════════════════════════════ */
+.tipo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem}
+.tipo-card{
+  position:relative;cursor:pointer;
+  border:2px solid var(--line);border-radius:10px;
+  padding:1rem .85rem .9rem;
+  background:#fff;
+  transition:all .2s ease;
+  text-align:center;
+  user-select:none;
+}
+.tipo-card:hover{border-color:var(--gold);background:#fffef9}
+.tipo-card.sel{
+  border-color:var(--gold);
+  background:linear-gradient(135deg,#fffef4 0%,#fff9e8 100%);
+  box-shadow:0 4px 16px rgba(201,168,76,.18);
+}
+.tipo-card input[type=radio]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;
+  width:100%;height:100%;margin:0;
+}
+.tipo-ico{font-size:1.6rem;margin-bottom:.42rem;line-height:1}
+.tipo-nm{font-size:.82rem;font-weight:600;color:var(--ink);line-height:1.2}
+.tipo-code{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-top:.2rem}
+.tipo-card.sel .tipo-nm{color:var(--ink2)}
+.tipo-card.sel .tipo-code{color:var(--gold)}
+.tipo-chk{
+  position:absolute;top:.5rem;right:.5rem;
+  width:16px;height:16px;border-radius:50%;
+  border:1.5px solid var(--line);background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;
+}
+.tipo-card.sel .tipo-chk{background:var(--gold);border-color:var(--gold)}
+.tipo-card.sel .tipo-chk::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff}
+
+/* ══════════════════════════════════════════════════
+   FOLIO GENERADO (campo visual integrado)
+══════════════════════════════════════════════════ */
+.folio-field{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.65rem 1rem;
+  background:var(--cream);border:1.5px solid var(--line);
+  border-radius:var(--r);
+}
+.folio-ico{font-size:1.1rem;flex-shrink:0}
+.folio-txt{
+  font-size:.88rem;font-weight:700;letter-spacing:.07em;
+  color:var(--ink2);font-family:'DM Sans',monospace;
+}
+.folio-txt.empty{color:var(--muted);font-weight:400;font-size:.84rem;letter-spacing:0}
+.folio-status{
+  margin-left:auto;font-size:.72rem;font-weight:600;
+  padding:.18rem .6rem;border-radius:4px;white-space:nowrap;
+}
+.folio-status.pen{background:rgba(201,168,76,.12);color:var(--warn)}
+.folio-status.ok{background:rgba(46,125,82,.1);color:var(--ok)}
+.folio-status.err{background:rgba(192,57,43,.08);color:var(--err)}
+
+/* ══════════════════════════════════════════════════
+   UPLOAD
+══════════════════════════════════════════════════ */
+.up-area{
+  border:2px dashed var(--line);border-radius:10px;
+  padding:1.6rem;text-align:center;cursor:pointer;
+  background:#fff;position:relative;
+  transition:all .2s ease;
+}
+.up-area:hover,.up-area.drag{border-color:var(--gold);background:#fffef9}
+.up-area.bad-up{border-color:var(--err)}
+.up-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.up-ico{font-size:2rem;margin-bottom:.45rem}
+.up-main{font-size:.9rem;font-weight:600;color:var(--ink2)}
+.up-fmt{font-size:.72rem;color:var(--muted);margin-top:.28rem}
+/* Indicador de tamaño */
+.up-indicator{
+  margin-top:.85rem;
+  padding:.65rem .9rem;border-radius:7px;
+  display:flex;align-items:flex-start;gap:.55rem;
+  font-size:.78rem;font-weight:500;line-height:1.45;
+  display:none;
+}
+.up-indicator.green{background:rgba(46,125,82,.09);color:#1B5E39;border:1px solid rgba(46,125,82,.2)}
+.up-indicator.orange{background:rgba(196,123,10,.09);color:#7A4B00;border:1px solid rgba(196,123,10,.2)}
+.up-indicator.red{background:rgba(192,57,43,.09);color:#8B1A12;border:1px solid rgba(192,57,43,.2)}
+.up-indicator-ico{font-size:1.1rem;flex-shrink:0;margin-top:.05rem}
+.up-fnm{font-size:.76rem;font-weight:600;color:var(--ink);margin-top:.2rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+/* ══════════════════════════════════════════════════
+   BOTÓN ENVIAR
+══════════════════════════════════════════════════ */
+.btn-submit{
+  width:100%;padding:.85rem 2rem;margin-top:2rem;
+  background:var(--ink2);color:#fff;
+  border:2px solid var(--ink2);border-radius:var(--r);
+  font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;
+  letter-spacing:.04em;text-transform:uppercase;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:.65rem;
+  transition:all .22s ease;
+  position:relative;overflow:hidden;
+}
+.btn-submit::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,168,76,.0) 0%,rgba(201,168,76,.0) 100%);
+  transition:background .3s;
+}
+.btn-submit:hover:not(:disabled){
+  background:var(--gold);border-color:var(--gold);color:var(--ink);
+  box-shadow:0 6px 24px rgba(201,168,76,.35);
+  transform:translateY(-1px);
+}
+.btn-submit:active{transform:translateY(0)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-submit svg{width:17px;height:17px;fill:currentColor;flex-shrink:0}
+.btn-spin{
+  width:17px;height:17px;border:2.5px solid rgba(255,255,255,.35);
+  border-top-color:currentColor;border-radius:50%;
+  animation:spin .65s linear infinite;display:none;flex-shrink:0;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ══════════════════════════════════════════════════
+   AVISO LEGAL
+══════════════════════════════════════════════════ */
+.legal{
+  margin-top:1.35rem;font-size:.72rem;color:var(--muted);
+  text-align:center;line-height:1.65;
+}
+.legal a{color:var(--ink2);text-decoration:underline}
+
+/* ══════════════════════════════════════════════════
+   MODAL ÉXITO
+══════════════════════════════════════════════════ */
+.overlay{
+  position:fixed;inset:0;background:rgba(13,27,42,.6);
+  backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;padding:1.5rem;
+  opacity:0;visibility:hidden;
+  transition:opacity .35s,visibility .35s;
+}
+.overlay.on{opacity:1;visibility:visible}
+.modal{
+  background:var(--paper);border:1px solid var(--line);
+  border-radius:16px;box-shadow:var(--shadow-lg);
+  max-width:440px;width:100%;padding:2.5rem 2rem;
+  text-align:center;
+  transform:scale(.92) translateY(12px);
+  transition:transform .38s cubic-bezier(.34,1.56,.64,1);
+}
+.overlay.on .modal{transform:scale(1) translateY(0)}
+.modal-seal{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,var(--ink2),var(--ink));
+  margin:0 auto 1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 28px rgba(13,27,42,.25);
+}
+.modal-seal svg{width:34px;height:34px;fill:var(--gold2)}
+.modal-ttl{
+  font-family:'Playfair Display',serif;
+  font-size:1.45rem;font-weight:700;color:var(--ink);
+  margin-bottom:.55rem;
+}
+.modal-folio{
+  font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:.3rem;
+}
+.modal-folio-val{
+  display:inline-block;
+  font-size:1.15rem;font-weight:700;letter-spacing:.08em;
+  color:var(--ink2);
+  background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.35);
+  border-radius:6px;padding:.28rem 1.1rem;margin-bottom:.9rem;
+}
+.modal-msg{font-size:.87rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
+.modal-msg strong{color:var(--ink2)}
+.modal-btn{
+  background:var(--ink2);color:#fff;border:none;
+  padding:.62rem 2rem;border-radius:var(--r);
+  font-family:'DM Sans',sans-serif;font-size:.87rem;font-weight:600;
+  cursor:pointer;transition:background .18s,transform .15s;
+  letter-spacing:.03em;
+}
+.modal-btn:hover{background:var(--gold);color:var(--ink);transform:translateY(-1px)}
+
+/* ══════════════════════════════════════════════════
+   OVERLAY ENVIANDO
+══════════════════════════════════════════════════ */
+.sending-ov{
+  position:fixed;inset:0;background:rgba(13,27,42,.65);
+  backdrop-filter:blur(4px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;
+  z-index:9998;opacity:0;visibility:hidden;transition:.25s;
+}
+.sending-ov.on{opacity:1;visibility:visible}
+.send-ring{
+  width:48px;height:48px;border:4px solid rgba(255,255,255,.2);
+  border-top-color:var(--gold2);border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+.send-msg{font-size:.95rem;font-weight:600;color:#fff;letter-spacing:.03em}
+
+/* ══════════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════════ */
+.ft{text-align:center;padding:1.5rem 1rem;font-size:.72rem;color:var(--muted);
+  border-top:1px solid var(--line);margin-top:2.5rem}
+.ft strong{color:var(--ink2)}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════ */
+@media(max-width:640px){
+  .wrap{padding:1.5rem .85rem 4rem}
+  .hdr-logo{font-size:2rem}
+  .card-top{flex-direction:column;align-items:flex-start;gap:.6rem}
+  .folio-tag{align-items:flex-start}
+  .card-body{padding:1.35rem 1.25rem 2rem}
+  .grid2{grid-template-columns:1fr}
+  .tipo-grid{grid-template-columns:1fr 1fr 1fr}
+}
+@media(max-width:420px){
+  .tipo-grid{grid-template-columns:1fr}
+  .hdr-logo{font-size:1.75rem}
+  .modal{padding:2rem 1.4rem}
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+<div class="wrap">
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-badge">
+    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5z"/></svg>
+    Plataforma Oficial
+  </div>
+  <div class="hdr-logo">AN<span>PAI</span></div>
+  <div class="hdr-sub">Sistema de Registro de Trámites en Línea</div>
+</header>
+
+<!-- FORMULARIO -->
+<div class="card">
+
+  <!-- Barra superior con folio -->
+  <div class="card-top">
+    <div class="card-ttl">Nueva Solicitud de Trámite</div>
+    <div class="folio-tag">
+      <span class="folio-lbl">Folio</span>
+      <span class="folio-val" id="folioTopVal">Selecciona tipo</span>
+    </div>
+  </div>
+
+  <form class="card-body" id="frm" novalidate>
+
+    <div class="grid2">
+
+      <!-- ── INFORMACIÓN PERSONAL ── -->
+      <div class="sec-div full"><span>Información Personal</span></div>
+
+      <!-- Nombre -->
+      <div class="fg">
+        <label class="lbl req" for="nombre">Nombre Completo</label>
+        <input id="nombre" name="nombre" type="text" placeholder="Ej. María Elena" autocomplete="given-name">
+        <span class="em" id="enombre"></span>
+      </div>
+
+      <!-- Apellido -->
+      <div class="fg">
+        <label class="lbl req" for="apellido">Apellido Completo</label>
+        <input id="apellido" name="apellido" type="text" placeholder="Ej. Ramírez Torres" autocomplete="family-name">
+        <span class="em" id="eapellido"></span>
+      </div>
+
+      <!-- Fecha de nacimiento -->
+      <div class="fg">
+        <label class="lbl req" for="fNac">Fecha de Nacimiento</label>
+        <input id="fNac" name="fNac" type="date" autocomplete="bday">
+        <span class="em" id="efNac"></span>
+      </div>
+
+      <!-- Correo -->
+      <div class="fg">
+        <label class="lbl req" for="email">Correo Electrónico</label>
+        <input id="email" name="email" type="email" placeholder="nombre@correo.com" autocomplete="email">
+        <span class="em" id="eemail"></span>
+      </div>
+
+      <!-- Teléfono con lada -->
+      <div class="fg full">
+        <label class="lbl req" for="telNum">Teléfono de Contacto</label>
+        <div class="tel-wr" id="telWr">
+          <select class="lada-sel" id="ladaTel" name="ladaTel" aria-label="Código de país">
+            <option value="+52" selected>🇲🇽 +52</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+1">🇨🇦 +1</option>
+            <option value="+34">🇪🇸 +34</option>
+            <option value="+54">🇦🇷 +54</option>
+            <option value="+55">🇧🇷 +55</option>
+            <option value="+56">🇨🇱 +56</option>
+            <option value="+57">🇨🇴 +57</option>
+            <option value="+58">🇻🇪 +58</option>
+            <option value="+51">🇵🇪 +51</option>
+            <option value="+593">🇪🇨 +593</option>
+            <option value="+591">🇧🇴 +591</option>
+            <option value="+595">🇵🇾 +595</option>
+            <option value="+598">🇺🇾 +598</option>
+            <option value="+507">🇵🇦 +507</option>
+            <option value="+506">🇨🇷 +506</option>
+            <option value="+502">🇬🇹 +502</option>
+            <option value="+503">🇸🇻 +503</option>
+            <option value="+504">🇭🇳 +504</option>
+            <option value="+505">🇳🇮 +505</option>
+            <option value="+53">🇨🇺 +53</option>
+            <option value="+1-809">🇩🇴 +1-809</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+49">🇩🇪 +49</option>
+            <option value="+39">🇮🇹 +39</option>
+            <option value="+351">🇵🇹 +351</option>
+            <option value="+31">🇳🇱 +31</option>
+            <option value="+32">🇧🇪 +32</option>
+            <option value="+41">🇨🇭 +41</option>
+            <option value="+43">🇦🇹 +43</option>
+            <option value="+48">🇵🇱 +48</option>
+            <option value="+46">🇸🇪 +46</option>
+            <option value="+47">🇳🇴 +47</option>
+            <option value="+45">🇩🇰 +45</option>
+            <option value="+358">🇫🇮 +358</option>
+            <option value="+7">🇷🇺 +7</option>
+            <option value="+86">🇨🇳 +86</option>
+            <option value="+81">🇯🇵 +81</option>
+            <option value="+82">🇰🇷 +82</option>
+            <option value="+91">🇮🇳 +91</option>
+            <option value="+61">🇦🇺 +61</option>
+            <option value="+27">🇿🇦 +27</option>
+          </select>
+          <input class="tel-num" id="telNum" name="telNum" type="tel"
+                 placeholder="7771234567" maxlength="15" inputmode="numeric" autocomplete="tel">
+        </div>
+        <input type="hidden" id="telFull" name="telefono">
+        <span class="em" id="etelNum"></span>
+      </div>
+
+      <!-- ── TIPO DE TRÁMITE ── -->
+      <div class="sec-div full"><span>Tipo de Trámite</span></div>
+
+      <div class="fg full">
+        <label class="lbl req">Selecciona el tipo de trámite</label>
+        <div class="tipo-grid" id="tipoGrid">
+
+          <label class="tipo-card" id="tc-CE">
+            <input type="radio" name="tipoTramite" value="CE" data-label="Certificado">
+            <div class="tipo-chk"></div>
+            <div class="tipo-ico">📜</div>
+            <div class="tipo-nm">Certificado</div>
+            <div class="tipo-code">CE</div>
+          </label>
+
+          <label class="tipo-card" id="tc-SO">
+            <input type="radio" name="tipoTramite" value="SO" data-label="Solicitud">
+            <div class="tipo-chk"></div>
+            <div class="tipo-ico">📋</div>
+            <div class="tipo-nm">Solicitud</div>
+            <div class="tipo-code">SO</div>
+          </label>
+
+          <label class="tipo-card" id="tc-RE">
+            <input type="radio" name="tipoTramite" value="RE" data-label="Registro">
+            <div class="tipo-chk"></div>
+            <div class="tipo-ico">📁</div>
+            <div class="tipo-nm">Registro</div>
+            <div class="tipo-code">RE</div>
+          </label>
+
+        </div>
+        <span class="em" id="etipoTramite"></span>
+      </div>
+
+      <!-- FOLIO GENERADO -->
+      <div class="fg full">
+        <label class="lbl">Folio Asignado <span style="font-weight:400;color:var(--muted)">(generado automáticamente)</span></label>
+        <div class="folio-field" id="folioField">
+          <span class="folio-ico">🔖</span>
+          <span class="folio-txt empty" id="folioDisplay">Selecciona el tipo de trámite</span>
+          <span class="folio-status pen" id="folioStatus" style="display:none">Generando…</span>
+        </div>
+        <input type="hidden" id="folioHidden" name="folio">
+      </div>
+
+      <!-- ── DOCUMENTACIÓN ── -->
+      <div class="sec-div full"><span>Documentación Adjunta</span></div>
+
+      <div class="fg full">
+        <label class="lbl req" for="upFile">Adjuntar Documentación</label>
+        <div class="up-area" id="upArea">
+          <input type="file" id="upFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+          <div class="up-ico">📎</div>
+          <div class="up-main">Arrastra tu archivo o haz clic para seleccionar</div>
+          <div class="up-fmt">PDF · DOC · DOCX · JPG · PNG — Máx. recomendado 5 MB</div>
+        </div>
+        <!-- Indicador de tamaño -->
+        <div class="up-indicator" id="upIndicator">
+          <span class="up-indicator-ico" id="upIco"></span>
+          <div>
+            <div id="upMsg"></div>
+            <div class="up-fnm" id="upFnm"></div>
+          </div>
+        </div>
+        <span class="em" id="eupFile"></span>
+      </div>
+
+    </div><!-- /grid2 -->
+
+    <!-- BOTÓN ENVIAR -->
+    <button type="submit" class="btn-submit" id="btnSubmit" disabled>
+      <div class="btn-spin" id="btnSpin"></div>
+      <svg id="btnIco" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      <span id="btnTxt">Enviar Trámite</span>
+    </button>
+
+    <p class="legal">
+      Al enviar este formulario aceptas que tus datos sean procesados conforme a la
+      política de privacidad de ANPAI. Para consultas escribe a
+      <a href="mailto:info@anpai.com.mx">info@anpai.com.mx</a>.
+    </p>
+
+  </form>
+</div><!-- /card -->
+
+<footer class="ft">
+  <strong>ANPAI</strong> · Plataforma de Trámites en Línea ·
+  Los datos son procesados de forma segura y confidencial.
+</footer>
+
+</div><!-- /wrap -->
+</div><!-- /page -->
+
+<!-- OVERLAY ENVIANDO -->
+<div class="sending-ov" id="sendingOv">
+  <div class="send-ring"></div>
+  <div class="send-msg">Registrando tu trámite…</div>
+</div>
+
+<!-- MODAL ÉXITO -->
+<div class="overlay" id="modalOv">
+  <div class="modal" id="modal">
+    <div class="modal-seal">
+      <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+    </div>
+    <div class="modal-ttl">¡Trámite Registrado!</div>
+    <div class="modal-folio">Tu folio asignado</div>
+    <div class="modal-folio-val" id="mFolioVal">—</div>
+    <div class="modal-msg" id="mMsg">
+      Tu trámite fue enviado exitosamente.<br>
+      Para seguimientos escribe a <strong>info@anpai.com.mx</strong>
+    </div>
+    <button class="modal-btn" id="mClose">Entendido</button>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// ═══════════════════════════════════════════════════════════════
+//  CONFIGURACIÓN — REEMPLAZAR CON TUS VALORES REALES
+// ═══════════════════════════════════════════════════════════════
+
+// URL del Web App de Google Apps Script (despliega tu script con "Ejecutar como: yo",
+// "Quién puede acceder: cualquier persona"). Ejemplo:
+// https://script.google.com/macros/s/AKfycbXXXXXX/exec
+var GAS_URL = 'https://script.google.com/macros/s/TU_DEPLOYMENT_ID_AQUI/exec';
+
+// ═══════════════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════════════
+function Q(id){ return document.getElementById(id); }
+function V(id){ var e=Q(id); return e?e.value.trim():''; }
+function setErr(id,msg){ var e=Q('e'+id); if(e)e.textContent=msg; var i=Q(id); if(i&&!i.closest('.tel-wr')&&!i.closest('.tipo-grid')){i.classList.add('bad');i.classList.remove('ok');} }
+function clrErr(id){ var e=Q('e'+id); if(e)e.textContent=''; var i=Q(id); if(i){i.classList.remove('bad');if(i.value&&i.value.trim())i.classList.add('ok');} }
+function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+function isEmpty(v){ return !v||!v.trim(); }
+
+// ═══════════════════════════════════════════════════════════════
+//  TELÉFONO — selector de lada
+// ═══════════════════════════════════════════════════════════════
+function updateTel(){
+  var lada = Q('ladaTel').value;
+  var num  = Q('telNum').value.replace(/\D/g,'');
+  Q('telFull').value = num ? lada+' '+num : '';
+}
+Q('ladaTel').addEventListener('change', updateTel);
+Q('telNum').addEventListener('input', function(){
+  this.value = this.value.replace(/\D/g,'');
+  updateTel();
+  Q('telWr').classList.remove('ok','bad');
+  Q('etelNum').textContent='';
+});
+Q('telNum').addEventListener('blur', function(){
+  var n=this.value.replace(/\D/g,'');
+  if(n.length>0&&n.length<7){ Q('telWr').classList.add('bad'); Q('etelNum').textContent='Mín. 7 dígitos.'; }
+  else if(n.length>=7){ Q('telWr').classList.remove('bad'); Q('telWr').classList.add('ok'); Q('etelNum').textContent=''; }
+  updateTel();
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  TIPO DE TRÁMITE — CARDS + FOLIO AUTOMÁTICO
+// ═══════════════════════════════════════════════════════════════
+var currentFolio = '';
+var folioLoading = false;
+
+// Códigos para el folio: primeras 2 letras del tipo
+var TIPO_MAP = { CE:'Certificado', SO:'Solicitud', RE:'Registro' };
+
+// Actualizar visualmente las cards
+document.querySelectorAll('.tipo-card').forEach(function(card){
+  var radio = card.querySelector('input[type=radio]');
+  radio.addEventListener('change', function(){
+    document.querySelectorAll('.tipo-card').forEach(function(c){ c.classList.remove('sel'); });
+    card.classList.add('sel');
+    Q('etipoTramite').textContent = '';
+    generarFolio(this.value);
+  });
+});
+
+// Pad 2 dígitos
+function pad2(n){ return n<10?'0'+n:String(n); }
+
+// Generar folio: AAAA-MM-NN-XX
+// Llama al GAS para obtener el siguiente número secuencial
+function generarFolio(tipo){
+  // UI estado "cargando"
+  Q('folioDisplay').textContent = 'Generando folio…';
+  Q('folioDisplay').className   = 'folio-txt empty';
+  Q('folioTopVal').textContent  = '…';
+  Q('folioTopVal').className    = 'folio-val loading';
+  Q('folioStatus').style.display= 'inline-block';
+  Q('folioStatus').textContent  = 'Generando…';
+  Q('folioStatus').className    = 'folio-status pen';
+  currentFolio = '';
+  Q('folioHidden').value = '';
+  folioLoading = true;
+  checkBtn();
+
+  var now = new Date();
+  var yyyy = now.getFullYear();
+  var mm   = pad2(now.getMonth()+1);
+  var params = '?action=getFolioSeq&tipo='+encodeURIComponent(tipo)
+             + '&year='+yyyy+'&month='+mm;
+
+  // Timeout de seguridad
+  var timer = setTimeout(function(){
+    if(folioLoading) onFolioError('Sin respuesta del servidor.');
+  }, 12000);
+
+  fetch(GAS_URL + params, { method:'GET' })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      clearTimeout(timer);
+      if(data.ok && data.folio){
+        setFolio(data.folio, tipo);
+      } else {
+        // Fallback local si el servidor responde pero sin folio
+        var fallback = buildFolioLocal(yyyy, mm, tipo);
+        setFolio(fallback, tipo);
+      }
+    })
+    .catch(function(){
+      clearTimeout(timer);
+      // Fallback: generar localmente (sin garantía de unicidad)
+      var now2=new Date();
+      var fallback = buildFolioLocal(now2.getFullYear(), pad2(now2.getMonth()+1), tipo);
+      setFolio(fallback, tipo);
+      // Mostrar advertencia suave
+      Q('folioStatus').textContent  = 'Generado local';
+      Q('folioStatus').className    = 'folio-status pen';
+    });
+}
+
+// Construye folio local con timestamp como secuencia (fallback)
+function buildFolioLocal(yyyy, mm, tipo){
+  var seq = pad2(Math.floor(Math.random()*90)+10); // 10-99
+  return yyyy+'-'+mm+'-'+seq+'-'+tipo;
+}
+
+function setFolio(folio, tipo){
+  currentFolio = folio;
+  folioLoading = false;
+  Q('folioDisplay').textContent = folio;
+  Q('folioDisplay').className   = 'folio-txt';
+  Q('folioTopVal').textContent  = folio;
+  Q('folioTopVal').className    = 'folio-val ready';
+  Q('folioStatus').textContent  = 'Confirmado';
+  Q('folioStatus').className    = 'folio-status ok';
+  Q('folioStatus').style.display= 'inline-block';
+  Q('folioHidden').value        = folio;
+  checkBtn();
+}
+
+function onFolioError(msg){
+  folioLoading = false;
+  Q('folioDisplay').textContent = 'Error al generar folio';
+  Q('folioDisplay').className   = 'folio-txt empty';
+  Q('folioTopVal').textContent  = 'Error';
+  Q('folioTopVal').className    = 'folio-val';
+  Q('folioStatus').textContent  = msg||'Error';
+  Q('folioStatus').className    = 'folio-status err';
+  currentFolio = '';
+  Q('folioHidden').value = '';
+  checkBtn();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  UPLOAD — indicador de tamaño
+// ═══════════════════════════════════════════════════════════════
+var upFile = null;
+
+Q('upArea').addEventListener('dragover', function(e){ e.preventDefault(); this.classList.add('drag'); });
+Q('upArea').addEventListener('dragleave', function(){ this.classList.remove('drag'); });
+Q('upArea').addEventListener('drop', function(e){ e.preventDefault(); this.classList.remove('drag'); handleFile(e.dataTransfer.files[0]); });
+Q('upFile').addEventListener('change', function(){ handleFile(this.files[0]); });
+
+function handleFile(f){
+  if(!f) return;
+  var allowed = ['.pdf','.doc','.docx','.jpg','.jpeg','.png'];
+  var ext = '.'+f.name.split('.').pop().toLowerCase();
+  var ind = Q('upIndicator');
+
+  Q('eupFile').textContent = '';
+  Q('upArea').classList.remove('bad-up');
+  upFile = null;
+  checkBtn();
+
+  if(!allowed.includes(ext)){
+    Q('eupFile').textContent = 'Formato no permitido. Usa: PDF, DOC, DOCX, JPG o PNG.';
+    Q('upArea').classList.add('bad-up');
+    ind.style.display = 'none';
+    return;
+  }
+
+  var mb  = f.size/1048576;
+  var mbR = mb.toFixed(2);
+
+  ind.style.display = 'flex';
+  Q('upFnm').textContent = f.name;
+
+  if(mb <= 3.75){
+    // ✅ Verde — OK
+    ind.className = 'up-indicator green';
+    Q('upIco').textContent = '✅';
+    Q('upMsg').textContent = mbR+' MB — Archivo dentro del límite óptimo.';
+    upFile = f; checkBtn();
+
+  } else if(mb <= 5){
+    // ⚠️ Naranja — aceptable pero grande
+    ind.className = 'up-indicator orange';
+    Q('upIco').textContent = '⚠️';
+    Q('upMsg').textContent = mbR+' MB — Archivo grande pero aceptable. Puede demorar el envío.';
+    upFile = f; checkBtn();
+
+  } else {
+    // ❌ Rojo — supera el límite
+    ind.className = 'up-indicator red';
+    Q('upIco').textContent = '❌';
+    Q('upMsg').innerHTML   = mbR+' MB — Archivo demasiado grande. '
+      +'Por favor envíalo directamente a '
+      +'<a href="mailto:info@anpai.com.mx" style="color:inherit;font-weight:700">info@anpai.com.mx</a>.';
+    Q('upArea').classList.add('bad-up');
+    upFile = null; checkBtn();
+    Q('eupFile').textContent = 'El archivo supera 5 MB. Envíalo a info@anpai.com.mx';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  HABILITAR / DESHABILITAR BOTÓN
+//  El botón solo se activa si: folio generado + archivo adjunto válido
+// ═══════════════════════════════════════════════════════════════
+function checkBtn(){
+  var tipoSel = document.querySelector('input[name=tipoTramite]:checked');
+  var ready = tipoSel && currentFolio && !folioLoading && upFile;
+  Q('btnSubmit').disabled = !ready;
+}
+
+// Escuchar cambios en campos para habilitar botón cuando todo esté listo
+['nombre','apellido','fNac','email'].forEach(function(id){
+  Q(id).addEventListener('input', function(){ if(this.value) this.classList.add('ok'); else this.classList.remove('ok'); });
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  VALIDACIÓN COMPLETA ANTES DE ENVIAR
+// ═══════════════════════════════════════════════════════════════
+function validate(){
+  var ok = true;
+
+  if(isEmpty(V('nombre'))){
+    setErr('nombre','Ingresa tu nombre.'); ok=false;
+  } else clrErr('nombre');
+
+  if(isEmpty(V('apellido'))){
+    setErr('apellido','Ingresa tu apellido.'); ok=false;
+  } else clrErr('apellido');
+
+  if(isEmpty(V('fNac'))){
+    setErr('fNac','Selecciona tu fecha de nacimiento.'); ok=false;
+  } else clrErr('fNac');
+
+  if(!isEmail(V('email'))){
+    setErr('email','Correo electrónico inválido.'); ok=false;
+  } else clrErr('email');
+
+  var telN = Q('telNum').value.replace(/\D/g,'');
+  if(telN.length<7){
+    Q('telWr').classList.add('bad'); Q('etelNum').textContent='Ingresa un número de al menos 7 dígitos.'; ok=false;
+  } else {
+    Q('telWr').classList.remove('bad'); Q('telWr').classList.add('ok'); Q('etelNum').textContent='';
+  }
+
+  var tipoSel = document.querySelector('input[name=tipoTramite]:checked');
+  if(!tipoSel){
+    Q('etipoTramite').textContent='Selecciona el tipo de trámite.'; ok=false;
+  } else Q('etipoTramite').textContent='';
+
+  if(!currentFolio){
+    Q('etipoTramite').textContent='Espera a que se genere el folio.'; ok=false;
+  }
+
+  if(!upFile){
+    Q('eupFile').textContent='Adjunta un documento.'; ok=false;
+  }
+
+  return ok;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SUBMIT — envío a Google Apps Script
+// ═══════════════════════════════════════════════════════════════
+Q('frm').addEventListener('submit', function(e){
+  e.preventDefault();
+  if(!validate()){
+    // Scroll al primer error
+    var first = Q('frm').querySelector('.bad, .bad-up, [class$="em"]:not(:empty)');
+    if(first) first.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+
+  // UI — enviando
+  Q('sendingOv').classList.add('on');
+  Q('btnSubmit').disabled = true;
+  Q('btnSpin').style.display = 'block';
+  Q('btnIco').style.display  = 'none';
+  Q('btnTxt').textContent    = 'Enviando…';
+
+  // Construir FormData para el GAS
+  var fd = new FormData();
+  fd.append('action',        'saveTramite');
+  fd.append('folio',          currentFolio);
+  fd.append('nombre',         V('nombre'));
+  fd.append('apellido',       V('apellido'));
+  fd.append('fechaNacimiento',V('fNac'));
+  fd.append('telefono',       Q('telFull').value || (Q('ladaTel').value+' '+Q('telNum').value.replace(/\D/g,'')));
+  fd.append('correo',         V('email'));
+  var tipoSel = document.querySelector('input[name=tipoTramite]:checked');
+  fd.append('tipoTramite',    tipoSel ? TIPO_MAP[tipoSel.value] || tipoSel.value : '');
+  fd.append('archivoNombre',  upFile ? upFile.name : '');
+  fd.append('archivoMB',      upFile ? (upFile.size/1048576).toFixed(3) : '0');
+  if(upFile) fd.append('archivo', upFile, upFile.name);
+
+  fetch(GAS_URL, { method:'POST', body:fd })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      Q('sendingOv').classList.remove('on');
+      if(data.ok){
+        showSuccess(currentFolio);
+      } else {
+        resetBtn();
+        alert('No se pudo registrar el trámite: '+(data.msg||'Error desconocido.')+'\nIntenta de nuevo o escribe a info@anpai.com.mx');
+      }
+    })
+    .catch(function(err){
+      Q('sendingOv').classList.remove('on');
+      resetBtn();
+      alert('Error de conexión. Verifica tu internet e intenta de nuevo.\nSi el problema persiste, contacta a info@anpai.com.mx');
+    });
+});
+
+function resetBtn(){
+  Q('btnSubmit').disabled = false;
+  Q('btnSpin').style.display = 'none';
+  Q('btnIco').style.display  = '';
+  Q('btnTxt').textContent    = 'Enviar Trámite';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  MODAL ÉXITO
+// ═══════════════════════════════════════════════════════════════
+function showSuccess(folio){
+  Q('mFolioVal').textContent = folio;
+  Q('mMsg').innerHTML =
+    '¡Tu trámite con folio <strong>'+folio+'</strong> fue enviado!<br>'
+    +'Para seguimientos escribe a <strong>info@anpai.com.mx</strong>';
+  Q('modalOv').classList.add('on');
+  // Reset del formulario
+  Q('frm').reset();
+  document.querySelectorAll('.tipo-card').forEach(function(c){ c.classList.remove('sel'); });
+  Q('folioDisplay').textContent = 'Selecciona el tipo de trámite';
+  Q('folioDisplay').className   = 'folio-txt empty';
+  Q('folioTopVal').textContent  = 'Selecciona tipo';
+  Q('folioTopVal').className    = 'folio-val';
+  Q('folioStatus').style.display= 'none';
+  Q('upIndicator').style.display= 'none';
+  Q('upArea').classList.remove('bad-up');
+  currentFolio = ''; upFile = null;
+  Q('btnSubmit').disabled = true;
+  resetBtn();
+  document.querySelectorAll('input.ok,select.ok').forEach(function(el){ el.classList.remove('ok'); });
+  Q('telWr').classList.remove('ok','bad');
+}
+
+Q('mClose').addEventListener('click', function(){
+  Q('modalOv').classList.remove('on');
+});
+Q('modalOv').addEventListener('click', function(e){
+  if(e.target===this) this.classList.remove('on');
+});
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape') Q('modalOv').classList.remove('on');
+});
+
+})();
+</script>
+</body>
+</html>
