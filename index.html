@@ -656,7 +656,7 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
     <p class="legal">
       Al enviar este formulario aceptas que tus datos sean procesados conforme a la
       política de privacidad de ANPAI. Para consultas escribe a
-      <a href="mailto:info@anpai.com.mx">info@anpai.com.mx</a>.
+      <a href="/cdn-cgi/l/email-protection#f29b9c949db2939c82939bdc919d9fdc9f8a"><span class="__cf_email__" data-cfemail="81e8efe7eec1e0eff1e0e8afe2eeecafecf9">[email&#160;protected]</span></a>.
     </p>
 
   </form>
@@ -687,7 +687,7 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
     <div class="modal-folio-val" id="mFolioVal">—</div>
     <div class="modal-msg" id="mMsg">
       Tu trámite fue enviado exitosamente.<br>
-      Para seguimientos escribe a <strong>info@anpai.com.mx</strong>
+      Para seguimientos escribe a <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ea83848c85aa8b849a8b83c4898587c48792">[email&#160;protected]</a></strong>
     </div>
     <button class="modal-btn" id="mClose">Entendido</button>
   </div>
@@ -698,9 +698,10 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 'use strict';
 
 // ═══════════════════════════════════════════════════════════════
-//  CONFIGURACIÓN — REEMPLAZAR CON TUS VALORES REALES
+//  CONFIGURACIÓN
 // ═══════════════════════════════════════════════════════════════
-var GAS_URL = 'https://script.google.com/macros/s/TU_DEPLOYMENT_ID_AQUI/exec';
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbxQuajaissdsDyj9-W53-4rbJK931kgluanfwo_7qdu8X-6VWRN4uXiBUzc81Rk2w6x_g/exec';
+var CLAVE   = 'MiClaveTramites2026';
 
 // ═══════════════════════════════════════════════════════════════
 //  HELPERS
@@ -712,183 +713,146 @@ function clrErr(id){ var e=Q('e'+id); if(e)e.textContent=''; var i=Q(id); if(i){
 function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
 function isEmpty(v){ return !v||!v.trim(); }
 
+// Genera UUID v4
+function generateUUID(){
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){
+    var r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8);
+    return v.toString(16);
+  });
+}
+
+// Serializa a application/x-www-form-urlencoded
+function toURLEncoded(obj){
+  return Object.keys(obj).map(function(k){
+    return encodeURIComponent(k)+'='+encodeURIComponent(obj[k]);
+  }).join('&');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CARGA INICIAL — GET ?accion=obtenerContador
+// ═══════════════════════════════════════════════════════════════
+function cargarContador(){
+  fetch(GAS_URL+'?accion=obtenerContador',{method:'GET'})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(data && data.siguienteFolio !== undefined){
+        Q('folioTopVal').textContent='Registro #'+data.siguienteFolio;
+        Q('folioTopVal').className='folio-val';
+      }
+    })
+    .catch(function(){/* silencioso */});
+}
+cargarContador();
+
 // ═══════════════════════════════════════════════════════════════
 //  TELÉFONO — selector de lada
 // ═══════════════════════════════════════════════════════════════
 function updateTel(){
-  var lada = Q('ladaTel').value;
-  var num  = Q('telNum').value.replace(/\D/g,'');
-  Q('telFull').value = num ? lada+' '+num : '';
+  var lada=Q('ladaTel').value;
+  var num=Q('telNum').value.replace(/\D/g,'');
+  Q('telFull').value=num?lada+' '+num:'';
 }
-Q('ladaTel').addEventListener('change', updateTel);
-Q('telNum').addEventListener('input', function(){
-  this.value = this.value.replace(/\D/g,'');
+Q('ladaTel').addEventListener('change',updateTel);
+Q('telNum').addEventListener('input',function(){
+  this.value=this.value.replace(/\D/g,'');
   updateTel();
   Q('telWr').classList.remove('ok','bad');
   Q('etelNum').textContent='';
 });
-Q('telNum').addEventListener('blur', function(){
+Q('telNum').addEventListener('blur',function(){
   var n=this.value.replace(/\D/g,'');
-  if(n.length>0&&n.length<7){ Q('telWr').classList.add('bad'); Q('etelNum').textContent='Mín. 7 dígitos.'; }
-  else if(n.length>=7){ Q('telWr').classList.remove('bad'); Q('telWr').classList.add('ok'); Q('etelNum').textContent=''; }
+  if(n.length>0&&n.length<7){Q('telWr').classList.add('bad');Q('etelNum').textContent='Mín. 7 dígitos.';}
+  else if(n.length>=7){Q('telWr').classList.remove('bad');Q('telWr').classList.add('ok');Q('etelNum').textContent='';}
   updateTel();
 });
 
 // ═══════════════════════════════════════════════════════════════
-//  TIPO DE TRÁMITE — CARDS + FOLIO AUTOMÁTICO
+//  TIPO DE TRÁMITE — CARDS + FOLIO UUID
 // ═══════════════════════════════════════════════════════════════
-var currentFolio = '';
-var folioLoading = false;
+var currentFolio='';
 
-var TIPO_MAP = {
-  CA: 'Crédito de Auto',
-  AP: 'Arrendamiento Puro',
-  SA: 'Seguro de Auto',
-  TV: 'Trámites Vehiculares',
-  PC: 'Permisos de Circulación Guerrero'
+var TIPO_MAP={
+  CA:'Crédito de Auto',
+  AP:'Arrendamiento Puro',
+  SA:'Seguro de Auto',
+  TV:'Trámites Vehiculares',
+  PC:'Permisos de Circulación Guerrero'
 };
 
 document.querySelectorAll('.tipo-card').forEach(function(card){
-  var radio = card.querySelector('input[type=radio]');
-  radio.addEventListener('change', function(){
-    document.querySelectorAll('.tipo-card').forEach(function(c){ c.classList.remove('sel'); });
+  var radio=card.querySelector('input[type=radio]');
+  radio.addEventListener('change',function(){
+    document.querySelectorAll('.tipo-card').forEach(function(c){c.classList.remove('sel');});
     card.classList.add('sel');
-    Q('etipoTramite').textContent = '';
-    generarFolio(this.value);
+    Q('etipoTramite').textContent='';
+    asignarFolioUUID();
   });
 });
 
-function pad2(n){ return n<10?'0'+n:String(n); }
-
-function generarFolio(tipo){
-  Q('folioDisplay').textContent = 'Generando folio…';
-  Q('folioDisplay').className   = 'folio-txt empty';
-  Q('folioTopVal').textContent  = '…';
-  Q('folioTopVal').className    = 'folio-val loading';
-  Q('folioStatus').style.display= 'inline-block';
-  Q('folioStatus').textContent  = 'Generando…';
-  Q('folioStatus').className    = 'folio-status pen';
-  currentFolio = '';
-  Q('folioHidden').value = '';
-  folioLoading = true;
-  checkBtn();
-
-  var now = new Date();
-  var yyyy = now.getFullYear();
-  var mm   = pad2(now.getMonth()+1);
-  var params = '?action=getFolioSeq&tipo='+encodeURIComponent(tipo)
-             + '&year='+yyyy+'&month='+mm;
-
-  var timer = setTimeout(function(){
-    if(folioLoading) onFolioError('Sin respuesta del servidor.');
-  }, 12000);
-
-  fetch(GAS_URL + params, { method:'GET' })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      clearTimeout(timer);
-      if(data.ok && data.folio){
-        setFolio(data.folio, tipo);
-      } else {
-        var fallback = buildFolioLocal(yyyy, mm, tipo);
-        setFolio(fallback, tipo);
-      }
-    })
-    .catch(function(){
-      clearTimeout(timer);
-      var now2=new Date();
-      var fallback = buildFolioLocal(now2.getFullYear(), pad2(now2.getMonth()+1), tipo);
-      setFolio(fallback, tipo);
-      Q('folioStatus').textContent  = 'Generado local';
-      Q('folioStatus').className    = 'folio-status pen';
-    });
-}
-
-function buildFolioLocal(yyyy, mm, tipo){
-  var seq = pad2(Math.floor(Math.random()*90)+10);
-  return yyyy+'-'+mm+'-'+seq+'-'+tipo;
-}
-
-function setFolio(folio, tipo){
-  currentFolio = folio;
-  folioLoading = false;
-  Q('folioDisplay').textContent = folio;
-  Q('folioDisplay').className   = 'folio-txt';
-  Q('folioTopVal').textContent  = folio;
-  Q('folioTopVal').className    = 'folio-val ready';
-  Q('folioStatus').textContent  = 'Confirmado';
-  Q('folioStatus').className    = 'folio-status ok';
-  Q('folioStatus').style.display= 'inline-block';
-  Q('folioHidden').value        = folio;
-  checkBtn();
-}
-
-function onFolioError(msg){
-  folioLoading = false;
-  Q('folioDisplay').textContent = 'Error al generar folio';
-  Q('folioDisplay').className   = 'folio-txt empty';
-  Q('folioTopVal').textContent  = 'Error';
-  Q('folioTopVal').className    = 'folio-val';
-  Q('folioStatus').textContent  = msg||'Error';
-  Q('folioStatus').className    = 'folio-status err';
-  currentFolio = '';
-  Q('folioHidden').value = '';
+function asignarFolioUUID(){
+  var uuid=generateUUID();
+  currentFolio=uuid;
+  Q('folioDisplay').textContent=uuid;
+  Q('folioDisplay').className='folio-txt';
+  Q('folioTopVal').textContent=uuid.substring(0,18)+'…';
+  Q('folioTopVal').className='folio-val ready';
+  Q('folioStatus').textContent='Listo';
+  Q('folioStatus').className='folio-status ok';
+  Q('folioStatus').style.display='inline-block';
+  Q('folioHidden').value=uuid;
   checkBtn();
 }
 
 // ═══════════════════════════════════════════════════════════════
 //  UPLOAD — indicador de tamaño
 // ═══════════════════════════════════════════════════════════════
-var upFile = null;
+var upFile=null;
 
-Q('upArea').addEventListener('dragover', function(e){ e.preventDefault(); this.classList.add('drag'); });
-Q('upArea').addEventListener('dragleave', function(){ this.classList.remove('drag'); });
-Q('upArea').addEventListener('drop', function(e){ e.preventDefault(); this.classList.remove('drag'); handleFile(e.dataTransfer.files[0]); });
-Q('upFile').addEventListener('change', function(){ handleFile(this.files[0]); });
+Q('upArea').addEventListener('dragover',function(e){e.preventDefault();this.classList.add('drag');});
+Q('upArea').addEventListener('dragleave',function(){this.classList.remove('drag');});
+Q('upArea').addEventListener('drop',function(e){e.preventDefault();this.classList.remove('drag');handleFile(e.dataTransfer.files[0]);});
+Q('upFile').addEventListener('change',function(){handleFile(this.files[0]);});
 
 function handleFile(f){
-  if(!f) return;
-  var allowed = ['.pdf','.doc','.docx','.jpg','.jpeg','.png'];
-  var ext = '.'+f.name.split('.').pop().toLowerCase();
-  var ind = Q('upIndicator');
+  if(!f)return;
+  var allowed=['.pdf','.doc','.docx','.jpg','.jpeg','.png'];
+  var ext='.'+f.name.split('.').pop().toLowerCase();
+  var ind=Q('upIndicator');
 
-  Q('eupFile').textContent = '';
+  Q('eupFile').textContent='';
   Q('upArea').classList.remove('bad-up');
-  upFile = null;
+  upFile=null;
   checkBtn();
 
   if(!allowed.includes(ext)){
-    Q('eupFile').textContent = 'Formato no permitido. Usa: PDF, DOC, DOCX, JPG o PNG.';
+    Q('eupFile').textContent='Formato no permitido. Usa: PDF, DOC, DOCX, JPG o PNG.';
     Q('upArea').classList.add('bad-up');
-    ind.style.display = 'none';
+    ind.style.display='none';
     return;
   }
 
-  var mb  = f.size/1048576;
-  var mbR = mb.toFixed(2);
+  var mb=f.size/1048576;
+  var mbR=mb.toFixed(2);
+  ind.style.display='flex';
+  Q('upFnm').textContent=f.name;
 
-  ind.style.display = 'flex';
-  Q('upFnm').textContent = f.name;
-
-  if(mb <= 3.75){
-    ind.className = 'up-indicator green';
-    Q('upIco').textContent = '✅';
-    Q('upMsg').textContent = mbR+' MB — Archivo dentro del límite óptimo.';
-    upFile = f; checkBtn();
-  } else if(mb <= 5){
-    ind.className = 'up-indicator orange';
-    Q('upIco').textContent = '⚠️';
-    Q('upMsg').textContent = mbR+' MB — Archivo grande pero aceptable. Puede demorar el envío.';
-    upFile = f; checkBtn();
-  } else {
-    ind.className = 'up-indicator red';
-    Q('upIco').textContent = '❌';
-    Q('upMsg').innerHTML   = mbR+' MB — Archivo demasiado grande. '
-      +'Por favor envíalo directamente a '
-      +'<a href="mailto:info@anpai.com.mx" style="color:inherit;font-weight:700">info@anpai.com.mx</a>.';
+  if(mb<=3.75){
+    ind.className='up-indicator green';
+    Q('upIco').textContent='✅';
+    Q('upMsg').textContent=mbR+' MB — Archivo dentro del límite óptimo.';
+    upFile=f;checkBtn();
+  }else if(mb<=5){
+    ind.className='up-indicator orange';
+    Q('upIco').textContent='⚠️';
+    Q('upMsg').textContent=mbR+' MB — Archivo grande pero aceptable. Puede demorar el envío.';
+    upFile=f;checkBtn();
+  }else{
+    ind.className='up-indicator red';
+    Q('upIco').textContent='❌';
+    Q('upMsg').innerHTML=mbR+' MB — Archivo demasiado grande. Por favor envíalo directamente a <a href="mailto:info@anpai.com.mx" style="color:inherit;font-weight:700">info@anpai.com.mx</a>.';
     Q('upArea').classList.add('bad-up');
-    upFile = null; checkBtn();
-    Q('eupFile').textContent = 'El archivo supera 5 MB. Envíalo a info@anpai.com.mx';
+    upFile=null;checkBtn();
+    Q('eupFile').textContent='El archivo supera 5 MB. Envíalo a info@anpai.com.mx';
   }
 }
 
@@ -896,150 +860,134 @@ function handleFile(f){
 //  HABILITAR / DESHABILITAR BOTÓN
 // ═══════════════════════════════════════════════════════════════
 function checkBtn(){
-  var tipoSel = document.querySelector('input[name=tipoTramite]:checked');
-  var ready = tipoSel && currentFolio && !folioLoading && upFile;
-  Q('btnSubmit').disabled = !ready;
+  var tipoSel=document.querySelector('input[name=tipoTramite]:checked');
+  Q('btnSubmit').disabled=!(tipoSel&&currentFolio&&upFile);
 }
 
 ['nombre','apellido','fNac','email'].forEach(function(id){
-  Q(id).addEventListener('input', function(){ if(this.value) this.classList.add('ok'); else this.classList.remove('ok'); });
+  Q(id).addEventListener('input',function(){if(this.value)this.classList.add('ok');else this.classList.remove('ok');});
 });
 
 // ═══════════════════════════════════════════════════════════════
-//  VALIDACIÓN COMPLETA ANTES DE ENVIAR
+//  VALIDACIÓN
 // ═══════════════════════════════════════════════════════════════
 function validate(){
-  var ok = true;
+  var ok=true;
 
-  if(isEmpty(V('nombre'))){
-    setErr('nombre','Ingresa tu nombre.'); ok=false;
-  } else clrErr('nombre');
+  if(isEmpty(V('nombre'))){setErr('nombre','Ingresa tu nombre.');ok=false;}
+  else clrErr('nombre');
 
-  if(isEmpty(V('apellido'))){
-    setErr('apellido','Ingresa tu apellido.'); ok=false;
-  } else clrErr('apellido');
+  if(isEmpty(V('apellido'))){setErr('apellido','Ingresa tu apellido.');ok=false;}
+  else clrErr('apellido');
 
-  if(isEmpty(V('fNac'))){
-    setErr('fNac','Selecciona tu fecha de nacimiento.'); ok=false;
-  } else clrErr('fNac');
+  if(isEmpty(V('fNac'))){setErr('fNac','Selecciona tu fecha de nacimiento.');ok=false;}
+  else clrErr('fNac');
 
-  if(!isEmail(V('email'))){
-    setErr('email','Correo electrónico inválido.'); ok=false;
-  } else clrErr('email');
+  if(!isEmail(V('email'))){setErr('email','Correo electrónico inválido.');ok=false;}
+  else clrErr('email');
 
-  var telN = Q('telNum').value.replace(/\D/g,'');
-  if(telN.length<7){
-    Q('telWr').classList.add('bad'); Q('etelNum').textContent='Ingresa un número de al menos 7 dígitos.'; ok=false;
-  } else {
-    Q('telWr').classList.remove('bad'); Q('telWr').classList.add('ok'); Q('etelNum').textContent='';
-  }
+  var telN=Q('telNum').value.replace(/\D/g,'');
+  if(telN.length<7){Q('telWr').classList.add('bad');Q('etelNum').textContent='Ingresa un número de al menos 7 dígitos.';ok=false;}
+  else{Q('telWr').classList.remove('bad');Q('telWr').classList.add('ok');Q('etelNum').textContent='';}
 
-  var tipoSel = document.querySelector('input[name=tipoTramite]:checked');
-  if(!tipoSel){
-    Q('etipoTramite').textContent='Selecciona el tipo de trámite.'; ok=false;
-  } else Q('etipoTramite').textContent='';
+  var tipoSel=document.querySelector('input[name=tipoTramite]:checked');
+  if(!tipoSel){Q('etipoTramite').textContent='Selecciona el tipo de trámite.';ok=false;}
+  else Q('etipoTramite').textContent='';
 
-  if(!currentFolio){
-    Q('etipoTramite').textContent='Espera a que se genere el folio.'; ok=false;
-  }
-
-  if(!upFile){
-    Q('eupFile').textContent='Adjunta un documento.'; ok=false;
-  }
+  if(!currentFolio){Q('etipoTramite').textContent='Selecciona el tipo de trámite para generar el folio.';ok=false;}
+  if(!upFile){Q('eupFile').textContent='Adjunta un documento.';ok=false;}
 
   return ok;
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SUBMIT — envío a Google Apps Script
+//  SUBMIT — POST application/x-www-form-urlencoded
 // ═══════════════════════════════════════════════════════════════
-Q('frm').addEventListener('submit', function(e){
+Q('frm').addEventListener('submit',function(e){
   e.preventDefault();
   if(!validate()){
-    var first = Q('frm').querySelector('.bad, .bad-up');
-    if(first) first.scrollIntoView({behavior:'smooth',block:'center'});
+    var first=Q('frm').querySelector('.bad,.bad-up');
+    if(first)first.scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
 
   Q('sendingOv').classList.add('on');
-  Q('btnSubmit').disabled = true;
-  Q('btnSpin').style.display = 'block';
-  Q('btnIco').style.display  = 'none';
-  Q('btnTxt').textContent    = 'Enviando…';
+  Q('btnSubmit').disabled=true;
+  Q('btnSpin').style.display='block';
+  Q('btnIco').style.display='none';
+  Q('btnTxt').textContent='Enviando…';
 
-  var fd = new FormData();
-  fd.append('action',        'saveTramite');
-  fd.append('folio',          currentFolio);
-  fd.append('nombre',         V('nombre'));
-  fd.append('apellido',       V('apellido'));
-  fd.append('fechaNacimiento',V('fNac'));
-  fd.append('telefono',       Q('telFull').value || (Q('ladaTel').value+' '+Q('telNum').value.replace(/\D/g,'')));
-  fd.append('correo',         V('email'));
-  var tipoSel = document.querySelector('input[name=tipoTramite]:checked');
-  fd.append('tipoTramite',    tipoSel ? TIPO_MAP[tipoSel.value] || tipoSel.value : '');
-  fd.append('archivoNombre',  upFile ? upFile.name : '');
-  fd.append('archivoMB',      upFile ? (upFile.size/1048576).toFixed(3) : '0');
-  if(upFile) fd.append('archivo', upFile, upFile.name);
+  var tipoSel=document.querySelector('input[name=tipoTramite]:checked');
+  var telefono=Q('telFull').value||(Q('ladaTel').value+' '+Q('telNum').value.replace(/\D/g,''));
 
-  fetch(GAS_URL, { method:'POST', body:fd })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      Q('sendingOv').classList.remove('on');
-      if(data.ok){
-        showSuccess(currentFolio);
-      } else {
-        resetBtn();
-        alert('No se pudo registrar el trámite: '+(data.msg||'Error desconocido.')+'\nIntenta de nuevo o escribe a info@anpai.com.mx');
-      }
-    })
-    .catch(function(){
-      Q('sendingOv').classList.remove('on');
+  var payload={
+    clave          : CLAVE,
+    folio          : currentFolio,
+    nombre         : V('nombre')+' '+V('apellido'),
+    correo         : V('email'),
+    tramite        : tipoSel?(TIPO_MAP[tipoSel.value]||tipoSel.value):'',
+    fechaNacimiento: V('fNac'),
+    telefono       : telefono,
+    nombreArchivo  : upFile?upFile.name:'',
+    tamanoArchivo  : upFile?(upFile.size/1048576).toFixed(2):'0.00'
+  };
+
+  fetch(GAS_URL,{
+    method :'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body   :toURLEncoded(payload)
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    Q('sendingOv').classList.remove('on');
+    if(data.status==='ok'){
+      showSuccess(currentFolio);
+    }else{
       resetBtn();
-      alert('Error de conexión. Verifica tu internet e intenta de nuevo.\nSi el problema persiste, contacta a info@anpai.com.mx');
-    });
+      alert('No se pudo registrar el trámite:\n'+(data.message||data.msg||'Error desconocido.')+'\n\nIntenta de nuevo o escribe a info@anpai.com.mx');
+    }
+  })
+  .catch(function(){
+    Q('sendingOv').classList.remove('on');
+    resetBtn();
+    alert('Error de conexión. Verifica tu internet e intenta de nuevo.\nSi el problema persiste, contacta a info@anpai.com.mx');
+  });
 });
 
 function resetBtn(){
-  Q('btnSubmit').disabled = false;
-  Q('btnSpin').style.display = 'none';
-  Q('btnIco').style.display  = '';
-  Q('btnTxt').textContent    = 'Enviar Trámite';
+  Q('btnSubmit').disabled=false;
+  Q('btnSpin').style.display='none';
+  Q('btnIco').style.display='';
+  Q('btnTxt').textContent='Enviar Trámite';
 }
 
 // ═══════════════════════════════════════════════════════════════
 //  MODAL ÉXITO
 // ═══════════════════════════════════════════════════════════════
 function showSuccess(folio){
-  Q('mFolioVal').textContent = folio;
-  Q('mMsg').innerHTML =
-    '¡Tu trámite con folio <strong>'+folio+'</strong> fue enviado!<br>'
-    +'Para seguimientos escribe a <strong>info@anpai.com.mx</strong>';
+  Q('mFolioVal').textContent=folio;
+  Q('mMsg').innerHTML='¡Tu trámite con folio<br><strong>'+folio+'</strong><br>fue registrado exitosamente!<br>Para seguimientos escribe a <strong>info@anpai.com.mx</strong>';
   Q('modalOv').classList.add('on');
   Q('frm').reset();
-  document.querySelectorAll('.tipo-card').forEach(function(c){ c.classList.remove('sel'); });
-  Q('folioDisplay').textContent = 'Selecciona el tipo de trámite';
-  Q('folioDisplay').className   = 'folio-txt empty';
-  Q('folioTopVal').textContent  = 'Selecciona tipo';
-  Q('folioTopVal').className    = 'folio-val';
-  Q('folioStatus').style.display= 'none';
-  Q('upIndicator').style.display= 'none';
+  document.querySelectorAll('.tipo-card').forEach(function(c){c.classList.remove('sel');});
+  Q('folioDisplay').textContent='Selecciona el tipo de trámite';
+  Q('folioDisplay').className='folio-txt empty';
+  Q('folioTopVal').textContent='Selecciona tipo';
+  Q('folioTopVal').className='folio-val';
+  Q('folioStatus').style.display='none';
+  Q('upIndicator').style.display='none';
   Q('upArea').classList.remove('bad-up');
-  currentFolio = ''; upFile = null;
-  Q('btnSubmit').disabled = true;
+  currentFolio='';upFile=null;
+  Q('btnSubmit').disabled=true;
   resetBtn();
-  document.querySelectorAll('input.ok,select.ok').forEach(function(el){ el.classList.remove('ok'); });
+  document.querySelectorAll('input.ok,select.ok').forEach(function(el){el.classList.remove('ok');});
   Q('telWr').classList.remove('ok','bad');
+  cargarContador();
 }
 
-Q('mClose').addEventListener('click', function(){
-  Q('modalOv').classList.remove('on');
-});
-Q('modalOv').addEventListener('click', function(e){
-  if(e.target===this) this.classList.remove('on');
-});
-document.addEventListener('keydown', function(e){
-  if(e.key==='Escape') Q('modalOv').classList.remove('on');
-});
+Q('mClose').addEventListener('click',function(){Q('modalOv').classList.remove('on');});
+Q('modalOv').addEventListener('click',function(e){if(e.target===this)this.classList.remove('on');});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')Q('modalOv').classList.remove('on');});
 
 })();
 </script>
