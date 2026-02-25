@@ -174,7 +174,7 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 .sec-div::before,.sec-div::after{content:'';flex:1;height:1px;background:var(--line)}
 
 /* ══════════════════════════════════════════════════
-   SELECTOR DE LADA (misma arquitectura que AVA)
+   SELECTOR DE LADA
 ══════════════════════════════════════════════════ */
 .tel-wr{
   display:flex;align-items:stretch;
@@ -206,12 +206,17 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 
 /* ══════════════════════════════════════════════════
    TIPO DE TRÁMITE — CARDS SELECCIONABLES
+   5 opciones: grid adaptable
 ══════════════════════════════════════════════════ */
-.tipo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem}
+.tipo-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:.85rem;
+}
 .tipo-card{
   position:relative;cursor:pointer;
   border:2px solid var(--line);border-radius:10px;
-  padding:1rem .85rem .9rem;
+  padding:1rem .75rem .9rem;
   background:#fff;
   transition:all .2s ease;
   text-align:center;
@@ -227,9 +232,9 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
   position:absolute;inset:0;opacity:0;cursor:pointer;
   width:100%;height:100%;margin:0;
 }
-.tipo-ico{font-size:1.6rem;margin-bottom:.42rem;line-height:1}
-.tipo-nm{font-size:.82rem;font-weight:600;color:var(--ink);line-height:1.2}
-.tipo-code{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-top:.2rem}
+.tipo-ico{font-size:1.55rem;margin-bottom:.42rem;line-height:1}
+.tipo-nm{font-size:.76rem;font-weight:600;color:var(--ink);line-height:1.25}
+.tipo-code{font-size:.63rem;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-top:.2rem}
 .tipo-card.sel .tipo-nm{color:var(--ink2)}
 .tipo-card.sel .tipo-code{color:var(--gold)}
 .tipo-chk{
@@ -243,7 +248,7 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 .tipo-card.sel .tipo-chk::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff}
 
 /* ══════════════════════════════════════════════════
-   FOLIO GENERADO (campo visual integrado)
+   FOLIO GENERADO
 ══════════════════════════════════════════════════ */
 .folio-field{
   display:flex;align-items:center;gap:.75rem;
@@ -280,7 +285,6 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 .up-ico{font-size:2rem;margin-bottom:.45rem}
 .up-main{font-size:.9rem;font-weight:600;color:var(--ink2)}
 .up-fmt{font-size:.72rem;color:var(--muted);margin-top:.28rem}
-/* Indicador de tamaño */
 .up-indicator{
   margin-top:.85rem;
   padding:.65rem .9rem;border-radius:7px;
@@ -308,11 +312,6 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
   display:flex;align-items:center;justify-content:center;gap:.65rem;
   transition:all .22s ease;
   position:relative;overflow:hidden;
-}
-.btn-submit::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(201,168,76,.0) 0%,rgba(201,168,76,.0) 100%);
-  transition:background .3s;
 }
 .btn-submit:hover:not(:disabled){
   background:var(--gold);border-color:var(--gold);color:var(--ink);
@@ -421,6 +420,9 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 /* ══════════════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════════════ */
+@media(max-width:700px){
+  .tipo-grid{grid-template-columns:repeat(3,1fr)}
+}
 @media(max-width:640px){
   .wrap{padding:1.5rem .85rem 4rem}
   .hdr-logo{font-size:2rem}
@@ -428,10 +430,9 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
   .folio-tag{align-items:flex-start}
   .card-body{padding:1.35rem 1.25rem 2rem}
   .grid2{grid-template-columns:1fr}
-  .tipo-grid{grid-template-columns:1fr 1fr 1fr}
 }
 @media(max-width:420px){
-  .tipo-grid{grid-template-columns:1fr}
+  .tipo-grid{grid-template-columns:1fr 1fr}
   .hdr-logo{font-size:1.75rem}
   .modal{padding:2rem 1.4rem}
 }
@@ -562,28 +563,49 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
         <label class="lbl req">Selecciona el tipo de trámite</label>
         <div class="tipo-grid" id="tipoGrid">
 
-          <label class="tipo-card" id="tc-CE">
-            <input type="radio" name="tipoTramite" value="CE" data-label="Certificado">
+          <!-- Crédito de Auto -->
+          <label class="tipo-card" id="tc-CA">
+            <input type="radio" name="tipoTramite" value="CA" data-label="Crédito de Auto">
             <div class="tipo-chk"></div>
-            <div class="tipo-ico">📜</div>
-            <div class="tipo-nm">Certificado</div>
-            <div class="tipo-code">CE</div>
+            <div class="tipo-ico">🚗</div>
+            <div class="tipo-nm">Crédito de Auto</div>
+            <div class="tipo-code">CA</div>
           </label>
 
-          <label class="tipo-card" id="tc-SO">
-            <input type="radio" name="tipoTramite" value="SO" data-label="Solicitud">
+          <!-- Arrendamiento Puro -->
+          <label class="tipo-card" id="tc-AP">
+            <input type="radio" name="tipoTramite" value="AP" data-label="Arrendamiento Puro">
+            <div class="tipo-chk"></div>
+            <div class="tipo-ico">🔑</div>
+            <div class="tipo-nm">Arrendamiento Puro</div>
+            <div class="tipo-code">AP</div>
+          </label>
+
+          <!-- Seguro de Auto -->
+          <label class="tipo-card" id="tc-SA">
+            <input type="radio" name="tipoTramite" value="SA" data-label="Seguro de Auto">
+            <div class="tipo-chk"></div>
+            <div class="tipo-ico">🛡️</div>
+            <div class="tipo-nm">Seguro de Auto</div>
+            <div class="tipo-code">SA</div>
+          </label>
+
+          <!-- Trámites Vehiculares -->
+          <label class="tipo-card" id="tc-TV">
+            <input type="radio" name="tipoTramite" value="TV" data-label="Trámites Vehiculares">
             <div class="tipo-chk"></div>
             <div class="tipo-ico">📋</div>
-            <div class="tipo-nm">Solicitud</div>
-            <div class="tipo-code">SO</div>
+            <div class="tipo-nm">Trámites Vehiculares</div>
+            <div class="tipo-code">TV</div>
           </label>
 
-          <label class="tipo-card" id="tc-RE">
-            <input type="radio" name="tipoTramite" value="RE" data-label="Registro">
+          <!-- Permisos de Circulación Guerrero -->
+          <label class="tipo-card" id="tc-PC">
+            <input type="radio" name="tipoTramite" value="PC" data-label="Permisos de Circulación Guerrero">
             <div class="tipo-chk"></div>
-            <div class="tipo-ico">📁</div>
-            <div class="tipo-nm">Registro</div>
-            <div class="tipo-code">RE</div>
+            <div class="tipo-ico">📝</div>
+            <div class="tipo-nm">Permisos de Circulación Guerrero</div>
+            <div class="tipo-code">PC</div>
           </label>
 
         </div>
@@ -612,7 +634,6 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
           <div class="up-main">Arrastra tu archivo o haz clic para seleccionar</div>
           <div class="up-fmt">PDF · DOC · DOCX · JPG · PNG — Máx. recomendado 5 MB</div>
         </div>
-        <!-- Indicador de tamaño -->
         <div class="up-indicator" id="upIndicator">
           <span class="up-indicator-ico" id="upIco"></span>
           <div>
@@ -679,10 +700,6 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 // ═══════════════════════════════════════════════════════════════
 //  CONFIGURACIÓN — REEMPLAZAR CON TUS VALORES REALES
 // ═══════════════════════════════════════════════════════════════
-
-// URL del Web App de Google Apps Script (despliega tu script con "Ejecutar como: yo",
-// "Quién puede acceder: cualquier persona"). Ejemplo:
-// https://script.google.com/macros/s/AKfycbXXXXXX/exec
 var GAS_URL = 'https://script.google.com/macros/s/TU_DEPLOYMENT_ID_AQUI/exec';
 
 // ═══════════════════════════════════════════════════════════════
@@ -723,10 +740,14 @@ Q('telNum').addEventListener('blur', function(){
 var currentFolio = '';
 var folioLoading = false;
 
-// Códigos para el folio: primeras 2 letras del tipo
-var TIPO_MAP = { CE:'Certificado', SO:'Solicitud', RE:'Registro' };
+var TIPO_MAP = {
+  CA: 'Crédito de Auto',
+  AP: 'Arrendamiento Puro',
+  SA: 'Seguro de Auto',
+  TV: 'Trámites Vehiculares',
+  PC: 'Permisos de Circulación Guerrero'
+};
 
-// Actualizar visualmente las cards
 document.querySelectorAll('.tipo-card').forEach(function(card){
   var radio = card.querySelector('input[type=radio]');
   radio.addEventListener('change', function(){
@@ -737,13 +758,9 @@ document.querySelectorAll('.tipo-card').forEach(function(card){
   });
 });
 
-// Pad 2 dígitos
 function pad2(n){ return n<10?'0'+n:String(n); }
 
-// Generar folio: AAAA-MM-NN-XX
-// Llama al GAS para obtener el siguiente número secuencial
 function generarFolio(tipo){
-  // UI estado "cargando"
   Q('folioDisplay').textContent = 'Generando folio…';
   Q('folioDisplay').className   = 'folio-txt empty';
   Q('folioTopVal').textContent  = '…';
@@ -762,7 +779,6 @@ function generarFolio(tipo){
   var params = '?action=getFolioSeq&tipo='+encodeURIComponent(tipo)
              + '&year='+yyyy+'&month='+mm;
 
-  // Timeout de seguridad
   var timer = setTimeout(function(){
     if(folioLoading) onFolioError('Sin respuesta del servidor.');
   }, 12000);
@@ -774,26 +790,22 @@ function generarFolio(tipo){
       if(data.ok && data.folio){
         setFolio(data.folio, tipo);
       } else {
-        // Fallback local si el servidor responde pero sin folio
         var fallback = buildFolioLocal(yyyy, mm, tipo);
         setFolio(fallback, tipo);
       }
     })
     .catch(function(){
       clearTimeout(timer);
-      // Fallback: generar localmente (sin garantía de unicidad)
       var now2=new Date();
       var fallback = buildFolioLocal(now2.getFullYear(), pad2(now2.getMonth()+1), tipo);
       setFolio(fallback, tipo);
-      // Mostrar advertencia suave
       Q('folioStatus').textContent  = 'Generado local';
       Q('folioStatus').className    = 'folio-status pen';
     });
 }
 
-// Construye folio local con timestamp como secuencia (fallback)
 function buildFolioLocal(yyyy, mm, tipo){
-  var seq = pad2(Math.floor(Math.random()*90)+10); // 10-99
+  var seq = pad2(Math.floor(Math.random()*90)+10);
   return yyyy+'-'+mm+'-'+seq+'-'+tipo;
 }
 
@@ -859,21 +871,16 @@ function handleFile(f){
   Q('upFnm').textContent = f.name;
 
   if(mb <= 3.75){
-    // ✅ Verde — OK
     ind.className = 'up-indicator green';
     Q('upIco').textContent = '✅';
     Q('upMsg').textContent = mbR+' MB — Archivo dentro del límite óptimo.';
     upFile = f; checkBtn();
-
   } else if(mb <= 5){
-    // ⚠️ Naranja — aceptable pero grande
     ind.className = 'up-indicator orange';
     Q('upIco').textContent = '⚠️';
     Q('upMsg').textContent = mbR+' MB — Archivo grande pero aceptable. Puede demorar el envío.';
     upFile = f; checkBtn();
-
   } else {
-    // ❌ Rojo — supera el límite
     ind.className = 'up-indicator red';
     Q('upIco').textContent = '❌';
     Q('upMsg').innerHTML   = mbR+' MB — Archivo demasiado grande. '
@@ -887,7 +894,6 @@ function handleFile(f){
 
 // ═══════════════════════════════════════════════════════════════
 //  HABILITAR / DESHABILITAR BOTÓN
-//  El botón solo se activa si: folio generado + archivo adjunto válido
 // ═══════════════════════════════════════════════════════════════
 function checkBtn(){
   var tipoSel = document.querySelector('input[name=tipoTramite]:checked');
@@ -895,7 +901,6 @@ function checkBtn(){
   Q('btnSubmit').disabled = !ready;
 }
 
-// Escuchar cambios en campos para habilitar botón cuando todo esté listo
 ['nombre','apellido','fNac','email'].forEach(function(id){
   Q(id).addEventListener('input', function(){ if(this.value) this.classList.add('ok'); else this.classList.remove('ok'); });
 });
@@ -951,20 +956,17 @@ function validate(){
 Q('frm').addEventListener('submit', function(e){
   e.preventDefault();
   if(!validate()){
-    // Scroll al primer error
-    var first = Q('frm').querySelector('.bad, .bad-up, [class$="em"]:not(:empty)');
+    var first = Q('frm').querySelector('.bad, .bad-up');
     if(first) first.scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
 
-  // UI — enviando
   Q('sendingOv').classList.add('on');
   Q('btnSubmit').disabled = true;
   Q('btnSpin').style.display = 'block';
   Q('btnIco').style.display  = 'none';
   Q('btnTxt').textContent    = 'Enviando…';
 
-  // Construir FormData para el GAS
   var fd = new FormData();
   fd.append('action',        'saveTramite');
   fd.append('folio',          currentFolio);
@@ -990,7 +992,7 @@ Q('frm').addEventListener('submit', function(e){
         alert('No se pudo registrar el trámite: '+(data.msg||'Error desconocido.')+'\nIntenta de nuevo o escribe a info@anpai.com.mx');
       }
     })
-    .catch(function(err){
+    .catch(function(){
       Q('sendingOv').classList.remove('on');
       resetBtn();
       alert('Error de conexión. Verifica tu internet e intenta de nuevo.\nSi el problema persiste, contacta a info@anpai.com.mx');
@@ -1013,7 +1015,6 @@ function showSuccess(folio){
     '¡Tu trámite con folio <strong>'+folio+'</strong> fue enviado!<br>'
     +'Para seguimientos escribe a <strong>info@anpai.com.mx</strong>';
   Q('modalOv').classList.add('on');
-  // Reset del formulario
   Q('frm').reset();
   document.querySelectorAll('.tipo-card').forEach(function(c){ c.classList.remove('sel'); });
   Q('folioDisplay').textContent = 'Selecciona el tipo de trámite';
