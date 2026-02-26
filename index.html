@@ -469,6 +469,73 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 
     <div class="grid2">
 
+      <!-- ── TIPO DE TRÁMITE ── -->
+      <div class="sec-div full"><span>Tipo de Trámite</span></div>
+
+      <div class="fg full">
+        <label class="lbl req">Selecciona el tipo de trámite</label>
+        <div class="tipo-grid" id="tipoGrid">
+
+          <!-- Crédito de Auto -->
+          <label class="tipo-card" id="tc-CA">
+            <input type="radio" name="tipoTramite" value="CA" data-label="Crédito de Auto">
+            <div class="tipo-chk"></div>
+            <div class="tipo-ico">🚗</div>
+            <div class="tipo-nm">Crédito de Auto</div>
+            <div class="tipo-code">CA</div>
+          </label>
+
+          <!-- Arrendamiento Puro -->
+          <label class="tipo-card" id="tc-AP">
+            <input type="radio" name="tipoTramite" value="AP" data-label="Arrendamiento Puro">
+            <div class="tipo-chk"></div>
+            <div class="tipo-ico">🔑</div>
+            <div class="tipo-nm">Arrendamiento Puro</div>
+            <div class="tipo-code">AP</div>
+          </label>
+
+          <!-- Seguro de Auto -->
+          <label class="tipo-card" id="tc-SA">
+            <input type="radio" name="tipoTramite" value="SA" data-label="Seguro de Auto">
+            <div class="tipo-chk"></div>
+            <div class="tipo-ico">🛡️</div>
+            <div class="tipo-nm">Seguro de Auto</div>
+            <div class="tipo-code">SA</div>
+          </label>
+
+          <!-- Trámites Vehiculares -->
+          <label class="tipo-card" id="tc-TV">
+            <input type="radio" name="tipoTramite" value="TV" data-label="Trámites Vehiculares">
+            <div class="tipo-chk"></div>
+            <div class="tipo-ico">📋</div>
+            <div class="tipo-nm">Trámites Vehiculares</div>
+            <div class="tipo-code">TV</div>
+          </label>
+
+          <!-- Permisos de Circulación Guerrero -->
+          <label class="tipo-card" id="tc-PC">
+            <input type="radio" name="tipoTramite" value="PC" data-label="Permisos de Circulación Guerrero">
+            <div class="tipo-chk"></div>
+            <div class="tipo-ico">📝</div>
+            <div class="tipo-nm">Permisos de Circulación Guerrero</div>
+            <div class="tipo-code">PC</div>
+          </label>
+
+        </div>
+        <span class="em" id="etipoTramite"></span>
+      </div>
+
+      <!-- FOLIO GENERADO -->
+      <div class="fg full">
+        <label class="lbl">Folio Asignado <span style="font-weight:400;color:var(--muted)">(generado automáticamente)</span></label>
+        <div class="folio-field" id="folioField">
+          <span class="folio-ico">🔖</span>
+          <span class="folio-txt empty" id="folioDisplay">Selecciona el tipo de trámite</span>
+          <span class="folio-status pen" id="folioStatus" style="display:none">Generando…</span>
+        </div>
+        <input type="hidden" id="folioHidden" name="folio">
+      </div>
+
       <!-- ── INFORMACIÓN PERSONAL ── -->
       <div class="sec-div full"><span>Información Personal</span></div>
 
@@ -556,73 +623,6 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
         <span class="em" id="etelNum"></span>
       </div>
 
-      <!-- ── TIPO DE TRÁMITE ── -->
-      <div class="sec-div full"><span>Tipo de Trámite</span></div>
-
-      <div class="fg full">
-        <label class="lbl req">Selecciona el tipo de trámite</label>
-        <div class="tipo-grid" id="tipoGrid">
-
-          <!-- Crédito de Auto -->
-          <label class="tipo-card" id="tc-CA">
-            <input type="radio" name="tipoTramite" value="CA" data-label="Crédito de Auto">
-            <div class="tipo-chk"></div>
-            <div class="tipo-ico">🚗</div>
-            <div class="tipo-nm">Crédito de Auto</div>
-            <div class="tipo-code">CA</div>
-          </label>
-
-          <!-- Arrendamiento Puro -->
-          <label class="tipo-card" id="tc-AP">
-            <input type="radio" name="tipoTramite" value="AP" data-label="Arrendamiento Puro">
-            <div class="tipo-chk"></div>
-            <div class="tipo-ico">🔑</div>
-            <div class="tipo-nm">Arrendamiento Puro</div>
-            <div class="tipo-code">AP</div>
-          </label>
-
-          <!-- Seguro de Auto -->
-          <label class="tipo-card" id="tc-SA">
-            <input type="radio" name="tipoTramite" value="SA" data-label="Seguro de Auto">
-            <div class="tipo-chk"></div>
-            <div class="tipo-ico">🛡️</div>
-            <div class="tipo-nm">Seguro de Auto</div>
-            <div class="tipo-code">SA</div>
-          </label>
-
-          <!-- Trámites Vehiculares -->
-          <label class="tipo-card" id="tc-TV">
-            <input type="radio" name="tipoTramite" value="TV" data-label="Trámites Vehiculares">
-            <div class="tipo-chk"></div>
-            <div class="tipo-ico">📋</div>
-            <div class="tipo-nm">Trámites Vehiculares</div>
-            <div class="tipo-code">TV</div>
-          </label>
-
-          <!-- Permisos de Circulación Guerrero -->
-          <label class="tipo-card" id="tc-PC">
-            <input type="radio" name="tipoTramite" value="PC" data-label="Permisos de Circulación Guerrero">
-            <div class="tipo-chk"></div>
-            <div class="tipo-ico">📝</div>
-            <div class="tipo-nm">Permisos de Circulación Guerrero</div>
-            <div class="tipo-code">PC</div>
-          </label>
-
-        </div>
-        <span class="em" id="etipoTramite"></span>
-      </div>
-
-      <!-- FOLIO GENERADO -->
-      <div class="fg full">
-        <label class="lbl">Folio Asignado <span style="font-weight:400;color:var(--muted)">(generado automáticamente)</span></label>
-        <div class="folio-field" id="folioField">
-          <span class="folio-ico">🔖</span>
-          <span class="folio-txt empty" id="folioDisplay">Selecciona el tipo de trámite</span>
-          <span class="folio-status pen" id="folioStatus" style="display:none">Generando…</span>
-        </div>
-        <input type="hidden" id="folioHidden" name="folio">
-      </div>
-
       <!-- ── DOCUMENTACIÓN ── -->
       <div class="sec-div full"><span>Documentación Adjunta</span></div>
 
@@ -656,7 +656,7 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
     <p class="legal">
       Al enviar este formulario aceptas que tus datos sean procesados conforme a la
       política de privacidad de ANPAI. Para consultas escribe a
-      <a href="/cdn-cgi/l/email-protection#f29b9c949db2939c82939bdc919d9fdc9f8a"><span class="__cf_email__" data-cfemail="81e8efe7eec1e0eff1e0e8afe2eeecafecf9">[email&#160;protected]</span></a>.
+      <a href="mailto:info@anpai.com.mx">info@anpai.com.mx</a>.
     </p>
 
   </form>
@@ -687,7 +687,7 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
     <div class="modal-folio-val" id="mFolioVal">—</div>
     <div class="modal-msg" id="mMsg">
       Tu trámite fue enviado exitosamente.<br>
-      Para seguimientos escribe a <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ea83848c85aa8b849a8b83c4898587c48792">[email&#160;protected]</a></strong>
+      Para seguimientos escribe a <strong>info@anpai.com.mx</strong>
     </div>
     <button class="modal-btn" id="mClose">Entendido</button>
   </div>
