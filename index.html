@@ -3,467 +3,191 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trámites en Línea — ANPAI</title>
+<title>Trámites en Línea — AVA</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ══════════════════════════════════════════════════
-   TOKENS & RESET
-══════════════════════════════════════════════════ */
 :root{
-  --ink:#0D1B2A;
-  --ink2:#1E3148;
-  --gold:#C9A84C;
-  --gold2:#F0CC7A;
-  --cream:#F7F4EE;
-  --paper:#FDFBF7;
-  --line:#DDD8CE;
-  --muted:#7A7265;
-  --err:#C0392B;
-  --ok:#2E7D52;
-  --warn:#C47B0A;
-  --r:8px;
+  --ink:#0D1B2A; --ink2:#1E3148; --gold:#C9A84C; --gold2:#F0CC7A;
+  --cream:#F7F4EE; --paper:#FDFBF7; --line:#DDD8CE; --muted:#7A7265;
+  --err:#C0392B; --ok:#2E7D52; --warn:#C47B0A; --r:8px;
   --shadow:0 4px 24px rgba(13,27,42,.10);
   --shadow-lg:0 12px 48px rgba(13,27,42,.18);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;font-size:16px}
-body{
-  font-family:'DM Sans',sans-serif;
-  background:var(--cream);
-  color:var(--ink);
-  min-height:100vh;
-  overflow-x:hidden;
-}
-
-/* ══════════════════════════════════════════════════
-   FONDO DECORATIVO
-══════════════════════════════════════════════════ */
-body::before{
-  content:'';
-  position:fixed;inset:0;
-  background:
-    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(201,168,76,.07) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 90% 100%, rgba(13,27,42,.05) 0%, transparent 60%);
-  pointer-events:none;z-index:0;
-}
-
-/* ══════════════════════════════════════════════════
-   WRAPPER
-══════════════════════════════════════════════════ */
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 10% 0%,rgba(201,168,76,.07) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 90% 100%,rgba(13,27,42,.05) 0%,transparent 60%);pointer-events:none;z-index:0}
 .page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
-.wrap{max-width:740px;margin:0 auto;padding:2.5rem 1.25rem 5rem;width:100%}
+.wrap{max-width:780px;margin:0 auto;padding:2.5rem 1.25rem 5rem;width:100%}
 
-/* ══════════════════════════════════════════════════
-   HEADER
-══════════════════════════════════════════════════ */
-.hdr{
-  text-align:center;
-  padding-bottom:2.5rem;
-  margin-bottom:2.5rem;
-  border-bottom:1px solid var(--line);
-  position:relative;
-}
-.hdr::after{
-  content:'';
-  position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
-  width:64px;height:3px;background:var(--gold);border-radius:2px;
-}
-.hdr-badge{
-  display:inline-flex;align-items:center;gap:.55rem;
-  background:var(--ink2);color:var(--gold2);
-  font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
-  padding:.35rem 1rem;border-radius:2rem;margin-bottom:1.1rem;
-}
+/* HEADER */
+.hdr{text-align:center;padding-bottom:2.5rem;margin-bottom:2.5rem;border-bottom:1px solid var(--line);position:relative}
+.hdr::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:64px;height:3px;background:var(--gold);border-radius:2px}
+.hdr-badge{display:inline-flex;align-items:center;gap:.55rem;background:var(--ink2);color:var(--gold2);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.35rem 1rem;border-radius:2rem;margin-bottom:1.1rem}
 .hdr-badge svg{width:13px;height:13px;fill:var(--gold2)}
-.hdr-logo{
-  font-family:'Playfair Display',serif;
-  font-size:2.6rem;font-weight:700;color:var(--ink);
-  letter-spacing:-.01em;line-height:1;
-  margin-bottom:.4rem;
-}
+.hdr-logo{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:700;color:var(--ink);letter-spacing:-.01em;line-height:1;margin-bottom:.4rem}
 .hdr-logo span{color:var(--gold)}
-.hdr-sub{
-  font-size:1rem;color:var(--muted);font-weight:400;
-  letter-spacing:.01em;
-}
+.hdr-sub{font-size:1rem;color:var(--muted);font-weight:400}
 
-/* ══════════════════════════════════════════════════
-   TARJETA PRINCIPAL
-══════════════════════════════════════════════════ */
-.card{
-  background:var(--paper);
-  border:1px solid var(--line);
-  border-radius:14px;
-  box-shadow:var(--shadow-lg);
-  overflow:hidden;
-}
-.card-top{
-  background:var(--ink2);
-  padding:1.4rem 2rem;
-  display:flex;align-items:center;justify-content:space-between;gap:1rem;
-}
-.card-ttl{
-  font-family:'Playfair Display',serif;
-  font-size:1.15rem;font-weight:600;color:#fff;
-  letter-spacing:.01em;
-}
-.folio-tag{
-  display:flex;flex-direction:column;align-items:flex-end;gap:.15rem;
-}
+/* CARD */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-lg);overflow:hidden}
+.card-top{background:var(--ink2);padding:1.4rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.card-ttl{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:600;color:#fff;letter-spacing:.01em}
+.folio-tag{display:flex;flex-direction:column;align-items:flex-end;gap:.15rem}
 .folio-lbl{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
-.folio-val{
-  font-family:'DM Sans',sans-serif;
-  font-size:.88rem;font-weight:600;letter-spacing:.06em;
-  color:var(--gold2);
-  background:rgba(201,168,76,.15);
-  border:1px solid rgba(201,168,76,.3);
-  border-radius:5px;padding:.2rem .75rem;
-  min-width:200px;text-align:center;
-  transition:all .3s ease;
-}
-.folio-val.ready{color:var(--gold2);border-color:var(--gold)}
-.folio-val.loading{opacity:.5}
+.folio-val{font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;letter-spacing:.06em;color:var(--gold2);background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:5px;padding:.2rem .75rem;min-width:200px;text-align:center;transition:all .3s}
+.folio-val.ready{border-color:var(--gold)}
 .card-body{padding:2rem 2rem 2.5rem}
 
-/* ══════════════════════════════════════════════════
-   FORM GRID
-══════════════════════════════════════════════════ */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
-.full{grid-column:1/-1}
+/* FORM UTILITIES */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
 .fg{display:flex;flex-direction:column;gap:.35rem}
 .lbl{font-size:.78rem;font-weight:600;color:var(--ink);letter-spacing:.02em}
 .lbl.req::after{content:' *';color:var(--gold)}
-.hint{font-size:.69rem;color:var(--muted);font-weight:400}
-
-/* ══════════════════════════════════════════════════
-   INPUTS
-══════════════════════════════════════════════════ */
-input,select,textarea{
-  width:100%;padding:.6rem .85rem;
-  border:1.5px solid var(--line);
-  border-radius:var(--r);
-  background:#fff;
-  font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);
-  outline:none;appearance:none;-webkit-appearance:none;
-  transition:border-color .18s,box-shadow .18s,background .18s;
-}
-input:focus,select:focus{
-  border-color:var(--gold);
-  box-shadow:0 0 0 3px rgba(201,168,76,.15);
-  background:#fffef9;
-}
-input.ok,select.ok{border-color:var(--ok)}
-input.bad,select.bad,textarea.bad{border-color:var(--err);box-shadow:0 0 0 3px rgba(192,57,43,.08)}
-input[readonly]{background:var(--cream);color:var(--muted);cursor:default}
-select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath fill='%237A7265' d='M5.5 7L0 0h11z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center}
 .em{font-size:.71rem;color:var(--err);font-weight:500;min-height:.9rem}
+.sep{display:flex;align-items:center;gap:.75rem;padding:.4rem 0;margin:.5rem 0 .25rem}
+.sep span{font-size:.69rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.sep::before,.sep::after{content:'';flex:1;height:1px;background:var(--line)}
 
-/* ══════════════════════════════════════════════════
-   DIVIDER CON ETIQUETA
-══════════════════════════════════════════════════ */
-.sec-div{
-  grid-column:1/-1;
-  display:flex;align-items:center;gap:.75rem;
-  padding:.4rem 0;
-  margin:.25rem 0;
-}
-.sec-div span{
-  font-size:.69rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--muted);white-space:nowrap;
-}
-.sec-div::before,.sec-div::after{content:'';flex:1;height:1px;background:var(--line)}
+/* INPUTS */
+input,select,textarea{width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;appearance:none;-webkit-appearance:none;transition:border-color .18s,box-shadow .18s,background .18s}
+input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15);background:#fffef9}
+input.bad,select.bad{border-color:var(--err)}
+select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath fill='%237A7265' d='M5.5 7L0 0h11z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center}
 
-/* ══════════════════════════════════════════════════
-   SELECTOR DE LADA
-══════════════════════════════════════════════════ */
-.tel-wr{
-  display:flex;align-items:stretch;
-  border:1.5px solid var(--line);border-radius:var(--r);
-  overflow:hidden;background:#fff;
-  transition:border-color .18s,box-shadow .18s;
-}
-.tel-wr:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15)}
-.tel-wr.ok{border-color:var(--ok)}
-.tel-wr.bad{border-color:var(--err);box-shadow:0 0 0 3px rgba(192,57,43,.08)}
-.lada-sel{
-  border:none;border-right:1.5px solid var(--line);border-radius:0;
-  background:#F5F3EE;padding:.6rem .45rem .6rem .7rem;
-  font-size:.8rem;font-weight:600;color:var(--ink2);
-  flex-shrink:0;min-width:84px;max-width:112px;
-  appearance:none;-webkit-appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%237A7265' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right .42rem center;
-  padding-right:1.5rem;outline:none;cursor:pointer;
-}
-.lada-sel:focus{background-color:#EEF0FF;box-shadow:none}
-.tel-num{
-  border:none !important;border-radius:0 !important;flex:1;
-  padding:.6rem .85rem;font-size:.88rem;
-  outline:none;background:transparent !important;min-width:0;
-  box-shadow:none !important;
-}
-.tel-wr input{border:none !important;box-shadow:none !important;border-radius:0 !important}
+/* FOLIO FIELD */
+.folio-field{display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;background:var(--cream);border:1.5px solid var(--line);border-radius:var(--r)}
+.folio-ico{font-size:1.1rem;flex-shrink:0}
+.folio-txt{font-size:.88rem;font-weight:700;letter-spacing:.07em;color:var(--ink2);font-family:'DM Sans',monospace}
+.folio-txt.empty{color:var(--muted);font-weight:400;font-size:.84rem;letter-spacing:0}
+.folio-status{margin-left:auto;font-size:.72rem;font-weight:600;padding:.18rem .6rem;border-radius:4px;white-space:nowrap}
+.folio-status.pen{background:rgba(201,168,76,.12);color:var(--warn)}
+.folio-status.ok{background:rgba(46,125,82,.1);color:var(--ok)}
 
-/* ══════════════════════════════════════════════════
-   TIPO DE TRÁMITE — CARDS SELECCIONABLES
-   5 opciones: grid adaptable
-══════════════════════════════════════════════════ */
-.tipo-grid{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:.85rem;
-}
-.tipo-card{
-  position:relative;cursor:pointer;
-  border:2px solid var(--line);border-radius:10px;
-  padding:1rem .75rem .9rem;
-  background:#fff;
-  transition:all .2s ease;
-  text-align:center;
-  user-select:none;
-}
+/* TIPO CARDS */
+.tipo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.85rem}
+.tipo-card{position:relative;cursor:pointer;border:2px solid var(--line);border-radius:10px;padding:1rem .75rem .9rem;background:#fff;transition:all .2s;text-align:center;user-select:none}
 .tipo-card:hover{border-color:var(--gold);background:#fffef9}
-.tipo-card.sel{
-  border-color:var(--gold);
-  background:linear-gradient(135deg,#fffef4 0%,#fff9e8 100%);
-  box-shadow:0 4px 16px rgba(201,168,76,.18);
-}
-.tipo-card input[type=radio]{
-  position:absolute;inset:0;opacity:0;cursor:pointer;
-  width:100%;height:100%;margin:0;
-}
+.tipo-card.sel{border-color:var(--gold);background:linear-gradient(135deg,#fffef4 0%,#fff9e8 100%);box-shadow:0 4px 16px rgba(201,168,76,.18)}
+.tipo-card input[type=radio]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;margin:0}
 .tipo-ico{font-size:1.55rem;margin-bottom:.42rem;line-height:1}
 .tipo-nm{font-size:.76rem;font-weight:600;color:var(--ink);line-height:1.25}
 .tipo-code{font-size:.63rem;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-top:.2rem}
 .tipo-card.sel .tipo-nm{color:var(--ink2)}
 .tipo-card.sel .tipo-code{color:var(--gold)}
-.tipo-chk{
-  position:absolute;top:.5rem;right:.5rem;
-  width:16px;height:16px;border-radius:50%;
-  border:1.5px solid var(--line);background:#fff;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .18s;
-}
+.tipo-chk{position:absolute;top:.5rem;right:.5rem;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;transition:all .18s}
 .tipo-card.sel .tipo-chk{background:var(--gold);border-color:var(--gold)}
 .tipo-card.sel .tipo-chk::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff}
 
-/* ══════════════════════════════════════════════════
-   FOLIO GENERADO
-══════════════════════════════════════════════════ */
-.folio-field{
-  display:flex;align-items:center;gap:.75rem;
-  padding:.65rem 1rem;
-  background:var(--cream);border:1.5px solid var(--line);
-  border-radius:var(--r);
-}
-.folio-ico{font-size:1.1rem;flex-shrink:0}
-.folio-txt{
-  font-size:.88rem;font-weight:700;letter-spacing:.07em;
-  color:var(--ink2);font-family:'DM Sans',monospace;
-}
-.folio-txt.empty{color:var(--muted);font-weight:400;font-size:.84rem;letter-spacing:0}
-.folio-status{
-  margin-left:auto;font-size:.72rem;font-weight:600;
-  padding:.18rem .6rem;border-radius:4px;white-space:nowrap;
-}
-.folio-status.pen{background:rgba(201,168,76,.12);color:var(--warn)}
-.folio-status.ok{background:rgba(46,125,82,.1);color:var(--ok)}
-.folio-status.err{background:rgba(192,57,43,.08);color:var(--err)}
+/* LADA */
+.tel-wr{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:var(--r);overflow:hidden;background:#fff;transition:border-color .18s,box-shadow .18s}
+.tel-wr:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15)}
+.lada-sel{border:none;border-right:1.5px solid var(--line);border-radius:0;background:#F5F3EE;padding:.6rem .45rem .6rem .7rem;font-size:.8rem;font-weight:600;color:var(--ink2);flex-shrink:0;min-width:82px;max-width:110px;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%237A7265' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .4rem center;padding-right:1.4rem;outline:none;cursor:pointer;box-shadow:none}
+.tel-num{border:none !important;border-radius:0 !important;flex:1;min-width:0;box-shadow:none !important;background:transparent !important}
 
-/* ══════════════════════════════════════════════════
-   UPLOAD
-══════════════════════════════════════════════════ */
-.up-area{
-  border:2px dashed var(--line);border-radius:10px;
-  padding:1.6rem;text-align:center;cursor:pointer;
-  background:#fff;position:relative;
-  transition:all .2s ease;
-}
-.up-area:hover,.up-area.drag{border-color:var(--gold);background:#fffef9}
-.up-area.bad-up{border-color:var(--err)}
-.up-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
-.up-ico{font-size:2rem;margin-bottom:.45rem}
-.up-main{font-size:.9rem;font-weight:600;color:var(--ink2)}
-.up-fmt{font-size:.72rem;color:var(--muted);margin-top:.28rem}
-.up-indicator{
-  margin-top:.85rem;
-  padding:.65rem .9rem;border-radius:7px;
-  display:flex;align-items:flex-start;gap:.55rem;
-  font-size:.78rem;font-weight:500;line-height:1.45;
-  display:none;
-}
-.up-indicator.green{background:rgba(46,125,82,.09);color:#1B5E39;border:1px solid rgba(46,125,82,.2)}
-.up-indicator.orange{background:rgba(196,123,10,.09);color:#7A4B00;border:1px solid rgba(196,123,10,.2)}
-.up-indicator.red{background:rgba(192,57,43,.09);color:#8B1A12;border:1px solid rgba(192,57,43,.2)}
-.up-indicator-ico{font-size:1.1rem;flex-shrink:0;margin-top:.05rem}
-.up-fnm{font-size:.76rem;font-weight:600;color:var(--ink);margin-top:.2rem;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+/* AP — RADIO PILLS */
+.pills{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.35rem}
+.rpill{display:inline-flex;align-items:center;gap:.45rem;padding:.45rem .95rem;border:1.5px solid var(--line);border-radius:6px;background:#fff;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--muted);transition:all .18s;user-select:none;position:relative}
+.rpill input{position:absolute;opacity:0;width:0;height:0}
+.rpill:hover{border-color:var(--gold);color:var(--ink2)}
+.rpill.on{border-color:var(--gold);background:rgba(201,168,76,.08);color:var(--ink2)}
+.rdot{width:10px;height:10px;border-radius:50%;border:2px solid currentColor;position:relative;flex-shrink:0}
+.rpill.on .rdot::after{content:'';position:absolute;inset:1px;background:var(--gold);border-radius:50%}
 
-/* ══════════════════════════════════════════════════
-   BOTÓN ENVIAR
-══════════════════════════════════════════════════ */
-.btn-submit{
-  width:100%;padding:.85rem 2rem;margin-top:2rem;
-  background:var(--ink2);color:#fff;
-  border:2px solid var(--ink2);border-radius:var(--r);
-  font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;
-  letter-spacing:.04em;text-transform:uppercase;
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:.65rem;
-  transition:all .22s ease;
-  position:relative;overflow:hidden;
-}
-.btn-submit:hover:not(:disabled){
-  background:var(--gold);border-color:var(--gold);color:var(--ink);
-  box-shadow:0 6px 24px rgba(201,168,76,.35);
-  transform:translateY(-1px);
-}
-.btn-submit:active{transform:translateY(0)}
-.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
-.btn-submit svg{width:17px;height:17px;fill:currentColor;flex-shrink:0}
-.btn-spin{
-  width:17px;height:17px;border:2.5px solid rgba(255,255,255,.35);
-  border-top-color:currentColor;border-radius:50%;
-  animation:spin .65s linear infinite;display:none;flex-shrink:0;
-}
+/* AP — CHECKBOX PILLS */
+.cpill{display:inline-flex;align-items:center;gap:.5rem;padding:.45rem .95rem;border:1.5px solid var(--line);border-radius:6px;background:#fff;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--muted);transition:all .18s;user-select:none;position:relative}
+.cpill input{position:absolute;opacity:0;width:0;height:0}
+.cpill:hover{border-color:var(--gold);color:var(--ink2)}
+.cpill.on{border-color:var(--gold);background:rgba(201,168,76,.08);color:var(--ink2)}
+.cbox{width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;font-weight:700;line-height:1;color:var(--gold)}
+
+/* AP — INMUEBLE TOGGLE */
+.imm-btns{display:flex;gap:.5rem;margin-bottom:.85rem}
+.imm-btn{padding:.45rem 1.1rem;border-radius:6px;border:1.5px solid var(--line);background:var(--cream);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .18s}
+.imm-btn.on{background:var(--ink2);color:#fff;border-color:var(--ink2)}
+
+/* AP — MINI TABLES */
+.ap-tbl{width:100%;border-collapse:collapse;font-size:.83rem}
+.ap-tbl th{padding:.5rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1.5px solid var(--line);background:var(--cream)}
+.ap-tbl td{padding:.35rem .6rem;border-bottom:1px solid var(--line)}
+.ap-tbl tr:last-child td{border-bottom:none}
+.ap-tbl td input,.ap-tbl td select{width:100%;border:none;border-bottom:1.5px solid transparent;border-radius:0;background:transparent;font-size:.83rem;color:var(--ink);padding:.18rem .2rem;outline:none;transition:border-color .15s;box-shadow:none}
+.ap-tbl td input:focus{border-bottom-color:var(--gold);background:rgba(201,168,76,.04)}
+.add-row{width:100%;margin-top:.5rem;background:transparent;border:1.5px dashed var(--line);border-radius:6px;padding:.38rem 1rem;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--muted);cursor:pointer;transition:all .18s;display:block;text-align:center}
+.add-row:hover{border-color:var(--gold);color:var(--ink2)}
+
+/* DOCS BANNER */
+.docs-ban{background:var(--ink2);border-radius:10px;padding:1.1rem 1.4rem;margin-top:1rem;display:none}
+.docs-ban.on{display:block}
+.docs-ban-ttl{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);margin-bottom:.75rem}
+.docs-grid{display:grid;grid-template-columns:1fr 1fr;gap:.3rem .8rem}
+.docs-item{font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem}
+.docs-bullet{color:var(--gold);flex-shrink:0;margin-top:.05rem}
+
+/* DECLARACIÓN */
+.decl{border:1.5px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;transition:border-color .2s}
+.decl.on{border-color:var(--gold)}
+.decl-inner{display:flex;gap:1rem;align-items:flex-start;padding:1.1rem 1.25rem;background:var(--cream);transition:background .2s;user-select:none}
+.decl.on .decl-inner{background:rgba(201,168,76,.05)}
+.decl-chk-box{width:22px;height:22px;flex-shrink:0;border-radius:6px;border:2px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;margin-top:.1rem;transition:all .2s}
+.decl.on .decl-chk-box{background:var(--gold);border-color:var(--gold)}
+.decl-chk-box svg{width:11px;opacity:0;transition:opacity .15s}
+.decl.on .decl-chk-box svg{opacity:1}
+.decl-ttl{font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:.3rem}
+.decl-txt{font-size:.77rem;color:var(--muted);line-height:1.65}
+
+/* BOTÓN ENVIAR */
+.btn-env{width:100%;padding:.85rem 2rem;margin-top:1.25rem;background:var(--ink2);color:#fff;border:2px solid var(--ink2);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.65rem;transition:all .22s;position:relative;overflow:hidden}
+.btn-env:hover:not(:disabled){background:var(--gold);border-color:var(--gold);color:var(--ink);box-shadow:0 6px 24px rgba(201,168,76,.35);transform:translateY(-1px)}
+.btn-env:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-env svg{width:17px;height:17px;fill:currentColor;flex-shrink:0}
+.btn-spin{width:17px;height:17px;border:2.5px solid rgba(255,255,255,.35);border-top-color:currentColor;border-radius:50%;animation:spin .65s linear infinite;display:none;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
+.legal{font-size:.72rem;color:var(--muted);text-align:center;line-height:1.65;margin-top:.75rem}
 
-/* ══════════════════════════════════════════════════
-   AVISO LEGAL
-══════════════════════════════════════════════════ */
-.legal{
-  margin-top:1.35rem;font-size:.72rem;color:var(--muted);
-  text-align:center;line-height:1.65;
-}
-.legal a{color:var(--ink2);text-decoration:underline}
-
-/* ══════════════════════════════════════════════════
-   MODAL ÉXITO
-══════════════════════════════════════════════════ */
-.overlay{
-  position:fixed;inset:0;background:rgba(13,27,42,.6);
-  backdrop-filter:blur(6px);
-  display:flex;align-items:center;justify-content:center;
-  z-index:9999;padding:1.5rem;
-  opacity:0;visibility:hidden;
-  transition:opacity .35s,visibility .35s;
-}
-.overlay.on{opacity:1;visibility:visible}
-.modal{
-  background:var(--paper);border:1px solid var(--line);
-  border-radius:16px;box-shadow:var(--shadow-lg);
-  max-width:440px;width:100%;padding:2.5rem 2rem;
-  text-align:center;
-  transform:scale(.92) translateY(12px);
-  transition:transform .38s cubic-bezier(.34,1.56,.64,1);
-}
-.overlay.on .modal{transform:scale(1) translateY(0)}
-.modal-seal{
-  width:72px;height:72px;border-radius:50%;
-  background:linear-gradient(135deg,var(--ink2),var(--ink));
-  margin:0 auto 1.1rem;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 8px 28px rgba(13,27,42,.25);
-}
-.modal-seal svg{width:34px;height:34px;fill:var(--gold2)}
-.modal-ttl{
-  font-family:'Playfair Display',serif;
-  font-size:1.45rem;font-weight:700;color:var(--ink);
-  margin-bottom:.55rem;
-}
-.modal-folio{
-  font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--muted);margin-bottom:.3rem;
-}
-.modal-folio-val{
-  display:inline-block;
-  font-size:1.15rem;font-weight:700;letter-spacing:.08em;
-  color:var(--ink2);
-  background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.35);
-  border-radius:6px;padding:.28rem 1.1rem;margin-bottom:.9rem;
-}
-.modal-msg{font-size:.87rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
-.modal-msg strong{color:var(--ink2)}
-.modal-btn{
-  background:var(--ink2);color:#fff;border:none;
-  padding:.62rem 2rem;border-radius:var(--r);
-  font-family:'DM Sans',sans-serif;font-size:.87rem;font-weight:600;
-  cursor:pointer;transition:background .18s,transform .15s;
-  letter-spacing:.03em;
-}
-.modal-btn:hover{background:var(--gold);color:var(--ink);transform:translateY(-1px)}
-
-/* ══════════════════════════════════════════════════
-   OVERLAY ENVIANDO
-══════════════════════════════════════════════════ */
-.sending-ov{
-  position:fixed;inset:0;background:rgba(13,27,42,.65);
-  backdrop-filter:blur(4px);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;
-  z-index:9998;opacity:0;visibility:hidden;transition:.25s;
-}
-.sending-ov.on{opacity:1;visibility:visible}
-.send-ring{
-  width:48px;height:48px;border:4px solid rgba(255,255,255,.2);
-  border-top-color:var(--gold2);border-radius:50%;
-  animation:spin .7s linear infinite;
-}
-.send-msg{font-size:.95rem;font-weight:600;color:#fff;letter-spacing:.03em}
-
-/* ══════════════════════════════════════════════════
-   FOOTER
-══════════════════════════════════════════════════ */
-.ft{text-align:center;padding:1.5rem 1rem;font-size:.72rem;color:var(--muted);
-  border-top:1px solid var(--line);margin-top:2.5rem}
+/* FOOTER */
+.ft{text-align:center;padding:1.5rem 1rem;font-size:.72rem;color:var(--muted);border-top:1px solid var(--line);margin-top:2.5rem}
 .ft strong{color:var(--ink2)}
 
-/* ══════════════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════════════ */
-@media(max-width:700px){
-  .tipo-grid{grid-template-columns:repeat(3,1fr)}
-}
+/* OVERLAY ENVIANDO */
+.sending-ov{position:fixed;inset:0;background:rgba(13,27,42,.65);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:9998;opacity:0;visibility:hidden;transition:.25s}
+.sending-ov.on{opacity:1;visibility:visible}
+.send-ring{width:48px;height:48px;border:4px solid rgba(255,255,255,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .7s linear infinite}
+.send-msg{font-size:.95rem;font-weight:600;color:#fff;letter-spacing:.03em}
+
+/* MODAL ÉXITO */
+.overlay{position:fixed;inset:0;background:rgba(13,27,42,.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1.5rem;opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
+.overlay.on{opacity:1;visibility:visible}
+.modal{background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-lg);max-width:440px;width:100%;padding:2.5rem 2rem;text-align:center;transform:scale(.92) translateY(12px);transition:transform .38s cubic-bezier(.34,1.56,.64,1)}
+.overlay.on .modal{transform:scale(1) translateY(0)}
+.modal-seal{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--ink2),var(--ink));margin:0 auto 1.1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(13,27,42,.25)}
+.modal-seal svg{width:34px;height:34px;fill:var(--gold2)}
+.modal-ttl{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;color:var(--ink);margin-bottom:.55rem}
+.modal-folio-lbl{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.modal-folio-val{display:inline-block;font-size:1.15rem;font-weight:700;letter-spacing:.08em;color:var(--ink2);background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.35);border-radius:6px;padding:.28rem 1.1rem;margin-bottom:.9rem}
+.modal-msg{font-size:.87rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
+.modal-msg strong{color:var(--ink2)}
+.modal-btn{background:var(--ink2);color:#fff;border:none;padding:.62rem 2rem;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.87rem;font-weight:600;cursor:pointer;transition:background .18s,transform .15s;letter-spacing:.03em}
+.modal-btn:hover{background:var(--gold);color:var(--ink);transform:translateY(-1px)}
+
+/* RESPONSIVE */
+@media(max-width:700px){.tipo-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:640px){
   .wrap{padding:1.5rem .85rem 4rem}
   .hdr-logo{font-size:2rem}
   .card-top{flex-direction:column;align-items:flex-start;gap:.6rem}
-  .folio-tag{align-items:flex-start}
   .card-body{padding:1.35rem 1.25rem 2rem}
-  .grid2{grid-template-columns:1fr}
+  .g2{grid-template-columns:1fr}
+  .docs-grid{grid-template-columns:1fr}
 }
 @media(max-width:420px){
   .tipo-grid{grid-template-columns:1fr 1fr}
   .hdr-logo{font-size:1.75rem}
   .modal{padding:2rem 1.4rem}
 }
-
-/* ══ AP FORM — Radio pills y checkboxes ══ */
-.ap-radio-pill{
-  display:inline-flex;align-items:center;gap:.45rem;
-  padding:.45rem .95rem;
-  border:1.5px solid var(--line);border-radius:6px;
-  background:#fff;cursor:pointer;
-  font-size:.82rem;font-weight:500;color:var(--muted);
-  transition:all .18s;user-select:none;
-}
-.ap-radio-pill:hover{border-color:var(--gold);color:var(--ink2)}
-.ap-radio-pill.sel{border-color:var(--gold);background:rgba(201,168,76,.08);color:var(--ink2)}
-.ap-radio-dot{
-  width:10px;height:10px;border-radius:50%;
-  border:2px solid currentColor;position:relative;flex-shrink:0;
-}
-.ap-radio-pill.sel .ap-radio-dot::after{
-  content:'';position:absolute;inset:1px;
-  background:var(--gold);border-radius:50%;
-}
-.ap-chk-label.sel{border-color:var(--gold)!important;color:var(--ink2)!important}
-.ap-chk-label.sel .ap-chk-box::after{content:'✓';font-size:9px;color:var(--gold);font-weight:700}
-.ap-inp:focus{border-color:var(--gold)!important;box-shadow:0 0 0 3px rgba(201,168,76,.12)!important;background:#fffef9!important}
-
 </style>
 </head>
 <body>
-
 <div class="page">
 <div class="wrap">
 
@@ -473,14 +197,12 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
     <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5z"/></svg>
     Plataforma Oficial
   </div>
-  <div class="hdr-logo">AN<span>PAI</span></div>
+  <div class="hdr-logo">A<span>VA</span></div>
   <div class="hdr-sub">Sistema de Registro de Trámites en Línea</div>
 </header>
 
-<!-- FORMULARIO -->
+<!-- CARD -->
 <div class="card">
-
-  <!-- Barra superior con folio -->
   <div class="card-top">
     <div class="card-ttl">Nueva Solicitud de Trámite</div>
     <div class="folio-tag">
@@ -489,597 +211,516 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
     </div>
   </div>
 
-  <form class="card-body" id="frm" novalidate>
+  <div class="card-body">
 
-    <div class="grid2">
+    <!-- SELECTOR TIPO DE TRÁMITE -->
+    <div class="sep"><span>Tipo de Trámite</span></div>
+    <div class="fg" style="margin-bottom:1.25rem">
+      <label class="lbl req">Selecciona el tipo de trámite</label>
+      <div class="tipo-grid" id="tipoGrid" style="margin-top:.5rem">
+        <label class="tipo-card" id="tc-CA">
+          <input type="radio" name="tipoTramite" value="CA">
+          <div class="tipo-chk"></div>
+          <div class="tipo-ico">🚗</div>
+          <div class="tipo-nm">Crédito de Auto</div>
+          <div class="tipo-code">CA</div>
+        </label>
+        <label class="tipo-card" id="tc-AP">
+          <input type="radio" name="tipoTramite" value="AP">
+          <div class="tipo-chk"></div>
+          <div class="tipo-ico">🔑</div>
+          <div class="tipo-nm">Arrendamiento Puro</div>
+          <div class="tipo-code">AP</div>
+        </label>
+        <label class="tipo-card" id="tc-SA">
+          <input type="radio" name="tipoTramite" value="SA">
+          <div class="tipo-chk"></div>
+          <div class="tipo-ico">🛡️</div>
+          <div class="tipo-nm">Seguro de Auto</div>
+          <div class="tipo-code">SA</div>
+        </label>
+        <label class="tipo-card" id="tc-TV">
+          <input type="radio" name="tipoTramite" value="TV">
+          <div class="tipo-chk"></div>
+          <div class="tipo-ico">📋</div>
+          <div class="tipo-nm">Trámites Vehiculares</div>
+          <div class="tipo-code">TV</div>
+        </label>
+        <label class="tipo-card" id="tc-PC">
+          <input type="radio" name="tipoTramite" value="PC">
+          <div class="tipo-chk"></div>
+          <div class="tipo-ico">📝</div>
+          <div class="tipo-nm">Permisos de Circulación Guerrero</div>
+          <div class="tipo-code">PC</div>
+        </label>
+      </div>
+      <span class="em" id="eTipo"></span>
+    </div>
 
-      <!-- ── TIPO DE TRÁMITE ── -->
-      <div class="sec-div full"><span>Tipo de Trámite</span></div>
+    <!-- FOLIO -->
+    <div class="fg" style="margin-bottom:1rem">
+      <label class="lbl">Folio Asignado <span style="font-weight:400;color:var(--muted)">(generado automáticamente)</span></label>
+      <div class="folio-field">
+        <span class="folio-ico">🔖</span>
+        <span class="folio-txt empty" id="folioDisplay">Selecciona el tipo de trámite</span>
+        <span class="folio-status pen" id="folioStatus" style="display:none">Generando…</span>
+      </div>
+      <input type="hidden" id="folioHidden">
+    </div>
 
-      <div class="fg full">
-        <label class="lbl req">Selecciona el tipo de trámite</label>
-        <div class="tipo-grid" id="tipoGrid">
+    <!-- ══════════════════════════════════════════════
+         FORMULARIO ARRENDAMIENTO PURO
+         (separado del grid, flujo propio)
+    ══════════════════════════════════════════════ -->
+    <div id="apForm" style="display:none">
 
-          <!-- Crédito de Auto -->
-          <label class="tipo-card" id="tc-CA">
-            <input type="radio" name="tipoTramite" value="CA" data-label="Crédito de Auto">
+      <!-- Selector PF / PM -->
+      <div class="sep" style="margin-top:.5rem"><span>Arrendamiento Puro — Perfil del Solicitante</span></div>
+      <div class="fg" style="margin-bottom:.5rem">
+        <label class="lbl req">Tipo de solicitante</label>
+        <div class="tipo-grid" id="apTipoGrid" style="grid-template-columns:1fr 1fr;max-width:440px;margin-top:.5rem">
+          <label class="tipo-card" id="ap-tc-PF">
+            <input type="radio" name="apTipo" value="PF">
             <div class="tipo-chk"></div>
-            <div class="tipo-ico">🚗</div>
-            <div class="tipo-nm">Crédito de Auto</div>
-            <div class="tipo-code">CA</div>
+            <div class="tipo-ico">👤</div>
+            <div class="tipo-nm">Persona Física</div>
+            <div class="tipo-code">PFAE</div>
           </label>
-
-          <!-- Arrendamiento Puro -->
-          <label class="tipo-card" id="tc-AP">
-            <input type="radio" name="tipoTramite" value="AP" data-label="Arrendamiento Puro">
+          <label class="tipo-card" id="ap-tc-PM">
+            <input type="radio" name="apTipo" value="PM">
             <div class="tipo-chk"></div>
-            <div class="tipo-ico">🔑</div>
-            <div class="tipo-nm">Arrendamiento Puro</div>
-            <div class="tipo-code">AP</div>
+            <div class="tipo-ico">🏢</div>
+            <div class="tipo-nm">Persona Moral</div>
+            <div class="tipo-code">PM</div>
           </label>
-
-          <!-- Seguro de Auto -->
-          <label class="tipo-card" id="tc-SA">
-            <input type="radio" name="tipoTramite" value="SA" data-label="Seguro de Auto">
-            <div class="tipo-chk"></div>
-            <div class="tipo-ico">🛡️</div>
-            <div class="tipo-nm">Seguro de Auto</div>
-            <div class="tipo-code">SA</div>
-          </label>
-
-          <!-- Trámites Vehiculares -->
-          <label class="tipo-card" id="tc-TV">
-            <input type="radio" name="tipoTramite" value="TV" data-label="Trámites Vehiculares">
-            <div class="tipo-chk"></div>
-            <div class="tipo-ico">📋</div>
-            <div class="tipo-nm">Trámites Vehiculares</div>
-            <div class="tipo-code">TV</div>
-          </label>
-
-          <!-- Permisos de Circulación Guerrero -->
-          <label class="tipo-card" id="tc-PC">
-            <input type="radio" name="tipoTramite" value="PC" data-label="Permisos de Circulación Guerrero">
-            <div class="tipo-chk"></div>
-            <div class="tipo-ico">📝</div>
-            <div class="tipo-nm">Permisos de Circulación Guerrero</div>
-            <div class="tipo-code">PC</div>
-          </label>
-
         </div>
-        <span class="em" id="etipoTramite"></span>
       </div>
 
-      <!-- FOLIO GENERADO -->
-      <div class="fg full">
-        <label class="lbl">Folio Asignado <span style="font-weight:400;color:var(--muted)">(generado automáticamente)</span></label>
-        <div class="folio-field" id="folioField">
-          <span class="folio-ico">🔖</span>
-          <span class="folio-txt empty" id="folioDisplay">Selecciona el tipo de trámite</span>
-          <span class="folio-status pen" id="folioStatus" style="display:none">Generando…</span>
+      <!-- Banners documentos -->
+      <div class="docs-ban" id="apDocsPF">
+        <div class="docs-ban-ttl">Documentos requeridos — Persona Física (PFAE)</div>
+        <div class="docs-grid">
+          <div class="docs-item"><span class="docs-bullet">•</span>Solicitud de arrendamiento firmada</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Autorización consulta buró de crédito</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>3 estados de cuenta (PDF, máx. 3 meses)</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Opinión de cumplimiento SAT (máx. 3 meses)</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Constancia de situación fiscal / RFC</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Comprobante de domicilio fiscal y particular</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Identificación oficial vigente</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Recibo predial del año en curso</div>
         </div>
-        <input type="hidden" id="folioHidden" name="folio">
+      </div>
+      <div class="docs-ban" id="apDocsPM">
+        <div class="docs-ban-ttl">Documentos requeridos — Persona Moral (PM)</div>
+        <div class="docs-grid">
+          <div class="docs-item"><span class="docs-bullet">•</span>Solicitud de arrendamiento</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Autorización buró de crédito PF y PM</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Estados financieros parciales con analíticas</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>3 estados de cuenta (PDF, máx. 3 meses)</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Opinión de cumplimiento SAT</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Constancia de situación fiscal / RFC</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Acta constitutiva, poderes y escritura accionaria</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Identificación oficial de participantes</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Comprobante de domicilio (máx. 3 meses)</div>
+          <div class="docs-item"><span class="docs-bullet">•</span>Recibo predial del año en curso</div>
+        </div>
       </div>
 
+      <!-- ╔══════════════════════════════════╗
+           ║   PERSONA FÍSICA (PFAE)          ║
+           ╚══════════════════════════════════╝ -->
+      <div id="apBodyPF" style="display:none">
 
+        <div class="sep" style="margin-top:1.5rem"><span>💼 Datos del Negocio / PFAE</span></div>
+        <div class="g2">
+          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Nombre del cliente / PFAE</label><input type="text" name="ap_nombre_cliente" placeholder="Nombre completo" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">R.F.C.</label><input type="text" name="ap_rfc" placeholder="RFC con homoclave" maxlength="13" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Actividad principal</label><input type="text" name="ap_actividad" placeholder="Descripción de actividad" style="text-transform:uppercase"></div>
+          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Régimen fiscal <span style="font-weight:400;color:var(--muted);font-size:.72rem">(transcribir de la Constancia)</span></label><input type="text" name="ap_regimen" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Nombre comercial</label><input type="text" name="ap_nombre_comercial" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Fundador del negocio</label><input type="text" name="ap_fundador" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Fecha inicio del negocio</label><input type="date" name="ap_fecha_inicio"></div>
+          <div class="fg"><label class="lbl req">Número de empleados</label><input type="number" name="ap_empleados" placeholder="0" min="0"></div>
+          <div class="fg" style="grid-column:1/-1"><label class="lbl">Sitio web / Facebook</label><input type="text" name="ap_web" placeholder="https://"></div>
+        </div>
 
-
-      <!-- ══ FORMULARIO ARRENDAMIENTO PURO (se muestra solo al elegir AP) ══ -->
-      <div id="apForm" style="display:none" class="full">
-
-        <!-- Selector Tipo de Solicitante -->
-        <div class="sec-div full" style="margin-top:1rem"><span>Arrendamiento Puro — Tipo de Solicitante</span></div>
-        <div class="fg full">
-          <label class="lbl req">Perfil del solicitante</label>
-          <div class="tipo-grid" id="apTipoGrid" style="grid-template-columns:1fr 1fr;max-width:460px">
-            <label class="tipo-card" id="ap-tc-PF">
-              <input type="radio" name="apTipo" value="PF">
-              <div class="tipo-chk"></div>
-              <div class="tipo-ico">👤</div>
-              <div class="tipo-nm">Persona Física</div>
-              <div class="tipo-code">PFAE</div>
-            </label>
-            <label class="tipo-card" id="ap-tc-PM">
-              <input type="radio" name="apTipo" value="PM">
-              <div class="tipo-chk"></div>
-              <div class="tipo-ico">🏢</div>
-              <div class="tipo-nm">Persona Moral</div>
-              <div class="tipo-code">PM</div>
-            </label>
+        <div class="sep"><span>Sector</span></div>
+        <div class="fg" style="margin-bottom:.5rem">
+          <label class="lbl req">Selecciona el o los sectores que apliquen</label>
+          <div class="pills" id="pfSectorPills">
+            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Manufactura"><span class="cbox"></span>Manufactura</label>
+            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Servicios"><span class="cbox"></span>Servicios</label>
+            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Comercio al por mayor"><span class="cbox"></span>Comercio al por mayor</label>
+            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Comercio al menudeo"><span class="cbox"></span>Comercio al menudeo</label>
+            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Construcción"><span class="cbox"></span>Construcción</label>
           </div>
         </div>
 
-        <!-- ── DOCUMENTOS REQUERIDOS (banner informativo) ── -->
-        <div id="ap-req-PF" class="full" style="display:none;margin-top:1rem">
-          <div style="background:var(--ink2);border-radius:10px;padding:1.1rem 1.4rem">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);margin-bottom:.8rem">Documentos requeridos — Persona Física (PFAE)</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem .8rem">
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Solicitud de arrendamiento firmada</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Autorización consulta buró de crédito</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>3 estados de cuenta (PDF, máx. 3 meses)</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Opinión de cumplimiento SAT (máx. 3 meses)</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Constancia de situación fiscal / RFC</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Comprobante de domicilio fiscal y particular</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Identificación oficial vigente</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Recibo predial del año en curso</div>
-            </div>
+        <div class="sep"><span>Contacto y Finanzas del Negocio</span></div>
+        <div class="g2">
+          <div class="fg"><label class="lbl req">Persona que dirige el negocio</label><input type="text" name="ap_director" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Relación con el aval</label><input type="text" name="ap_relacion_aval" placeholder="Ej. Socio, cónyuge…" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Cuenta CLABE</label><input type="text" name="ap_clabe" placeholder="18 dígitos" maxlength="18"></div>
+          <div class="fg"><label class="lbl req">Banco</label><input type="text" name="ap_banco" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Contacto de pagos</label><input type="text" name="ap_contacto_pagos" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Teléfono negocio</label>
+            <div class="tel-wr"><select class="lada-sel" id="pf_t1_l"></select><input class="tel-num" type="tel" id="pf_t1_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_tel_negocio" id="pf_t1_v">
           </div>
-        </div>
-        <div id="ap-req-PM" class="full" style="display:none;margin-top:1rem">
-          <div style="background:var(--ink2);border-radius:10px;padding:1.1rem 1.4rem">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);margin-bottom:.8rem">Documentos requeridos — Persona Moral (PM)</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem .8rem">
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Solicitud de arrendamiento</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Autorización buró crédito PF y PM</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Estados financieros parciales con analíticas</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>3 estados de cuenta (PDF, máx. 3 meses)</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Opinión de cumplimiento SAT</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Constancia de situación fiscal / RFC</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Acta constitutiva, poderes y escritura accionaria</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Identificación oficial de participantes</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Comprobante de domicilio (máx. 3 meses)</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--gold);margin-top:.1rem">•</span>Recibo predial del año en curso</div>
-            </div>
+          <div class="fg"><label class="lbl req">Celular negocio</label>
+            <div class="tel-wr"><select class="lada-sel" id="pf_t2_l"></select><input class="tel-num" type="tel" id="pf_t2_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_cel_negocio" id="pf_t2_v">
           </div>
+          <div class="fg"><label class="lbl req">Correo electrónico</label><input type="email" name="ap_email_negocio" placeholder="correo@ejemplo.com"></div>
         </div>
 
-        <!-- ══════════════════════════════════ -->
-        <!-- SECCIÓN PF                        -->
-        <!-- ══════════════════════════════════ -->
-        <div id="ap-body-PF" style="display:none" class="full">
+        <div class="sep"><span>Principales Clientes</span></div>
+        <div class="fg">
+          <table class="ap-tbl"><thead><tr><th>Nombre</th><th>Teléfono</th><th>% Ventas</th><th>Contacto</th></tr></thead>
+          <tbody id="pfTbClientes">
+            <tr><td><input type="text" name="c1_nombre"></td><td><input type="tel" name="c1_tel" style="text-transform:none"></td><td><input type="number" name="c1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="c1_contacto"></td></tr>
+            <tr><td><input type="text" name="c2_nombre"></td><td><input type="tel" name="c2_tel" style="text-transform:none"></td><td><input type="number" name="c2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="c2_contacto"></td></tr>
+          </tbody></table>
+          <button type="button" class="add-row" onclick="addRow('pfTbClientes',['nombre','tel','pct','contacto'],'c')">+ Agregar cliente</button>
+        </div>
 
-          <!-- Datos del Negocio / PFAE -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>💼 Datos del Negocio / PFAE</span></div>
-          <div class="grid2" style="margin-bottom:.5rem">
-            <div class="fg full"><label class="lbl req">Nombre del cliente</label><input class="ap-inp" type="text" name="ap_Nombre_cliente" placeholder="Nombre completo" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">R.F.C.</label><input class="ap-inp ap-rfc" type="text" name="ap_RFC" placeholder="RFC con homoclave" maxlength="13" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Actividad principal</label><input class="ap-inp" type="text" name="ap_Actividad" placeholder="Descripción de actividad" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg full"><label class="lbl req">Régimen fiscal <span style="font-weight:400;color:var(--muted);font-size:.72rem">(transcribir de la Constancia)</span></label><input class="ap-inp" type="text" name="ap_Regimen" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Nombre comercial</label><input class="ap-inp" type="text" name="ap_NombreComercial" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Fundador del negocio</label><input class="ap-inp" type="text" name="ap_Fundador" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Fecha inicio del negocio</label><input class="ap-inp" type="date" name="ap_FechaInicio" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
-            <div class="fg"><label class="lbl req">Número de empleados</label><input class="ap-inp" type="number" name="ap_Empleados" placeholder="0" min="0" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
-            <div class="fg full"><label class="lbl">Sitio web / Facebook</label><input class="ap-inp" type="text" name="ap_Web" placeholder="https://" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
+        <div class="sep"><span>Principales Proveedores</span></div>
+        <div class="fg">
+          <table class="ap-tbl"><thead><tr><th>Nombre</th><th>Teléfono</th><th>% Compras</th><th>Contacto</th></tr></thead>
+          <tbody id="pfTbProv">
+            <tr><td><input type="text" name="p1_nombre"></td><td><input type="tel" name="p1_tel" style="text-transform:none"></td><td><input type="number" name="p1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="p1_contacto"></td></tr>
+            <tr><td><input type="text" name="p2_nombre"></td><td><input type="tel" name="p2_tel" style="text-transform:none"></td><td><input type="number" name="p2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="p2_contacto"></td></tr>
+          </tbody></table>
+          <button type="button" class="add-row" onclick="addRow('pfTbProv',['nombre','tel','pct','contacto'],'p')">+ Agregar proveedor</button>
+        </div>
+
+        <div class="sep"><span>Primer Cuadro Directivo</span></div>
+        <div class="fg">
+          <table class="ap-tbl"><thead><tr><th>Nombre completo</th><th>Cargo</th><th>Años exp.</th></tr></thead>
+          <tbody id="pfTbDir">
+            <tr><td><input type="text" name="d1_nombre"></td><td><input type="text" name="d1_cargo"></td><td><input type="number" name="d1_exp" min="0" style="text-transform:none"></td></tr>
+            <tr><td><input type="text" name="d2_nombre"></td><td><input type="text" name="d2_cargo"></td><td><input type="number" name="d2_exp" min="0" style="text-transform:none"></td></tr>
+          </tbody></table>
+          <button type="button" class="add-row" onclick="addRow('pfTbDir',['nombre','cargo','exp'],'d')">+ Agregar directivo</button>
+        </div>
+
+        <div class="sep" style="margin-top:.5rem"><span>📍 Domicilio Fiscal del Negocio</span></div>
+        <div class="g2">
+          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Calle</label><input type="text" name="ap_f_calle" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">No. Ext.</label><input type="text" name="ap_f_noext" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl">No. Int.</label><input type="text" name="ap_f_noint" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Colonia</label><input type="text" name="ap_f_colonia" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">C.P.</label><input type="text" name="ap_f_cp" maxlength="5" placeholder="00000"></div>
+          <div class="fg"><label class="lbl req">Ciudad</label><input type="text" name="ap_f_ciudad" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Estado</label><input type="text" name="ap_f_estado" style="text-transform:uppercase"></div>
+        </div>
+
+        <div class="sep"><span>Tipo de Inmueble Fiscal</span></div>
+        <div>
+          <div class="imm-btns">
+            <button type="button" class="imm-btn on" id="pfImmP" onclick="toggleImm('PF','propio')">Propio</button>
+            <button type="button" class="imm-btn" id="pfImmR" onclick="toggleImm('PF','rentado')">Rentado</button>
           </div>
-
-          <!-- Sector -->
-          <div class="sec-div full"><span>Sector</span></div>
-          <div class="fg full" id="ap-sector-PF-wrap">
-            <label class="lbl req">Selecciona el(los) sectores que apliquen</label>
-            <div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.25rem" id="ap-sectorPF">
-              <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border:1.5px solid var(--line);border-radius:6px;cursor:pointer;font-size:.83rem;font-weight:500;color:var(--muted);background:#fff;transition:all .18s;user-select:none"><input type="checkbox" name="ap_Sector_Manufactura" value="Manufactura" style="position:absolute;opacity:0;pointer-events:none"><span class="ap-chk-box" style="width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0"></span>Manufactura</label>
-              <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border:1.5px solid var(--line);border-radius:6px;cursor:pointer;font-size:.83rem;font-weight:500;color:var(--muted);background:#fff;transition:all .18s;user-select:none"><input type="checkbox" name="ap_Sector_Servicios" value="Servicios" style="position:absolute;opacity:0;pointer-events:none"><span class="ap-chk-box" style="width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0"></span>Servicios</label>
-              <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border:1.5px solid var(--line);border-radius:6px;cursor:pointer;font-size:.83rem;font-weight:500;color:var(--muted);background:#fff;transition:all .18s;user-select:none"><input type="checkbox" name="ap_Sector_Mayor" value="Comercio al por mayor" style="position:absolute;opacity:0;pointer-events:none"><span class="ap-chk-box" style="width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0"></span>Comercio al por mayor</label>
-              <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border:1.5px solid var(--line);border-radius:6px;cursor:pointer;font-size:.83rem;font-weight:500;color:var(--muted);background:#fff;transition:all .18s;user-select:none"><input type="checkbox" name="ap_Sector_Menudeo" value="Comercio al menudeo" style="position:absolute;opacity:0;pointer-events:none"><span class="ap-chk-box" style="width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0"></span>Comercio al menudeo</label>
-              <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border:1.5px solid var(--line);border-radius:6px;cursor:pointer;font-size:.83rem;font-weight:500;color:var(--muted);background:#fff;transition:all .18s;user-select:none"><input type="checkbox" name="ap_Sector_Construccion" value="Construcción" style="position:absolute;opacity:0;pointer-events:none"><span class="ap-chk-box" style="width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0"></span>Construcción</label>
-            </div>
-            <span class="em" id="ap-err-sectorPF"></span>
-          </div>
-
-          <!-- Continuación datos del negocio -->
-          <div class="sec-div full" style="margin-top:1rem"><span>Contacto y Finanzas del Negocio</span></div>
-          <div class="grid2">
-            <div class="fg"><label class="lbl req">Persona que dirige el negocio</label><input class="ap-inp" type="text" name="ap_Director" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Relación con el aval</label><input class="ap-inp" type="text" name="ap_RelacionAval" placeholder="Ej. Socio, cónyuge…" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Cuenta CLABE</label><input class="ap-inp" type="text" name="ap_CLABE" placeholder="18 dígitos" maxlength="18" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Banco</label><input class="ap-inp" type="text" name="ap_Banco" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Contacto de pagos</label><input class="ap-inp" type="text" name="ap_ContactoPagos" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Teléfono negocio</label>
-              <div class="tel-wr" id="ap-tel1-wr"><select class="lada-sel" id="ap_tel1_lada" onchange="apSyncTel('ap_tel1')"></select><input class="tel-num" type="tel" id="ap_tel1_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel1')"></div>
-              <input type="hidden" name="ap_Tel_negocio" id="ap_tel1_combined">
-              <span class="em" id="ap-err-tel1"></span>
-            </div>
-            <div class="fg"><label class="lbl req">Celular negocio</label>
-              <div class="tel-wr" id="ap-tel2-wr"><select class="lada-sel" id="ap_tel2_lada" onchange="apSyncTel('ap_tel2')"></select><input class="tel-num" type="tel" id="ap_tel2_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel2')"></div>
-              <input type="hidden" name="ap_Cel_negocio" id="ap_tel2_combined">
-              <span class="em" id="ap-err-tel2"></span>
-            </div>
-            <div class="fg"><label class="lbl req">Correo electrónico</label><input class="ap-inp" type="email" name="ap_Email" placeholder="correo@ejemplo.com" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
-          </div>
-
-          <!-- Principales Clientes -->
-          <div class="sec-div full" style="margin-top:1rem"><span>Principales Clientes</span></div>
-          <div class="fg full">
-            <table class="ap-table" style="width:100%;border-collapse:collapse;font-size:.83rem">
-              <thead><tr style="background:var(--cream)">
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Nombre *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Teléfono *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">% Ventas *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Contacto *</th>
-              </tr></thead>
-              <tbody id="ap-tbl-clientes">
-                <tr><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_C1_nombre" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase" placeholder="—"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="tel" name="ap_C1_tel" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)" placeholder="—"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="number" name="ap_C1_pct" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)" placeholder="%" min="0" max="100"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_C1_contacto" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase" placeholder="—"></td></tr>
-                <tr><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_C2_nombre" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase" placeholder="—"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="tel" name="ap_C2_tel" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)" placeholder="—"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="number" name="ap_C2_pct" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)" placeholder="%" min="0" max="100"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_C2_contacto" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase" placeholder="—"></td></tr>
-              </tbody>
-            </table>
-            <button type="button" onclick="apAddRow('ap-tbl-clientes')" style="margin-top:.6rem;background:transparent;border:1.5px dashed var(--muted);border-radius:6px;padding:.4rem 1rem;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--muted);cursor:pointer;width:100%;transition:all .18s">+ Agregar cliente</button>
-          </div>
-
-          <!-- Principales Proveedores -->
-          <div class="sec-div full" style="margin-top:1rem"><span>Principales Proveedores</span></div>
-          <div class="fg full">
-            <table class="ap-table" style="width:100%;border-collapse:collapse;font-size:.83rem">
-              <thead><tr style="background:var(--cream)">
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Nombre *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Teléfono *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">% Compras *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Contacto *</th>
-              </tr></thead>
-              <tbody id="ap-tbl-proveedores">
-                <tr><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_P1_nombre" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase" placeholder="—"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="tel" name="ap_P1_tel" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)" placeholder="—"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="number" name="ap_P1_pct" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)" placeholder="%" min="0" max="100"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_P1_contacto" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase" placeholder="—"></td></tr>
-                <tr><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_P2_nombre" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase" placeholder="—"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="tel" name="ap_P2_tel" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)" placeholder="—"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="number" name="ap_P2_pct" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)" placeholder="%" min="0" max="100"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_P2_contacto" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase" placeholder="—"></td></tr>
-              </tbody>
-            </table>
-            <button type="button" onclick="apAddRow('ap-tbl-proveedores')" style="margin-top:.6rem;background:transparent;border:1.5px dashed var(--muted);border-radius:6px;padding:.4rem 1rem;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--muted);cursor:pointer;width:100%;transition:all .18s">+ Agregar proveedor</button>
-          </div>
-
-          <!-- Primer Cuadro Directivo -->
-          <div class="sec-div full" style="margin-top:1rem"><span>Primer Cuadro Directivo</span></div>
-          <div class="fg full">
-            <table class="ap-table" style="width:100%;border-collapse:collapse;font-size:.83rem">
-              <thead><tr style="background:var(--cream)">
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Nombre completo *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Cargo *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Años exp. *</th>
-              </tr></thead>
-              <tbody id="ap-tbl-directivos">
-                <tr><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_D1_nombre" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase" placeholder="—"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_D1_cargo" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase" placeholder="—"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="number" name="ap_D1_exp" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)" min="0" placeholder="0"></td></tr>
-                <tr><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_D2_nombre" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase" placeholder="—"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_D2_cargo" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase" placeholder="—"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="number" name="ap_D2_exp" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)" min="0" placeholder="0"></td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Domicilio Fiscal -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>📍 Domicilio Fiscal del Negocio</span></div>
-          <div class="grid2">
-            <div class="fg full"><label class="lbl req">Calle</label><input class="ap-inp" type="text" name="ap_F_calle" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">No. Ext.</label><input class="ap-inp" type="text" name="ap_F_noext" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl">No. Int.</label><input class="ap-inp" type="text" name="ap_F_noint" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Colonia</label><input class="ap-inp" type="text" name="ap_F_colonia" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">C.P.</label><input class="ap-inp" type="text" name="ap_F_cp" maxlength="5" placeholder="00000" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
-            <div class="fg"><label class="lbl req">Ciudad</label><input class="ap-inp" type="text" name="ap_F_ciudad" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Estado</label><input class="ap-inp" type="text" name="ap_F_estado" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-          </div>
-
-          <!-- Tipo de Inmueble Fiscal -->
-          <div class="sec-div full" style="margin-top:.75rem"><span>Tipo de Inmueble Fiscal</span></div>
-          <div class="fg full">
-            <div style="display:flex;gap:.5rem;margin-bottom:.85rem">
-              <button type="button" id="ap-inmueble-btn-propio" onclick="apToggleInmueble('propio')" style="padding:.45rem 1.1rem;border-radius:6px;border:1.5px solid var(--line);background:var(--ink2);color:#fff;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .18s">Propio</button>
-              <button type="button" id="ap-inmueble-btn-rentado" onclick="apToggleInmueble('rentado')" style="padding:.45rem 1.1rem;border-radius:6px;border:1.5px solid var(--line);background:var(--cream);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .18s">Rentado</button>
-            </div>
-            <div id="ap-inmueble-propio" class="grid2">
-              <div class="fg full"><label class="lbl req">A nombre de quién está registrado</label><input class="ap-inp" type="text" name="ap_I_titular" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-              <div class="fg"><label class="lbl req">Tipo de inmueble</label><input class="ap-inp" type="text" name="ap_I_tipo" placeholder="Planta, oficina…" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-              <div class="fg"><label class="lbl req">Tamaño (m²)</label><input class="ap-inp" type="number" name="ap_I_m2" placeholder="0" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
-              <div class="fg"><label class="lbl req">Presenta gravamen</label><select class="ap-inp" name="ap_I_gravamen" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'11\' height=\'7\'%3E%3Cpath fill=\'%237A7265\' d=\'M5.5 7L0 0h11z\'/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right .8rem center;padding-right:2.2rem"><option value="">Seleccionar</option><option>No presenta gravamen</option><option>Hipoteca</option><option>Embargo</option><option>Otro</option></select></div>
-            </div>
-            <div id="ap-inmueble-rentado" class="grid2" style="display:none">
-              <div class="fg full"><label class="lbl req">Nombre del arrendador</label><input class="ap-inp" type="text" name="ap_R_arrendador" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-              <div class="fg"><label class="lbl req">Teléfono arrendador</label>
-                <div class="tel-wr" id="ap-tel3-wr"><select class="lada-sel" id="ap_tel3_lada" onchange="apSyncTel('ap_tel3')"></select><input class="tel-num" type="tel" id="ap_tel3_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel3')"></div>
-                <input type="hidden" name="ap_R_tel" id="ap_tel3_combined">
-              </div>
-              <div class="fg"><label class="lbl req">Inicio contrato</label><input class="ap-inp" type="date" name="ap_R_inicio" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
-              <div class="fg"><label class="lbl req">Término contrato</label><input class="ap-inp" type="date" name="ap_R_termino" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
+          <div class="g2" id="pfImmPropio">
+            <div class="fg" style="grid-column:1/-1"><label class="lbl req">A nombre de quién está registrado</label><input type="text" name="ap_ip_titular" style="text-transform:uppercase"></div>
+            <div class="fg"><label class="lbl req">Tipo de inmueble</label><input type="text" name="ap_ip_tipo" placeholder="Planta, oficina…" style="text-transform:uppercase"></div>
+            <div class="fg"><label class="lbl req">Tamaño (m²)</label><input type="number" name="ap_ip_m2" placeholder="0" min="0"></div>
+            <div class="fg"><label class="lbl req">Presenta gravamen</label>
+              <select name="ap_ip_gravamen"><option value="">Seleccionar</option><option>No presenta gravamen</option><option>Hipoteca</option><option>Embargo</option><option>Otro</option></select>
             </div>
           </div>
-
-          <!-- Datos Personales -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>🤝 Datos Personales del PFAE</span></div>
-          <div class="grid2">
-            <div class="fg"><label class="lbl req">Lugar y fecha de nacimiento</label><input class="ap-inp" type="text" name="ap_Nacimiento" placeholder="Ciudad, DD/MM/AAAA" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Profesión</label><input class="ap-inp" type="text" name="ap_Profesion" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Puesto en el negocio</label><input class="ap-inp" type="text" name="ap_Puesto" placeholder="Director, Propietario…" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Antigüedad en el negocio</label><input class="ap-inp" type="text" name="ap_Antiguedad" placeholder="Ej. 5 años" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Email personal</label><input class="ap-inp" type="email" name="ap_EmailPersonal" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
-            <div class="fg"><label class="lbl req">Teléfono particular</label>
-              <div class="tel-wr" id="ap-tel4-wr"><select class="lada-sel" id="ap_tel4_lada" onchange="apSyncTel('ap_tel4')"></select><input class="tel-num" type="tel" id="ap_tel4_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel4')"></div>
-              <input type="hidden" name="ap_TelParticular" id="ap_tel4_combined">
+          <div class="g2" id="pfImmRentado" style="display:none">
+            <div class="fg" style="grid-column:1/-1"><label class="lbl req">Nombre del arrendador</label><input type="text" name="ap_ir_arrendador" style="text-transform:uppercase"></div>
+            <div class="fg"><label class="lbl req">Teléfono arrendador</label>
+              <div class="tel-wr"><select class="lada-sel" id="pf_t3_l"></select><input class="tel-num" type="tel" id="pf_t3_n" placeholder="55 0000 0000"></div>
+              <input type="hidden" name="ap_ir_tel" id="pf_t3_v">
             </div>
-            <div class="fg full">
-              <label class="lbl req">Estado civil</label>
-              <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.25rem" id="ap-estcivil-group">
-                <label class="ap-radio-pill" onclick="apSelectRadio(this,'ap_EstadoCivil','Casado-Sep');apToggleConyuge(true)"><input type="radio" name="ap_EstadoCivil" value="Casado-Sep" style="position:absolute;opacity:0"><span class="ap-radio-dot"></span>Casado(a) Sep. bienes</label>
-                <label class="ap-radio-pill" onclick="apSelectRadio(this,'ap_EstadoCivil','Casado-Man');apToggleConyuge(true)"><input type="radio" name="ap_EstadoCivil" value="Casado-Man" style="position:absolute;opacity:0"><span class="ap-radio-dot"></span>Casado(a) Mancomunados</label>
-                <label class="ap-radio-pill" onclick="apSelectRadio(this,'ap_EstadoCivil','Soltero');apToggleConyuge(false)"><input type="radio" name="ap_EstadoCivil" value="Soltero" style="position:absolute;opacity:0"><span class="ap-radio-dot"></span>Soltero(a)</label>
-                <label class="ap-radio-pill" onclick="apSelectRadio(this,'ap_EstadoCivil','Divorciado');apToggleConyuge(false)"><input type="radio" name="ap_EstadoCivil" value="Divorciado" style="position:absolute;opacity:0"><span class="ap-radio-dot"></span>Divorciado(a)</label>
-                <label class="ap-radio-pill" onclick="apSelectRadio(this,'ap_EstadoCivil','Viudo');apToggleConyuge(false)"><input type="radio" name="ap_EstadoCivil" value="Viudo" style="position:absolute;opacity:0"><span class="ap-radio-dot"></span>Viudo(a)</label>
-              </div>
-              <span class="em" id="ap-err-estcivil"></span>
-            </div>
-            <div class="fg" id="ap-conyuge-nombre-fg" style="display:none"><label class="lbl req">Nombre del cónyuge</label><input class="ap-inp" type="text" name="ap_Conyuge_nombre" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg" id="ap-conyuge-rfc-fg" style="display:none"><label class="lbl req">RFC del cónyuge</label><input class="ap-inp ap-rfc" type="text" name="ap_Conyuge_RFC" maxlength="13" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
+            <div class="fg"><label class="lbl req">Inicio contrato</label><input type="date" name="ap_ir_inicio"></div>
+            <div class="fg"><label class="lbl req">Término contrato</label><input type="date" name="ap_ir_termino"></div>
           </div>
+        </div>
 
-          <!-- Equipos / Vehículos -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>🚗 Equipos / Vehículos Solicitados</span></div>
-          <div class="fg full">
-            <table class="ap-table" style="width:100%;border-collapse:collapse;font-size:.83rem">
-              <thead><tr style="background:var(--cream)">
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Descripción *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Año *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Valor (IVA incl.) *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Plazo *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Usuario *</th>
-              </tr></thead>
-              <tbody id="ap-tbl-equipos">
-                <tr><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_Eq1_desc" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="number" name="ap_Eq1_anio" placeholder="2025" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="number" name="ap_Eq1_valor" placeholder="$0" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_Eq1_plazo" placeholder="Meses" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_Eq1_usuario" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase"></td></tr>
-              </tbody>
-            </table>
-            <button type="button" onclick="apAddRow('ap-tbl-equipos')" style="margin-top:.6rem;background:transparent;border:1.5px dashed var(--muted);border-radius:6px;padding:.4rem 1rem;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--muted);cursor:pointer;width:100%;transition:all .18s">+ Agregar equipo</button>
+        <div class="sep" style="margin-top:.5rem"><span>🤝 Datos Personales del PFAE</span></div>
+        <div class="g2">
+          <div class="fg"><label class="lbl req">Lugar y fecha de nacimiento</label><input type="text" name="ap_nacimiento" placeholder="Ciudad, DD/MM/AAAA" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Profesión</label><input type="text" name="ap_profesion" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Puesto en el negocio</label><input type="text" name="ap_puesto" placeholder="Director, Propietario…" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Antigüedad en el negocio</label><input type="text" name="ap_antiguedad" placeholder="Ej. 5 años" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Email personal</label><input type="email" name="ap_email_personal" placeholder="correo@ejemplo.com"></div>
+          <div class="fg"><label class="lbl req">Teléfono particular</label>
+            <div class="tel-wr"><select class="lada-sel" id="pf_t4_l"></select><input class="tel-num" type="tel" id="pf_t4_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_tel_particular" id="pf_t4_v">
           </div>
-
-          <!-- Referencias Personales -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>👥 Referencias Personales</span></div>
-          <div class="grid2">
-            <div class="fg full"><label class="lbl req">Referencia 1 — Nombre completo</label><input class="ap-inp" type="text" name="ap_Ref1_nombre" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Parentesco</label><input class="ap-inp" type="text" name="ap_Ref1_parentesco" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Teléfono Ref. 1</label>
-              <div class="tel-wr"><select class="lada-sel" id="ap_tel5_lada" onchange="apSyncTel('ap_tel5')"></select><input class="tel-num" type="tel" id="ap_tel5_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel5')"></div>
-              <input type="hidden" name="ap_Ref1_tel" id="ap_tel5_combined">
-            </div>
-            <div class="fg"><label class="lbl req">Celular Ref. 1</label>
-              <div class="tel-wr"><select class="lada-sel" id="ap_tel6_lada" onchange="apSyncTel('ap_tel6')"></select><input class="tel-num" type="tel" id="ap_tel6_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel6')"></div>
-              <input type="hidden" name="ap_Ref1_cel" id="ap_tel6_combined">
-            </div>
-            <div style="height:1px;background:var(--line);grid-column:1/-1;margin:.25rem 0"></div>
-            <div class="fg full"><label class="lbl req">Referencia 2 — Nombre completo</label><input class="ap-inp" type="text" name="ap_Ref2_nombre" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Parentesco</label><input class="ap-inp" type="text" name="ap_Ref2_parentesco" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Teléfono Ref. 2</label>
-              <div class="tel-wr"><select class="lada-sel" id="ap_tel7_lada" onchange="apSyncTel('ap_tel7')"></select><input class="tel-num" type="tel" id="ap_tel7_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel7')"></div>
-              <input type="hidden" name="ap_Ref2_tel" id="ap_tel7_combined">
-            </div>
-            <div class="fg"><label class="lbl req">Celular Ref. 2</label>
-              <div class="tel-wr"><select class="lada-sel" id="ap_tel8_lada" onchange="apSyncTel('ap_tel8')"></select><input class="tel-num" type="tel" id="ap_tel8_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel8')"></div>
-              <input type="hidden" name="ap_Ref2_cel" id="ap_tel8_combined">
+          <div class="fg" style="grid-column:1/-1">
+            <label class="lbl req">Estado civil</label>
+            <div class="pills" id="pfEstCivil">
+              <label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',true)"><input type="radio" name="ap_estado_civil" value="Casado-Sep. bienes"><span class="rdot"></span>Casado(a) Sep. bienes</label>
+              <label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',true)"><input type="radio" name="ap_estado_civil" value="Casado-Mancomunados"><span class="rdot"></span>Casado(a) Mancomunados</label>
+              <label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',false)"><input type="radio" name="ap_estado_civil" value="Soltero"><span class="rdot"></span>Soltero(a)</label>
+              <label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',false)"><input type="radio" name="ap_estado_civil" value="Divorciado"><span class="rdot"></span>Divorciado(a)</label>
+              <label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',false)"><input type="radio" name="ap_estado_civil" value="Viudo"><span class="rdot"></span>Viudo(a)</label>
             </div>
           </div>
+          <div class="fg" id="pfConNombre" style="display:none"><label class="lbl req">Nombre del cónyuge</label><input type="text" name="ap_conyuge_nombre" style="text-transform:uppercase"></div>
+          <div class="fg" id="pfConRfc" style="display:none"><label class="lbl req">RFC del cónyuge</label><input type="text" name="ap_conyuge_rfc" maxlength="13" style="text-transform:uppercase"></div>
+        </div>
 
-          <!-- Contacto para Visita al Negocio -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>📋 Contacto para Visita al Negocio</span></div>
-          <div class="grid2">
-            <div class="fg"><label class="lbl req">Nombre</label><input class="ap-inp" type="text" name="ap_Visita_nombre" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Puesto</label><input class="ap-inp" type="text" name="ap_Visita_puesto" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Teléfono</label>
-              <div class="tel-wr"><select class="lada-sel" id="ap_tel9_lada" onchange="apSyncTel('ap_tel9')"></select><input class="tel-num" type="tel" id="ap_tel9_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel9')"></div>
-              <input type="hidden" name="ap_Visita_tel" id="ap_tel9_combined">
-            </div>
-            <div class="fg"><label class="lbl req">Celular</label>
-              <div class="tel-wr"><select class="lada-sel" id="ap_tel10_lada" onchange="apSyncTel('ap_tel10')"></select><input class="tel-num" type="tel" id="ap_tel10_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel10')"></div>
-              <input type="hidden" name="ap_Visita_cel" id="ap_tel10_combined">
-            </div>
+        <div class="sep" style="margin-top:.5rem"><span>🚗 Equipos / Vehículos Solicitados</span></div>
+        <div class="fg">
+          <table class="ap-tbl"><thead><tr><th>Descripción</th><th>Año</th><th>Valor (IVA incl.)</th><th>Plazo</th><th>Usuario</th></tr></thead>
+          <tbody id="pfTbEquipos">
+            <tr><td><input type="text" name="eq1_desc"></td><td><input type="number" name="eq1_anio" placeholder="2025" style="text-transform:none"></td><td><input type="number" name="eq1_valor" placeholder="$0" style="text-transform:none"></td><td><input type="text" name="eq1_plazo" placeholder="Meses"></td><td><input type="text" name="eq1_usuario"></td></tr>
+          </tbody></table>
+          <button type="button" class="add-row" onclick="addRow('pfTbEquipos',['desc','anio','valor','plazo','usuario'],'eq')">+ Agregar equipo</button>
+        </div>
+
+        <div class="sep" style="margin-top:.5rem"><span>👥 Referencias Personales</span></div>
+        <div class="g2">
+          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Referencia 1 — Nombre completo</label><input type="text" name="ap_ref1_nombre" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Parentesco</label><input type="text" name="ap_ref1_parentesco" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Teléfono Ref. 1</label>
+            <div class="tel-wr"><select class="lada-sel" id="pf_t5_l"></select><input class="tel-num" type="tel" id="pf_t5_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_ref1_tel" id="pf_t5_v">
           </div>
-
-          <!-- Lugar, fecha y firmante -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>✍️ Firma y Declaración</span></div>
-          <div class="grid2">
-            <div class="fg"><label class="lbl req">Lugar y fecha de elaboración</label><input class="ap-inp" type="text" name="ap_LugarFecha" placeholder="Ciudad, DD/MM/AAAA" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Nombre del firmante</label><input class="ap-inp" type="text" name="ap_Firmante" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Celular Ref. 1</label>
+            <div class="tel-wr"><select class="lada-sel" id="pf_t6_l"></select><input class="tel-num" type="tel" id="pf_t6_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_ref1_cel" id="pf_t6_v">
           </div>
-
-          <!-- Declaración -->
-          <div class="fg full" style="margin-top:1rem">
-            <div id="ap-declaration-wrap" style="border:1.5px solid var(--line);border-radius:10px;overflow:hidden;transition:border-color .25s;cursor:pointer" onclick="apToggleDeclaration()">
-              <div style="display:flex;gap:1rem;align-items:flex-start;padding:1.1rem 1.25rem;background:var(--cream);transition:background .25s" id="ap-decl-box">
-                <div id="ap-decl-chk" style="width:22px;height:22px;flex-shrink:0;border-radius:6px;border:2px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;margin-top:.1rem;transition:all .2s">
-                  <svg id="ap-decl-chk-svg" viewBox="0 0 16 12" fill="none" style="width:11px;opacity:0;transition:opacity .18s"><path d="M1 6l4.5 4.5L15 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </div>
-                <div>
-                  <div style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:.3rem">Declaración de veracidad y autenticidad</div>
-                  <div style="font-size:.77rem;color:var(--muted);line-height:1.65">Bajo protesta de decir verdad, declaro que toda la información y documentación proporcionada es auténtica. Al marcar esta casilla, manifiesto mi conformidad otorgando a esta acción el mismo valor jurídico que mi firma autógrafa, de conformidad con el artículo 89 del Código de Comercio y la NOM-151-SCFI-2016.</div>
-                </div>
-              </div>
-            </div>
+          <div style="height:1px;background:var(--line);grid-column:1/-1"></div>
+          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Referencia 2 — Nombre completo</label><input type="text" name="ap_ref2_nombre" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Parentesco</label><input type="text" name="ap_ref2_parentesco" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Teléfono Ref. 2</label>
+            <div class="tel-wr"><select class="lada-sel" id="pf_t7_l"></select><input class="tel-num" type="tel" id="pf_t7_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_ref2_tel" id="pf_t7_v">
           </div>
-
-          <!-- Botón Enviar AP-PF -->
-          <div class="fg full" style="margin-top:1.25rem">
-            <button type="button" id="ap-submit-btn" onclick="apSubmitForm()" disabled class="btn-submit">
-              <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
-              <span id="ap-btn-txt">Confirma la declaración para enviar</span>
-              <div class="btn-spin" id="ap-spin"></div>
-            </button>
-            <div class="legal" style="margin-top:.75rem">Al enviar, aceptas que la información será procesada de forma segura y confidencial.</div>
+          <div class="fg"><label class="lbl req">Celular Ref. 2</label>
+            <div class="tel-wr"><select class="lada-sel" id="pf_t8_l"></select><input class="tel-num" type="tel" id="pf_t8_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_ref2_cel" id="pf_t8_v">
           </div>
+        </div>
 
-        </div><!-- /ap-body-PF -->
-
-        <!-- ══════════════════════════════════ -->
-        <!-- SECCIÓN PM                        -->
-        <!-- ══════════════════════════════════ -->
-        <div id="ap-body-PM" style="display:none" class="full">
-
-          <!-- Datos de la Empresa -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>🏢 Datos de la Empresa</span></div>
-          <div class="grid2">
-            <div class="fg full"><label class="lbl req">Razón social</label><input class="ap-inp" type="text" name="ap_RazonSocial" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">R.F.C. de la empresa</label><input class="ap-inp ap-rfc" type="text" name="ap_RFC_PM" maxlength="13" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Actividad principal</label><input class="ap-inp" type="text" name="ap_Actividad_PM" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg full"><label class="lbl req">Régimen fiscal</label><input class="ap-inp" type="text" name="ap_Regimen_PM" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Nombre comercial</label><input class="ap-inp" type="text" name="ap_NombreComercial_PM" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Fundador</label><input class="ap-inp" type="text" name="ap_Fundador_PM" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Fecha de inicio</label><input class="ap-inp" type="date" name="ap_FechaInicio_PM" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
-            <div class="fg"><label class="lbl req">Número de empleados</label><input class="ap-inp" type="number" name="ap_Empleados_PM" min="0" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
-            <div class="fg full"><label class="lbl">Sitio web / Facebook</label><input class="ap-inp" type="text" name="ap_Web_PM" placeholder="https://" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
+        <div class="sep" style="margin-top:.5rem"><span>📋 Contacto para Visita al Negocio</span></div>
+        <div class="g2">
+          <div class="fg"><label class="lbl req">Nombre</label><input type="text" name="ap_visita_nombre" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Puesto</label><input type="text" name="ap_visita_puesto" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Teléfono</label>
+            <div class="tel-wr"><select class="lada-sel" id="pf_t9_l"></select><input class="tel-num" type="tel" id="pf_t9_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_visita_tel" id="pf_t9_v">
           </div>
-
-          <!-- Sector PM -->
-          <div class="sec-div full" style="margin-top:.75rem"><span>Sector</span></div>
-          <div class="fg full">
-            <label class="lbl req">Selecciona el(los) sectores</label>
-            <div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.25rem" id="ap-sectorPM">
-              <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border:1.5px solid var(--line);border-radius:6px;cursor:pointer;font-size:.83rem;font-weight:500;color:var(--muted);background:#fff;transition:all .18s;user-select:none"><input type="checkbox" name="ap_SectorPM_Manufactura" value="Manufactura" style="position:absolute;opacity:0;pointer-events:none"><span class="ap-chk-box" style="width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0"></span>Manufactura</label>
-              <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border:1.5px solid var(--line);border-radius:6px;cursor:pointer;font-size:.83rem;font-weight:500;color:var(--muted);background:#fff;transition:all .18s;user-select:none"><input type="checkbox" name="ap_SectorPM_Servicios" value="Servicios" style="position:absolute;opacity:0;pointer-events:none"><span class="ap-chk-box" style="width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0"></span>Servicios</label>
-              <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border:1.5px solid var(--line);border-radius:6px;cursor:pointer;font-size:.83rem;font-weight:500;color:var(--muted);background:#fff;transition:all .18s;user-select:none"><input type="checkbox" name="ap_SectorPM_Mayor" value="Comercio al por mayor" style="position:absolute;opacity:0;pointer-events:none"><span class="ap-chk-box" style="width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0"></span>Comercio al por mayor</label>
-              <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border:1.5px solid var(--line);border-radius:6px;cursor:pointer;font-size:.83rem;font-weight:500;color:var(--muted);background:#fff;transition:all .18s;user-select:none"><input type="checkbox" name="ap_SectorPM_Menudeo" value="Comercio al menudeo" style="position:absolute;opacity:0;pointer-events:none"><span class="ap-chk-box" style="width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0"></span>Comercio al menudeo</label>
-              <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border:1.5px solid var(--line);border-radius:6px;cursor:pointer;font-size:.83rem;font-weight:500;color:var(--muted);background:#fff;transition:all .18s;user-select:none"><input type="checkbox" name="ap_SectorPM_Construccion" value="Construcción" style="position:absolute;opacity:0;pointer-events:none"><span class="ap-chk-box" style="width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0"></span>Construcción</label>
-            </div>
+          <div class="fg"><label class="lbl req">Celular</label>
+            <div class="tel-wr"><select class="lada-sel" id="pf_t10_l"></select><input class="tel-num" type="tel" id="pf_t10_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_visita_cel" id="pf_t10_v">
           </div>
+        </div>
 
-          <!-- Datos de contacto PM -->
-          <div class="sec-div full" style="margin-top:1rem"><span>Contacto y Finanzas</span></div>
-          <div class="grid2">
-            <div class="fg"><label class="lbl req">Cuenta CLABE</label><input class="ap-inp" type="text" name="ap_CLABE_PM" maxlength="18" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Banco</label><input class="ap-inp" type="text" name="ap_Banco_PM" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Teléfono empresa</label>
-              <div class="tel-wr"><select class="lada-sel" id="ap_tel11_lada" onchange="apSyncTel('ap_tel11')"></select><input class="tel-num" type="tel" id="ap_tel11_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel11')"></div>
-              <input type="hidden" name="ap_Tel_PM" id="ap_tel11_combined">
-            </div>
-            <div class="fg"><label class="lbl req">Celular empresa</label>
-              <div class="tel-wr"><select class="lada-sel" id="ap_tel12_lada" onchange="apSyncTel('ap_tel12')"></select><input class="tel-num" type="tel" id="ap_tel12_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel12')"></div>
-              <input type="hidden" name="ap_Cel_PM" id="ap_tel12_combined">
-            </div>
-            <div class="fg"><label class="lbl req">Correo electrónico</label><input class="ap-inp" type="email" name="ap_Email_PM" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
+        <div class="sep" style="margin-top:.5rem"><span>✍️ Firma y Declaración</span></div>
+        <div class="g2">
+          <div class="fg"><label class="lbl req">Lugar y fecha de elaboración</label><input type="text" name="ap_lugar_fecha" placeholder="Ciudad, DD/MM/AAAA" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Nombre del firmante</label><input type="text" name="ap_firmante" style="text-transform:uppercase"></div>
+        </div>
+        <div class="decl" id="pfDecl" onclick="toggleDecl('PF')" style="margin-top:1rem">
+          <div class="decl-inner">
+            <div class="decl-chk-box"><svg viewBox="0 0 16 12" fill="none"><path d="M1 6l4.5 4.5L15 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div><div class="decl-ttl">Declaración de veracidad y autenticidad</div><div class="decl-txt">Bajo protesta de decir verdad, declaro que toda la información y documentación proporcionada es auténtica. Al marcar esta casilla, manifiesto mi conformidad otorgando a esta acción el mismo valor jurídico que mi firma autógrafa, de conformidad con el artículo 89 del Código de Comercio y la NOM-151-SCFI-2016.</div></div>
           </div>
+        </div>
+        <button type="button" class="btn-env" id="pfEnviarBtn" onclick="apEnviar('PF')" disabled>
+          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+          <span id="pfEnviarTxt">Confirma la declaración para enviar</span>
+          <div class="btn-spin" id="pfSpin"></div>
+        </button>
+        <p class="legal">Al enviar, tu información será procesada de forma segura y confidencial.</p>
 
-          <!-- Accionistas PM -->
-          <div class="sec-div full" style="margin-top:1rem"><span>Accionistas</span></div>
-          <div class="fg full">
-            <table class="ap-table" style="width:100%;border-collapse:collapse;font-size:.83rem">
-              <thead><tr style="background:var(--cream)">
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Nombre completo</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Participación %</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">RFC</th>
-              </tr></thead>
-              <tbody id="ap-tbl-accionistas">
-                <tr><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_Acc1_nombre" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="number" name="ap_Acc1_pct" placeholder="%" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_Acc1_rfc" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase"></td></tr>
-                <tr><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_Acc2_nombre" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="number" name="ap_Acc2_pct" placeholder="%" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_Acc2_rfc" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase"></td></tr>
-              </tbody>
-            </table>
-            <button type="button" onclick="apAddRow('ap-tbl-accionistas')" style="margin-top:.6rem;background:transparent;border:1.5px dashed var(--muted);border-radius:6px;padding:.4rem 1rem;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--muted);cursor:pointer;width:100%;transition:all .18s">+ Agregar accionista</button>
+      </div><!-- /apBodyPF -->
+
+      <!-- ╔══════════════════════════════════╗
+           ║   PERSONA MORAL (PM)             ║
+           ╚══════════════════════════════════╝ -->
+      <div id="apBodyPM" style="display:none">
+
+        <div class="sep" style="margin-top:1.5rem"><span>🏢 Datos de la Empresa</span></div>
+        <div class="g2">
+          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Razón social</label><input type="text" name="ap_razon_social" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">R.F.C. de la empresa</label><input type="text" name="ap_rfc_pm" maxlength="13" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Actividad principal</label><input type="text" name="ap_actividad_pm" style="text-transform:uppercase"></div>
+          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Régimen fiscal</label><input type="text" name="ap_regimen_pm" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Nombre comercial</label><input type="text" name="ap_nombre_comercial_pm" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Fundador</label><input type="text" name="ap_fundador_pm" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Fecha de inicio</label><input type="date" name="ap_fecha_inicio_pm"></div>
+          <div class="fg"><label class="lbl req">Número de empleados</label><input type="number" name="ap_empleados_pm" min="0"></div>
+          <div class="fg" style="grid-column:1/-1"><label class="lbl">Sitio web / Facebook</label><input type="text" name="ap_web_pm" placeholder="https://"></div>
+        </div>
+
+        <div class="sep"><span>Sector</span></div>
+        <div class="fg" style="margin-bottom:.5rem">
+          <label class="lbl req">Selecciona el o los sectores que apliquen</label>
+          <div class="pills">
+            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Manufactura"><span class="cbox"></span>Manufactura</label>
+            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Servicios"><span class="cbox"></span>Servicios</label>
+            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Comercio al por mayor"><span class="cbox"></span>Comercio al por mayor</label>
+            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Comercio al menudeo"><span class="cbox"></span>Comercio al menudeo</label>
+            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Construcción"><span class="cbox"></span>Construcción</label>
           </div>
+        </div>
 
-          <!-- Domicilio Fiscal PM -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>📍 Domicilio Fiscal de la Empresa</span></div>
-          <div class="grid2">
-            <div class="fg full"><label class="lbl req">Calle</label><input class="ap-inp" type="text" name="ap_FPM_calle" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">No. Ext.</label><input class="ap-inp" type="text" name="ap_FPM_noext" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl">No. Int.</label><input class="ap-inp" type="text" name="ap_FPM_noint" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Colonia</label><input class="ap-inp" type="text" name="ap_FPM_colonia" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">C.P.</label><input class="ap-inp" type="text" name="ap_FPM_cp" maxlength="5" placeholder="00000" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
-            <div class="fg"><label class="lbl req">Ciudad</label><input class="ap-inp" type="text" name="ap_FPM_ciudad" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Estado</label><input class="ap-inp" type="text" name="ap_FPM_estado" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
+        <div class="sep"><span>Contacto y Finanzas</span></div>
+        <div class="g2">
+          <div class="fg"><label class="lbl req">Cuenta CLABE</label><input type="text" name="ap_clabe_pm" maxlength="18"></div>
+          <div class="fg"><label class="lbl req">Banco</label><input type="text" name="ap_banco_pm" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Teléfono empresa</label>
+            <div class="tel-wr"><select class="lada-sel" id="pm_t1_l"></select><input class="tel-num" type="tel" id="pm_t1_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_tel_empresa" id="pm_t1_v">
           </div>
-
-          <!-- Equipos PM -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>🚗 Equipos / Vehículos Solicitados</span></div>
-          <div class="fg full">
-            <table class="ap-table" style="width:100%;border-collapse:collapse;font-size:.83rem">
-              <thead><tr style="background:var(--cream)">
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Descripción *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Año *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Valor (IVA incl.) *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Plazo *</th>
-                <th style="padding:.55rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)">Usuario *</th>
-              </tr></thead>
-              <tbody id="ap-tbl-equipos-pm">
-                <tr><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_EqPM1_desc" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="number" name="ap_EqPM1_anio" placeholder="2025" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="number" name="ap_EqPM1_valor" placeholder="$0" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_EqPM1_plazo" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink)"></td><td style="padding:.45rem .7rem;border-bottom:1px solid var(--line)"><input type="text" name="ap_EqPM1_usuario" style="width:100%;border:none;outline:none;background:transparent;font-size:.83rem;color:var(--ink);text-transform:uppercase"></td></tr>
-              </tbody>
-            </table>
-            <button type="button" onclick="apAddRow('ap-tbl-equipos-pm')" style="margin-top:.6rem;background:transparent;border:1.5px dashed var(--muted);border-radius:6px;padding:.4rem 1rem;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--muted);cursor:pointer;width:100%;transition:all .18s">+ Agregar equipo</button>
+          <div class="fg"><label class="lbl req">Celular empresa</label>
+            <div class="tel-wr"><select class="lada-sel" id="pm_t2_l"></select><input class="tel-num" type="tel" id="pm_t2_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_cel_empresa" id="pm_t2_v">
           </div>
+          <div class="fg"><label class="lbl req">Correo electrónico</label><input type="email" name="ap_email_empresa" placeholder="correo@ejemplo.com"></div>
+        </div>
 
-          <!-- Datos del Accionista / Aval -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>🤝 Datos del Accionista / Aval</span></div>
-          <div class="grid2">
-            <div class="fg full"><label class="lbl req">Nombre completo del aval</label><input class="ap-inp" type="text" name="ap_Aval_nombre" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">R.F.C. del aval</label><input class="ap-inp ap-rfc" type="text" name="ap_Aval_RFC" maxlength="13" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Nacimiento (lugar y fecha)</label><input class="ap-inp" type="text" name="ap_Aval_nacimiento" placeholder="Ciudad, DD/MM/AAAA" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Cargo en la empresa</label><input class="ap-inp" type="text" name="ap_Aval_puesto" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Email del aval</label><input class="ap-inp" type="email" name="ap_Aval_email" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
-            <div class="fg"><label class="lbl req">Teléfono del aval</label>
-              <div class="tel-wr"><select class="lada-sel" id="ap_tel14_lada" onchange="apSyncTel('ap_tel14')"></select><input class="tel-num" type="tel" id="ap_tel14_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel14')"></div>
-              <input type="hidden" name="ap_Aval_tel" id="ap_tel14_combined">
-            </div>
-            <div class="fg"><label class="lbl req">Celular del aval</label>
-              <div class="tel-wr"><select class="lada-sel" id="ap_tel15_lada" onchange="apSyncTel('ap_tel15')"></select><input class="tel-num" type="tel" id="ap_tel15_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel15')"></div>
-              <input type="hidden" name="ap_Aval_cel" id="ap_tel15_combined">
-            </div>
-            <div class="fg full">
-              <label class="lbl req">Estado civil del aval</label>
-              <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.25rem" id="ap-estcivil-aval-group">
-                <label class="ap-radio-pill" onclick="apSelectRadio(this,'ap_EstadoCivil_Aval','Casado-Sep');apToggleConuygeAval(true)"><input type="radio" name="ap_EstadoCivil_Aval" value="Casado-Sep" style="position:absolute;opacity:0"><span class="ap-radio-dot"></span>Casado(a) Sep. bienes</label>
-                <label class="ap-radio-pill" onclick="apSelectRadio(this,'ap_EstadoCivil_Aval','Casado-Man');apToggleConuygeAval(true)"><input type="radio" name="ap_EstadoCivil_Aval" value="Casado-Man" style="position:absolute;opacity:0"><span class="ap-radio-dot"></span>Casado(a) Mancomunados</label>
-                <label class="ap-radio-pill" onclick="apSelectRadio(this,'ap_EstadoCivil_Aval','Soltero');apToggleConuygeAval(false)"><input type="radio" name="ap_EstadoCivil_Aval" value="Soltero" style="position:absolute;opacity:0"><span class="ap-radio-dot"></span>Soltero(a)</label>
-                <label class="ap-radio-pill" onclick="apSelectRadio(this,'ap_EstadoCivil_Aval','Divorciado');apToggleConuygeAval(false)"><input type="radio" name="ap_EstadoCivil_Aval" value="Divorciado" style="position:absolute;opacity:0"><span class="ap-radio-dot"></span>Divorciado(a)</label>
-                <label class="ap-radio-pill" onclick="apSelectRadio(this,'ap_EstadoCivil_Aval','Viudo');apToggleConuygeAval(false)"><input type="radio" name="ap_EstadoCivil_Aval" value="Viudo" style="position:absolute;opacity:0"><span class="ap-radio-dot"></span>Viudo(a)</label>
-              </div>
-            </div>
-            <div class="fg" id="ap-conyuge-aval-nombre-fg" style="display:none"><label class="lbl req">Nombre del cónyuge (aval)</label><input class="ap-inp" type="text" name="ap_Aval_conyuge_nombre" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg" id="ap-conyuge-aval-rfc-fg" style="display:none"><label class="lbl req">RFC del cónyuge (aval)</label><input class="ap-inp ap-rfc" type="text" name="ap_Aval_conyuge_RFC" maxlength="13" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
+        <div class="sep"><span>Accionistas</span></div>
+        <div class="fg">
+          <table class="ap-tbl"><thead><tr><th>Nombre completo</th><th>Participación %</th><th>RFC</th></tr></thead>
+          <tbody id="pmTbAcc">
+            <tr><td><input type="text" name="acc1_nombre"></td><td><input type="number" name="acc1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="acc1_rfc"></td></tr>
+            <tr><td><input type="text" name="acc2_nombre"></td><td><input type="number" name="acc2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="acc2_rfc"></td></tr>
+          </tbody></table>
+          <button type="button" class="add-row" onclick="addRow('pmTbAcc',['nombre','pct','rfc'],'acc')">+ Agregar accionista</button>
+        </div>
+
+        <div class="sep"><span>Principales Clientes</span></div>
+        <div class="fg">
+          <table class="ap-tbl"><thead><tr><th>Nombre</th><th>Teléfono</th><th>% Ventas</th><th>Contacto</th></tr></thead>
+          <tbody id="pmTbCli">
+            <tr><td><input type="text" name="cpm1_nombre"></td><td><input type="tel" name="cpm1_tel" style="text-transform:none"></td><td><input type="number" name="cpm1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="cpm1_contacto"></td></tr>
+            <tr><td><input type="text" name="cpm2_nombre"></td><td><input type="tel" name="cpm2_tel" style="text-transform:none"></td><td><input type="number" name="cpm2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="cpm2_contacto"></td></tr>
+          </tbody></table>
+          <button type="button" class="add-row" onclick="addRow('pmTbCli',['nombre','tel','pct','contacto'],'cpm')">+ Agregar cliente</button>
+        </div>
+
+        <div class="sep"><span>Principales Proveedores</span></div>
+        <div class="fg">
+          <table class="ap-tbl"><thead><tr><th>Nombre</th><th>Teléfono</th><th>% Compras</th><th>Contacto</th></tr></thead>
+          <tbody id="pmTbProv">
+            <tr><td><input type="text" name="ppm1_nombre"></td><td><input type="tel" name="ppm1_tel" style="text-transform:none"></td><td><input type="number" name="ppm1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="ppm1_contacto"></td></tr>
+            <tr><td><input type="text" name="ppm2_nombre"></td><td><input type="tel" name="ppm2_tel" style="text-transform:none"></td><td><input type="number" name="ppm2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="ppm2_contacto"></td></tr>
+          </tbody></table>
+          <button type="button" class="add-row" onclick="addRow('pmTbProv',['nombre','tel','pct','contacto'],'ppm')">+ Agregar proveedor</button>
+        </div>
+
+        <div class="sep"><span>Primer Cuadro Directivo</span></div>
+        <div class="fg">
+          <table class="ap-tbl"><thead><tr><th>Nombre completo</th><th>Cargo</th><th>Años exp.</th></tr></thead>
+          <tbody id="pmTbDir">
+            <tr><td><input type="text" name="dpm1_nombre"></td><td><input type="text" name="dpm1_cargo"></td><td><input type="number" name="dpm1_exp" min="0" style="text-transform:none"></td></tr>
+            <tr><td><input type="text" name="dpm2_nombre"></td><td><input type="text" name="dpm2_cargo"></td><td><input type="number" name="dpm2_exp" min="0" style="text-transform:none"></td></tr>
+          </tbody></table>
+          <button type="button" class="add-row" onclick="addRow('pmTbDir',['nombre','cargo','exp'],'dpm')">+ Agregar directivo</button>
+        </div>
+
+        <div class="sep" style="margin-top:.5rem"><span>📍 Domicilio Fiscal de la Empresa</span></div>
+        <div class="g2">
+          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Calle</label><input type="text" name="ap_fpm_calle" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">No. Ext.</label><input type="text" name="ap_fpm_noext" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl">No. Int.</label><input type="text" name="ap_fpm_noint" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Colonia</label><input type="text" name="ap_fpm_colonia" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">C.P.</label><input type="text" name="ap_fpm_cp" maxlength="5" placeholder="00000"></div>
+          <div class="fg"><label class="lbl req">Ciudad</label><input type="text" name="ap_fpm_ciudad" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Estado</label><input type="text" name="ap_fpm_estado" style="text-transform:uppercase"></div>
+        </div>
+
+        <div class="sep" style="margin-top:.5rem"><span>🚗 Equipos / Vehículos Solicitados</span></div>
+        <div class="fg">
+          <table class="ap-tbl"><thead><tr><th>Descripción</th><th>Año</th><th>Valor (IVA incl.)</th><th>Plazo</th><th>Usuario</th></tr></thead>
+          <tbody id="pmTbEquipos">
+            <tr><td><input type="text" name="eqpm1_desc"></td><td><input type="number" name="eqpm1_anio" placeholder="2025" style="text-transform:none"></td><td><input type="number" name="eqpm1_valor" placeholder="$0" style="text-transform:none"></td><td><input type="text" name="eqpm1_plazo" placeholder="Meses"></td><td><input type="text" name="eqpm1_usuario"></td></tr>
+          </tbody></table>
+          <button type="button" class="add-row" onclick="addRow('pmTbEquipos',['desc','anio','valor','plazo','usuario'],'eqpm')">+ Agregar equipo</button>
+        </div>
+
+        <div class="sep" style="margin-top:.5rem"><span>🤝 Datos del Accionista / Aval</span></div>
+        <div class="g2">
+          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Nombre completo del aval</label><input type="text" name="ap_aval_nombre" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">R.F.C. del aval</label><input type="text" name="ap_aval_rfc" maxlength="13" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Nacimiento (lugar y fecha)</label><input type="text" name="ap_aval_nacimiento" placeholder="Ciudad, DD/MM/AAAA" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Cargo en la empresa</label><input type="text" name="ap_aval_puesto" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Email del aval</label><input type="email" name="ap_aval_email" placeholder="correo@ejemplo.com"></div>
+          <div class="fg"><label class="lbl req">Teléfono del aval</label>
+            <div class="tel-wr"><select class="lada-sel" id="pm_t3_l"></select><input class="tel-num" type="tel" id="pm_t3_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_aval_tel" id="pm_t3_v">
           </div>
-
-          <!-- Domicilio Particular del Aval -->
-          <div class="sec-div full" style="margin-top:1rem"><span>Domicilio Particular del Aval</span></div>
-          <div class="grid2">
-            <div class="fg full"><label class="lbl req">Calle</label><input class="ap-inp" type="text" name="ap_AvalDom_calle" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">No. Ext.</label><input class="ap-inp" type="text" name="ap_AvalDom_noext" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl">No. Int.</label><input class="ap-inp" type="text" name="ap_AvalDom_noint" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Colonia</label><input class="ap-inp" type="text" name="ap_AvalDom_colonia" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">C.P.</label><input class="ap-inp" type="text" name="ap_AvalDom_cp" maxlength="5" placeholder="00000" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s"></div>
-            <div class="fg"><label class="lbl req">Ciudad</label><input class="ap-inp" type="text" name="ap_AvalDom_ciudad" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Estado</label><input class="ap-inp" type="text" name="ap_AvalDom_estado" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Celular del aval</label>
+            <div class="tel-wr"><select class="lada-sel" id="pm_t4_l"></select><input class="tel-num" type="tel" id="pm_t4_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_aval_cel" id="pm_t4_v">
           </div>
-
-          <!-- Contacto Visita Empresa PM -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>📋 Contacto para Visita a la Empresa</span></div>
-          <div class="grid2">
-            <div class="fg"><label class="lbl req">Nombre</label><input class="ap-inp" type="text" name="ap_VisitaPM_nombre" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Puesto</label><input class="ap-inp" type="text" name="ap_VisitaPM_puesto" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Teléfono</label>
-              <div class="tel-wr"><select class="lada-sel" id="ap_tel18_lada" onchange="apSyncTel('ap_tel18')"></select><input class="tel-num" type="tel" id="ap_tel18_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel18')"></div>
-              <input type="hidden" name="ap_VisitaPM_tel" id="ap_tel18_combined">
-            </div>
-            <div class="fg"><label class="lbl req">Celular</label>
-              <div class="tel-wr"><select class="lada-sel" id="ap_tel19_lada" onchange="apSyncTel('ap_tel19')"></select><input class="tel-num" type="tel" id="ap_tel19_num" placeholder="55 0000 0000" oninput="apSyncTel('ap_tel19')"></div>
-              <input type="hidden" name="ap_VisitaPM_cel" id="ap_tel19_combined">
-            </div>
-          </div>
-
-          <!-- Firma PM -->
-          <div class="sec-div full" style="margin-top:1.5rem"><span>✍️ Firma y Declaración</span></div>
-          <div class="grid2">
-            <div class="fg"><label class="lbl req">Lugar y fecha de elaboración</label><input class="ap-inp" type="text" name="ap_LugarFecha_PM" placeholder="Ciudad, DD/MM/AAAA" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Nombre del firmante</label><input class="ap-inp" type="text" name="ap_Firmante_PM" style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .18s;text-transform:uppercase"></div>
-          </div>
-
-          <!-- Declaración PM -->
-          <div class="fg full" style="margin-top:1rem">
-            <div id="ap-declaration-pm-wrap" style="border:1.5px solid var(--line);border-radius:10px;overflow:hidden;transition:border-color .25s;cursor:pointer" onclick="apToggleDeclarationPM()">
-              <div style="display:flex;gap:1rem;align-items:flex-start;padding:1.1rem 1.25rem;background:var(--cream);transition:background .25s" id="ap-decl-pm-box">
-                <div id="ap-decl-pm-chk" style="width:22px;height:22px;flex-shrink:0;border-radius:6px;border:2px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;margin-top:.1rem;transition:all .2s">
-                  <svg id="ap-decl-pm-chk-svg" viewBox="0 0 16 12" fill="none" style="width:11px;opacity:0;transition:opacity .18s"><path d="M1 6l4.5 4.5L15 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </div>
-                <div>
-                  <div style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:.3rem">Declaración de veracidad y autenticidad</div>
-                  <div style="font-size:.77rem;color:var(--muted);line-height:1.65">Bajo protesta de decir verdad, declaro que toda la información y documentación proporcionada es auténtica. Al marcar esta casilla, manifiesto mi conformidad otorgando a esta acción el mismo valor jurídico que mi firma autógrafa.</div>
-                </div>
-              </div>
+          <div class="fg" style="grid-column:1/-1">
+            <label class="lbl req">Estado civil del aval</label>
+            <div class="pills" id="pmEstCivil">
+              <label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',true)"><input type="radio" name="ap_aval_est_civil" value="Casado-Sep. bienes"><span class="rdot"></span>Casado(a) Sep. bienes</label>
+              <label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',true)"><input type="radio" name="ap_aval_est_civil" value="Casado-Mancomunados"><span class="rdot"></span>Casado(a) Mancomunados</label>
+              <label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',false)"><input type="radio" name="ap_aval_est_civil" value="Soltero"><span class="rdot"></span>Soltero(a)</label>
+              <label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',false)"><input type="radio" name="ap_aval_est_civil" value="Divorciado"><span class="rdot"></span>Divorciado(a)</label>
+              <label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',false)"><input type="radio" name="ap_aval_est_civil" value="Viudo"><span class="rdot"></span>Viudo(a)</label>
             </div>
           </div>
+          <div class="fg" id="pmConNombre" style="display:none"><label class="lbl req">Nombre del cónyuge (aval)</label><input type="text" name="ap_aval_conyuge_nombre" style="text-transform:uppercase"></div>
+          <div class="fg" id="pmConRfc" style="display:none"><label class="lbl req">RFC del cónyuge (aval)</label><input type="text" name="ap_aval_conyuge_rfc" maxlength="13" style="text-transform:uppercase"></div>
+        </div>
 
-          <!-- Botón Enviar AP-PM -->
-          <div class="fg full" style="margin-top:1.25rem">
-            <button type="button" id="ap-submit-pm-btn" onclick="apSubmitFormPM()" disabled class="btn-submit">
-              <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
-              <span id="ap-btn-pm-txt">Confirma la declaración para enviar</span>
-              <div class="btn-spin" id="ap-spin-pm"></div>
-            </button>
-            <div class="legal" style="margin-top:.75rem">Al enviar, aceptas que la información será procesada de forma segura y confidencial.</div>
+        <div class="sep" style="margin-top:.5rem"><span>Domicilio Particular del Aval</span></div>
+        <div class="g2">
+          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Calle</label><input type="text" name="ap_avaldom_calle" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">No. Ext.</label><input type="text" name="ap_avaldom_noext" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl">No. Int.</label><input type="text" name="ap_avaldom_noint" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Colonia</label><input type="text" name="ap_avaldom_colonia" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">C.P.</label><input type="text" name="ap_avaldom_cp" maxlength="5" placeholder="00000"></div>
+          <div class="fg"><label class="lbl req">Ciudad</label><input type="text" name="ap_avaldom_ciudad" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Estado</label><input type="text" name="ap_avaldom_estado" style="text-transform:uppercase"></div>
+        </div>
+
+        <div class="sep" style="margin-top:.5rem"><span>📋 Contacto para Visita a la Empresa</span></div>
+        <div class="g2">
+          <div class="fg"><label class="lbl req">Nombre</label><input type="text" name="ap_visitapm_nombre" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Puesto</label><input type="text" name="ap_visitapm_puesto" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Teléfono</label>
+            <div class="tel-wr"><select class="lada-sel" id="pm_t5_l"></select><input class="tel-num" type="tel" id="pm_t5_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_visitapm_tel" id="pm_t5_v">
           </div>
+          <div class="fg"><label class="lbl req">Celular</label>
+            <div class="tel-wr"><select class="lada-sel" id="pm_t6_l"></select><input class="tel-num" type="tel" id="pm_t6_n" placeholder="55 0000 0000"></div>
+            <input type="hidden" name="ap_visitapm_cel" id="pm_t6_v">
+          </div>
+        </div>
 
-        </div><!-- /ap-body-PM -->
+        <div class="sep" style="margin-top:.5rem"><span>✍️ Firma y Declaración</span></div>
+        <div class="g2">
+          <div class="fg"><label class="lbl req">Lugar y fecha de elaboración</label><input type="text" name="ap_lugar_fecha_pm" placeholder="Ciudad, DD/MM/AAAA" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req">Nombre del firmante</label><input type="text" name="ap_firmante_pm" style="text-transform:uppercase"></div>
+        </div>
+        <div class="decl" id="pmDecl" onclick="toggleDecl('PM')" style="margin-top:1rem">
+          <div class="decl-inner">
+            <div class="decl-chk-box"><svg viewBox="0 0 16 12" fill="none"><path d="M1 6l4.5 4.5L15 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div><div class="decl-ttl">Declaración de veracidad y autenticidad</div><div class="decl-txt">Bajo protesta de decir verdad, declaro que toda la información y documentación proporcionada es auténtica. Al marcar esta casilla, manifiesto mi conformidad otorgando a esta acción el mismo valor jurídico que mi firma autógrafa, de conformidad con el artículo 89 del Código de Comercio y la NOM-151-SCFI-2016.</div></div>
+          </div>
+        </div>
+        <button type="button" class="btn-env" id="pmEnviarBtn" onclick="apEnviar('PM')" disabled>
+          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+          <span id="pmEnviarTxt">Confirma la declaración para enviar</span>
+          <div class="btn-spin" id="pmSpin"></div>
+        </button>
+        <p class="legal">Al enviar, tu información será procesada de forma segura y confidencial.</p>
 
-      </div><!-- /apForm -->
-    </div><!-- /grid2 -->
+      </div><!-- /apBodyPM -->
 
-  </form>
+    </div><!-- /apForm -->
+
+  </div><!-- /card-body -->
 </div><!-- /card -->
 
 <footer class="ft">
-  <strong>ANPAI</strong> · Plataforma de Trámites en Línea ·
+  <strong>AVA</strong> · Plataforma de Trámites en Línea ·
   Los datos son procesados de forma segura y confidencial.<br>
-  Para consultas escribe a <a href="/cdn-cgi/l/email-protection#b8d1d6ded7f8d9d6c8d9d196dbd7d596d5c0" style="color:var(--ink2)"><span class="__cf_email__" data-cfemail="aec7c0c8c1eecfc0decfc780cdc1c380c3d6">[email&#160;protected]</span></a>
+  Para consultas escribe a <a href="mailto:info@anpai.com.mx">info@anpai.com.mx</a>
 </footer>
 
 </div><!-- /wrap -->
@@ -1093,412 +734,241 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 
 <!-- MODAL ÉXITO -->
 <div class="overlay" id="modalOv">
-  <div class="modal" id="modal">
+  <div class="modal">
     <div class="modal-seal">
       <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
     </div>
-    <div class="modal-ttl">¡Trámite Registrado!</div>
-    <div class="modal-folio">Tu folio asignado</div>
+    <div class="modal-ttl">¡Solicitud Enviada!</div>
+    <div class="modal-folio-lbl">Tu folio asignado</div>
     <div class="modal-folio-val" id="mFolioVal">—</div>
-    <div class="modal-msg" id="mMsg">
-      Tu trámite fue enviado exitosamente.<br>
-      Para seguimientos escribe a <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f262129200f2e213f2e26612c2022612237">[email&#160;protected]</a></strong>
-    </div>
+    <div class="modal-msg" id="mMsg">Tu trámite fue enviado exitosamente.</div>
     <button class="modal-btn" id="mClose">Entendido</button>
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 (function(){
 'use strict';
 
-// ═══════════════════════════════════════════════════════════════
-//  CONFIGURACIÓN
-// ═══════════════════════════════════════════════════════════════
-var GAS_URL = 'https://script.google.com/macros/s/AKfycbxQuajaissdsDyj9-W53-4rbJK931kgluanfwo_7qdu8X-6VWRN4uXiBUzc81Rk2w6x_g/exec';
+var GAS = 'https://script.google.com/macros/s/AKfycbxQuajaissdsDyj9-W53-4rbJK931kgluanfwo_7qdu8X-6VWRN4uXiBUzc81Rk2w6x_g/exec';
+function $id(id){ return document.getElementById(id); }
 
-// ═══════════════════════════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════════════════════════
-function Q(id){ return document.getElementById(id); }
-
-// Construye folio con formato aaaa-mm-dd-SIGLAS-NNN
-function construirFolio(siglas, consecutivo){
-  var hoy=new Date();
-  var anio=hoy.getFullYear();
-  var mes=String(hoy.getMonth()+1).padStart(2,'0');
-  var dia=String(hoy.getDate()).padStart(2,'0');
-  var num=String(consecutivo).padStart(2,'0');
-  return anio+'-'+mes+'-'+dia+'-'+siglas+'-'+num;
+/* ─── FOLIO ─────────────────────────────────── */
+var nextFolio = 1;
+function buildFolio(sig, n){
+  var d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'-'+sig+'-'+String(n).padStart(2,'0');
+}
+function fetchCounter(cb){
+  fetch(GAS+'?accion=obtenerContador')
+    .then(function(r){ return r.json(); })
+    .then(function(j){ if(j && j.siguienteFolio) nextFolio = j.siguienteFolio; cb && cb(); })
+    .catch(function(){ cb && cb(); });
+}
+fetchCounter();
+function showFolio(sig){
+  var f = buildFolio(sig, nextFolio);
+  $id('folioDisplay').textContent = f;
+  $id('folioDisplay').className = 'folio-txt';
+  $id('folioTopVal').textContent = f;
+  $id('folioTopVal').className = 'folio-val ready';
+  $id('folioStatus').textContent = 'Listo';
+  $id('folioStatus').className = 'folio-status ok';
+  $id('folioStatus').style.display = 'inline-block';
+  $id('folioHidden').value = f;
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  CARGA INICIAL — GET ?accion=obtenerContador
-//  Almacena el consecutivo para armar el folio
-// ═══════════════════════════════════════════════════════════════
-var consecutivoActual=1;
-
-function cargarContador(callback){
-  fetch(GAS_URL+'?accion=obtenerContador',{method:'GET'})
-    .then(function(r){return r.json();})
-    .then(function(data){
-      if(data && data.siguienteFolio !== undefined){
-        consecutivoActual=data.siguienteFolio;
-      }
-      if(callback) callback();
-    })
-    .catch(function(){if(callback) callback();});
-}
-cargarContador();
-
-// ═══════════════════════════════════════════════════════════════
-//  TIPO DE TRÁMITE — CARDS + FOLIO
-// ═══════════════════════════════════════════════════════════════
-var currentFolio='';
-var siglasPendientes='';
-
-document.querySelectorAll('.tipo-card').forEach(function(card){
-  var radio=card.querySelector('input[type=radio]');
-  radio.addEventListener('change',function(){
-    document.querySelectorAll('.tipo-card').forEach(function(c){c.classList.remove('sel');});
+/* ─── SELECTOR TIPO DE TRÁMITE ──────────────── */
+document.querySelectorAll('#tipoGrid .tipo-card').forEach(function(card){
+  var r = card.querySelector('input[type=radio]');
+  r.addEventListener('change', function(){
+    document.querySelectorAll('#tipoGrid .tipo-card').forEach(function(c){ c.classList.remove('sel'); });
     card.classList.add('sel');
-    Q('etipoTramite').textContent='';
-    siglasPendientes=radio.value;
-    Q('folioStatus').textContent='Obteniendo…';
-    Q('folioStatus').className='folio-status pen';
-    Q('folioStatus').style.display='inline-block';
-    cargarContador(function(){ mostrarFolio(siglasPendientes); });
+    $id('eTipo').textContent = '';
+    // Folio
+    $id('folioStatus').textContent = 'Obteniendo…';
+    $id('folioStatus').className = 'folio-status pen';
+    $id('folioStatus').style.display = 'inline-block';
+    fetchCounter(function(){ showFolio(r.value); });
+    // AP form
+    var ap = $id('apForm');
+    if(r.value === 'AP'){
+      ap.style.display = 'block';
+      setTimeout(function(){ ap.scrollIntoView({behavior:'smooth', block:'start'}); }, 150);
+    } else {
+      ap.style.display = 'none';
+    }
   });
 });
 
-function mostrarFolio(siglas){
-  var folio=construirFolio(siglas, consecutivoActual);
-  currentFolio=folio;
-  Q('folioDisplay').textContent=folio;
-  Q('folioDisplay').className='folio-txt';
-  Q('folioTopVal').textContent=folio;
-  Q('folioTopVal').className='folio-val ready';
-  Q('folioStatus').textContent='Listo';
-  Q('folioStatus').className='folio-status ok';
-  Q('folioStatus').style.display='inline-block';
-  Q('folioHidden').value=folio;
-}
-
-
-// ═══════════════════════════════════════════════════════════════
-//  ARRENDAMIENTO PURO — LÓGICA DEL FORMULARIO
-// ═══════════════════════════════════════════════════════════════
-
-// Construye las ladas en los selects del AP form (reutiliza los datos globales)
-var AP_LADAS=[
-  {r:'América del Norte',f:'MX',n:'México',c:'+52'},
-  {r:'América del Norte',f:'US',n:'EE.UU.',c:'+1'},
-  {r:'América del Norte',f:'CA',n:'Canadá',c:'+1'},
-  {r:'América Central',f:'GT',n:'Guatemala',c:'+502'},
-  {r:'América Central',f:'SV',n:'El Salvador',c:'+503'},
-  {r:'América Central',f:'HN',n:'Honduras',c:'+504'},
-  {r:'América Central',f:'NI',n:'Nicaragua',c:'+505'},
-  {r:'América Central',f:'CR',n:'Costa Rica',c:'+506'},
-  {r:'América Central',f:'PA',n:'Panamá',c:'+507'},
-  {r:'América del Sur',f:'AR',n:'Argentina',c:'+54'},
-  {r:'América del Sur',f:'CO',n:'Colombia',c:'+57'},
-  {r:'América del Sur',f:'BR',n:'Brasil',c:'+55'},
-  {r:'América del Sur',f:'CL',n:'Chile',c:'+56'},
-  {r:'América del Sur',f:'PE',n:'Perú',c:'+51'},
-  {r:'Europa',f:'ES',n:'España',c:'+34'},
-  {r:'Europa',f:'US',n:'EE.UU.',c:'+1'},
+/* ─── LADAS ─────────────────────────────────── */
+var LADAS=[
+  ['MX','México','+52'],['US','EE.UU.','+1'],['CA','Canadá','+1'],
+  ['GT','Guatemala','+502'],['SV','El Salvador','+503'],['HN','Honduras','+504'],
+  ['NI','Nicaragua','+505'],['CR','Costa Rica','+506'],['PA','Panamá','+507'],
+  ['AR','Argentina','+54'],['CO','Colombia','+57'],['BR','Brasil','+55'],
+  ['CL','Chile','+56'],['PE','Perú','+51'],['ES','España','+34'],
+  ['DE','Alemania','+49'],['FR','Francia','+33'],['GB','R.Unido','+44']
 ];
-
-function apFlag(code){return Array.from(code.toUpperCase()).map(function(c){return String.fromCodePoint(c.charCodeAt(0)-65+0x1F1E6);}).join('');}
-
-function apBuildLadas(sel){
-  sel.innerHTML='';
-  var grouped={};
-  AP_LADAS.forEach(function(l){if(!grouped[l.r])grouped[l.r]=[];grouped[l.r].push(l);});
-  Object.keys(grouped).forEach(function(r){
-    var og=document.createElement('optgroup');og.label=r;
-    grouped[r].forEach(function(l){
-      var op=document.createElement('option');
-      op.value=l.c;
-      op.textContent=apFlag(l.f)+' '+l.n+' '+l.c;
-      if(l.f==='MX')op.selected=true;
-      og.appendChild(op);
-    });
-    sel.appendChild(og);
+function flag(c){ return Array.from(c).map(function(x){ return String.fromCodePoint(x.charCodeAt(0)-65+0x1F1E6); }).join(''); }
+function fillLada(sel){
+  LADAS.forEach(function(l){
+    var op = document.createElement('option');
+    op.value = l[2]; op.textContent = flag(l[0])+' '+l[1]+' '+l[2];
+    if(l[0]==='MX') op.selected = true;
+    sel.appendChild(op);
   });
 }
+var TEL_PAIRS = [
+  'pf_t1','pf_t2','pf_t3','pf_t4','pf_t5','pf_t6','pf_t7','pf_t8','pf_t9','pf_t10',
+  'pm_t1','pm_t2','pm_t3','pm_t4','pm_t5','pm_t6'
+];
+TEL_PAIRS.forEach(function(p){
+  var sel = $id(p+'_l'), num = $id(p+'_n'), val = $id(p+'_v');
+  if(!sel) return;
+  fillLada(sel);
+  function sync(){ if(val) val.value = (sel.value+' '+num.value).trim(); }
+  sel.addEventListener('change', sync);
+  if(num) num.addEventListener('input', sync);
+});
 
-function apInitLadas(){
-  // Inicializa todos los selects de lada dentro del formulario AP
-  var prefixes=['ap_tel1','ap_tel2','ap_tel3','ap_tel4','ap_tel5','ap_tel6',
-                'ap_tel7','ap_tel8','ap_tel9','ap_tel10','ap_tel11','ap_tel12',
-                'ap_tel14','ap_tel15','ap_tel18','ap_tel19'];
-  prefixes.forEach(function(p){
-    var sel=document.getElementById(p+'_lada');
-    if(sel)apBuildLadas(sel);
-  });
-}
-
-function apSyncTel(prefix){
-  var lada=document.getElementById(prefix+'_lada');
-  var num=document.getElementById(prefix+'_num');
-  var out=document.getElementById(prefix+'_combined');
-  if(lada&&num&&out)out.value=(lada.value+' '+num.value).trim();
-}
-
-// Selector de tipo (PF / PM)
+/* ─── SELECTOR PF / PM ──────────────────────── */
 document.querySelectorAll('#apTipoGrid .tipo-card').forEach(function(card){
-  var radio=card.querySelector('input[type=radio]');
-  radio.addEventListener('change',function(){
-    document.querySelectorAll('#apTipoGrid .tipo-card').forEach(function(c){c.classList.remove('sel');});
+  var r = card.querySelector('input[type=radio]');
+  r.addEventListener('change', function(){
+    // Resaltar cards
+    document.querySelectorAll('#apTipoGrid .tipo-card').forEach(function(c){ c.classList.remove('sel'); });
     card.classList.add('sel');
-    var tipo=radio.value;
-    // Muestra el banner de documentos
-    document.getElementById('ap-req-PF').style.display=tipo==='PF'?'block':'none';
-    document.getElementById('ap-req-PM').style.display=tipo==='PM'?'block':'none';
-    // Muestra el body correspondiente
-    document.getElementById('ap-body-PF').style.display=tipo==='PF'?'block':'none';
-    document.getElementById('ap-body-PM').style.display=tipo==='PM'?'block':'none';
-    // Inicializa ladas si es la primera vez
-    apInitLadas();
-    // Scroll suave hacia los campos
+    var tipo = r.value; // 'PF' o 'PM'
+    // Mostrar/ocultar banners y body
+    $id('apDocsPF').classList.toggle('on', tipo === 'PF');
+    $id('apDocsPM').classList.toggle('on', tipo === 'PM');
+    $id('apBodyPF').style.display = tipo === 'PF' ? 'block' : 'none';
+    $id('apBodyPM').style.display = tipo === 'PM' ? 'block' : 'none';
+    // Scroll
     setTimeout(function(){
-      var target=document.getElementById('ap-req-'+tipo);
-      if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
-    },80);
+      $id(tipo === 'PF' ? 'apDocsPF' : 'apDocsPM').scrollIntoView({behavior:'smooth', block:'start'});
+    }, 80);
   });
 });
 
-// Checkboxes de sector (AP)
-document.querySelectorAll('#ap-sectorPF label, #ap-sectorPM label').forEach(function(lbl){
-  lbl.addEventListener('click',function(e){
-    // evitar doble toggle
-    var cb=lbl.querySelector('input[type=checkbox]');
-    if(!cb)return;
-    // El click natural ya cambió cb.checked; reflejamos visualmente
-    setTimeout(function(){
-      var checked=cb.checked;
-      lbl.style.borderColor=checked?'var(--gold)':'var(--line)';
-      lbl.style.color=checked?'var(--ink2)':'var(--muted)';
-      lbl.style.background=checked?'rgba(201,168,76,.07)':'#fff';
-      var box=lbl.querySelector('.ap-chk-box');
-      if(box){
-        box.style.background=checked?'var(--gold)':'';;
-        box.style.borderColor=checked?'var(--gold)':'currentColor';
-        box.textContent=checked?'✓':'';
-        box.style.color=checked?'#fff':'';
-        box.style.fontSize=checked?'9px':'';
-      }
-    },0);
+/* ─── RADIO PILLS ───────────────────────────── */
+window.pickRpill = function(lbl, groupId){
+  document.querySelectorAll('#'+groupId+' .rpill').forEach(function(p){ p.classList.remove('on'); });
+  lbl.classList.add('on');
+  var rb = lbl.querySelector('input[type=radio]');
+  if(rb){ rb.checked = true; }
+};
+
+/* ─── CHECKBOX PILLS ────────────────────────── */
+window.toggleCpill = function(lbl){
+  var cb = lbl.querySelector('input[type=checkbox]');
+  if(!cb) return;
+  setTimeout(function(){
+    lbl.classList.toggle('on', cb.checked);
+    var box = lbl.querySelector('.cbox');
+    if(box) box.textContent = cb.checked ? '✓' : '';
+  }, 0);
+};
+
+/* ─── CÓNYUGE CONDICIONAL ───────────────────── */
+window.showConyuge = function(tipo, show){
+  var ids = tipo === 'PF'
+    ? ['pfConNombre','pfConRfc']
+    : ['pmConNombre','pmConRfc'];
+  ids.forEach(function(id){ $id(id).style.display = show ? '' : 'none'; });
+};
+
+/* ─── TOGGLE INMUEBLE ───────────────────────── */
+window.toggleImm = function(tipo, cual){
+  // PF only (extendible)
+  var btnP = $id(tipo+'ImmP'), btnR = $id(tipo+'ImmR');
+  var divP = $id(tipo.toLowerCase()+'ImmPropio'), divR = $id(tipo.toLowerCase()+'ImmRentado');
+  var esP = cual === 'propio';
+  if(btnP){ btnP.classList.toggle('on', esP); }
+  if(btnR){ btnR.classList.toggle('on', !esP); }
+  if(divP){ divP.style.display = esP ? 'grid' : 'none'; }
+  if(divR){ divR.style.display = esP ? 'none' : 'grid'; }
+};
+
+/* ─── AGREGAR FILAS ─────────────────────────── */
+window.addRow = function(tbodyId, fields, prefix){
+  var tb = $id(tbodyId);
+  if(!tb) return;
+  var n = tb.querySelectorAll('tr').length + 1;
+  var tr = document.createElement('tr');
+  fields.forEach(function(f){
+    var td = document.createElement('td');
+    var inp = document.createElement('input');
+    inp.type = ['pct','exp','anio','valor'].indexOf(f) !== -1 ? 'number' : f === 'tel' ? 'tel' : 'text';
+    inp.name = prefix+n+'_'+f;
+    if(f==='pct'||f==='exp') inp.placeholder = f==='pct' ? '%' : '';
+    if(f==='anio') inp.placeholder = '2025';
+    if(f==='valor') inp.placeholder = '$0';
+    if(f==='plazo') inp.placeholder = 'Meses';
+    if(inp.type !== 'text') inp.style.textTransform = 'none';
+    td.appendChild(inp);
+    tr.appendChild(td);
   });
-});
+  tb.appendChild(tr);
+};
 
-// Radio pills de estado civil (AP)
-function apSelectRadio(lbl,name,value){
-  var group=lbl.closest('[id]');
-  if(group){
-    group.querySelectorAll('.ap-radio-pill').forEach(function(p){p.classList.remove('sel');});
-  }
-  lbl.classList.add('sel');
-  var rb=lbl.querySelector('input[type=radio]');
-  if(rb)rb.checked=true;
-}
+/* ─── DECLARACIÓN ───────────────────────────── */
+var declOn = {PF: false, PM: false};
+window.toggleDecl = function(tipo){
+  declOn[tipo] = !declOn[tipo];
+  var on = declOn[tipo];
+  $id(tipo==='PF' ? 'pfDecl' : 'pmDecl').classList.toggle('on', on);
+  var btn = $id(tipo==='PF' ? 'pfEnviarBtn' : 'pmEnviarBtn');
+  var txt = $id(tipo==='PF' ? 'pfEnviarTxt' : 'pmEnviarTxt');
+  btn.disabled = !on;
+  txt.textContent = on
+    ? 'Enviar Solicitud de Arrendamiento Puro →'
+    : 'Confirma la declaración para enviar';
+};
 
-// Toggle cónyuge PF
-function apToggleConyuge(show){
-  var nFg=document.getElementById('ap-conyuge-nombre-fg');
-  var rFg=document.getElementById('ap-conyuge-rfc-fg');
-  if(nFg)nFg.style.display=show?'flex':'none';
-  if(rFg)rFg.style.display=show?'flex':'none';
-}
+/* ─── ENVÍO ─────────────────────────────────── */
+window.apEnviar = function(tipo){
+  if(!declOn[tipo]) return;
+  var btn  = $id(tipo==='PF' ? 'pfEnviarBtn' : 'pmEnviarBtn');
+  var txt  = $id(tipo==='PF' ? 'pfEnviarTxt' : 'pmEnviarTxt');
+  var spin = $id(tipo==='PF' ? 'pfSpin'      : 'pmSpin');
+  var body = $id(tipo==='PF' ? 'apBodyPF'    : 'apBodyPM');
+  btn.disabled = true;
+  txt.textContent = 'Enviando…';
+  spin.style.display = 'inline-block';
+  $id('sendingOv').classList.add('on');
 
-// Toggle cónyuge aval PM
-function apToggleConuygeAval(show){
-  var nFg=document.getElementById('ap-conyuge-aval-nombre-fg');
-  var rFg=document.getElementById('ap-conyuge-aval-rfc-fg');
-  if(nFg)nFg.style.display=show?'flex':'none';
-  if(rFg)rFg.style.display=show?'flex':'none';
-}
-
-// Toggle inmueble Propio / Rentado
-function apToggleInmueble(tipo){
-  var propioDiv=document.getElementById('ap-inmueble-propio');
-  var rentadoDiv=document.getElementById('ap-inmueble-rentado');
-  var propioBtn=document.getElementById('ap-inmueble-btn-propio');
-  var rentadoBtn=document.getElementById('ap-inmueble-btn-rentado');
-  var isPropio=tipo==='propio';
-  if(propioDiv)propioDiv.style.display=isPropio?'grid':'none';
-  if(rentadoDiv)rentadoDiv.style.display=isPropio?'none':'grid';
-  if(propioBtn){
-    propioBtn.style.background=isPropio?'var(--ink2)':'var(--cream)';
-    propioBtn.style.color=isPropio?'#fff':'var(--muted)';
-  }
-  if(rentadoBtn){
-    rentadoBtn.style.background=isPropio?'var(--cream)':'var(--ink2)';
-    rentadoBtn.style.color=isPropio?'var(--muted)':'#fff';
-  }
-}
-
-// Agregar fila en tablas AP
-function apAddRow(tbodyId){
-  var tb=document.getElementById(tbodyId);
-  if(!tb)return;
-  var rows=tb.querySelectorAll('tr');
-  var last=rows[rows.length-1];
-  if(!last)return;
-  var clone=last.cloneNode(true);
-  var n=rows.length+1;
-  clone.querySelectorAll('input').forEach(function(inp){
-    inp.name=inp.name.replace(/\d+/,String(n));
-    inp.value='';
-  });
-  tb.appendChild(clone);
-}
-
-// Declaración PF
-var apDeclChecked=false;
-function apToggleDeclaration(){
-  apDeclChecked=!apDeclChecked;
-  var wrap=document.getElementById('ap-declaration-wrap');
-  var box=document.getElementById('ap-decl-box');
-  var chk=document.getElementById('ap-decl-chk');
-  var svg=document.getElementById('ap-decl-chk-svg');
-  var btn=document.getElementById('ap-submit-btn');
-  var btnTxt=document.getElementById('ap-btn-txt');
-  if(wrap)wrap.style.borderColor=apDeclChecked?'var(--gold)':'var(--line)';
-  if(box)box.style.background=apDeclChecked?'rgba(201,168,76,.06)':'var(--cream)';
-  if(chk){chk.style.background=apDeclChecked?'var(--gold)':'#fff';chk.style.borderColor=apDeclChecked?'var(--gold)':'var(--line)';}
-  if(svg)svg.style.opacity=apDeclChecked?'1':'0';
-  if(btn){
-    btn.disabled=!apDeclChecked;
-    if(btnTxt)btnTxt.textContent=apDeclChecked?'Enviar Solicitud de Arrendamiento Puro →':'Confirma la declaración para enviar';
-  }
-}
-
-// Declaración PM
-var apDeclPMChecked=false;
-function apToggleDeclarationPM(){
-  apDeclPMChecked=!apDeclPMChecked;
-  var wrap=document.getElementById('ap-declaration-pm-wrap');
-  var box=document.getElementById('ap-decl-pm-box');
-  var chk=document.getElementById('ap-decl-pm-chk');
-  var svg=document.getElementById('ap-decl-pm-chk-svg');
-  var btn=document.getElementById('ap-submit-pm-btn');
-  var btnTxt=document.getElementById('ap-btn-pm-txt');
-  if(wrap)wrap.style.borderColor=apDeclPMChecked?'var(--gold)':'var(--line)';
-  if(box)box.style.background=apDeclPMChecked?'rgba(201,168,76,.06)':'var(--cream)';
-  if(chk){chk.style.background=apDeclPMChecked?'var(--gold)':'#fff';chk.style.borderColor=apDeclPMChecked?'var(--gold)':'var(--line)';}
-  if(svg)svg.style.opacity=apDeclPMChecked?'1':'0';
-  if(btn){
-    btn.disabled=!apDeclPMChecked;
-    if(btnTxt)btnTxt.textContent=apDeclPMChecked?'Enviar Solicitud de Arrendamiento Puro →':'Confirma la declaración para enviar';
-  }
-}
-
-// Recolecta todos los campos del AP form como FormData y envía
-function apCollectAndSend(tipo){
-  var form=document.getElementById('frm');
-  var fd=new FormData();
-  // Folio
-  var folio=document.getElementById('folioHidden');
-  if(folio)fd.append('folio',folio.value);
-  fd.append('Tipo_Solicitud','Arrendamiento Puro - '+(tipo==='PF'?'Persona Física':'Persona Moral'));
-  // Todos los inputs con name="ap_*"
-  var container=document.getElementById(tipo==='PF'?'ap-body-PF':'ap-body-PM');
-  container.querySelectorAll('input[name],select[name],textarea[name]').forEach(function(el){
+  var fd = new FormData();
+  fd.append('folio',            $id('folioHidden').value);
+  fd.append('tipo_tramite',     'Arrendamiento Puro');
+  fd.append('tipo_solicitante', tipo==='PF' ? 'Persona Física (PFAE)' : 'Persona Moral');
+  body.querySelectorAll('input[name],select[name],textarea[name]').forEach(function(el){
     if(el.type==='radio'||el.type==='checkbox'){
-      if(el.checked)fd.append(el.name,el.value);
-    }else{
-      fd.append(el.name,el.value);
+      if(el.checked) fd.append(el.name, el.value);
+    } else if(el.type !== 'hidden'){
+      fd.append(el.name, el.value);
+    } else {
+      if(el.value) fd.append(el.name, el.value);
     }
   });
-  // Selector de tipo de solicitante
-  fd.append('ap_TipoSolicitante',tipo);
-  return fd;
-}
 
-function apSubmitForm(){
-  if(!apDeclChecked)return;
-  var btn=document.getElementById('ap-submit-btn');
-  var btnTxt=document.getElementById('ap-btn-txt');
-  var spin=document.getElementById('ap-spin');
-  btn.disabled=true;
-  if(btnTxt)btnTxt.textContent='Enviando…';
-  if(spin)spin.style.display='inline-block';
-  var fd=apCollectAndSend('PF');
-  var GAS=document.querySelector('#frm input[name=folio]')&&'https://script.google.com/macros/s/AKfycbxQuajaissdsDyj9-W53-4rbJK931kgluanfwo_7qdu8X-6VWRN4uXiBUzc81Rk2w6x_g/exec';
-  fetch(GAS||'',{method:'POST',body:fd})
+  fetch(GAS, {method:'POST', body: fd})
     .catch(function(){})
     .finally(function(){
-      if(spin)spin.style.display='none';
-      btn.disabled=false;
-      if(btnTxt)btnTxt.textContent='Enviar Solicitud de Arrendamiento Puro →';
-      // Muestra el modal de éxito existente
-      var mFolio=document.getElementById('mFolioVal');
-      var folioVal=document.getElementById('folioHidden');
-      if(mFolio&&folioVal)mFolio.textContent=folioVal.value;
-      var mMsg=document.getElementById('mMsg');
-      if(mMsg)mMsg.innerHTML='Tu solicitud de <strong>Arrendamiento Puro (PF)</strong> fue enviada exitosamente.<br>Un ejecutivo te contactará en 24–48 horas hábiles.';
-      var ov=document.getElementById('modalOv');
-      if(ov)ov.classList.add('on');
+      $id('sendingOv').classList.remove('on');
+      spin.style.display = 'none';
+      btn.disabled = false;
+      txt.textContent = 'Enviar Solicitud de Arrendamiento Puro →';
+      $id('mFolioVal').textContent = $id('folioHidden').value || '—';
+      $id('mMsg').innerHTML = 'Tu solicitud de <strong>Arrendamiento Puro ('+(tipo==='PF'?'Persona Física':'Persona Moral')+')</strong> fue enviada exitosamente.<br>Un ejecutivo te contactará en 24–48 horas hábiles.';
+      $id('modalOv').classList.add('on');
     });
-}
+};
 
-function apSubmitFormPM(){
-  if(!apDeclPMChecked)return;
-  var btn=document.getElementById('ap-submit-pm-btn');
-  var btnTxt=document.getElementById('ap-btn-pm-txt');
-  var spin=document.getElementById('ap-spin-pm');
-  btn.disabled=true;
-  if(btnTxt)btnTxt.textContent='Enviando…';
-  if(spin)spin.style.display='inline-block';
-  var fd=apCollectAndSend('PM');
-  var GAS='https://script.google.com/macros/s/AKfycbxQuajaissdsDyj9-W53-4rbJK931kgluanfwo_7qdu8X-6VWRN4uXiBUzc81Rk2w6x_g/exec';
-  fetch(GAS,{method:'POST',body:fd})
-    .catch(function(){})
-    .finally(function(){
-      if(spin)spin.style.display='none';
-      btn.disabled=false;
-      if(btnTxt)btnTxt.textContent='Enviar Solicitud de Arrendamiento Puro →';
-      var mFolio=document.getElementById('mFolioVal');
-      var folioVal=document.getElementById('folioHidden');
-      if(mFolio&&folioVal)mFolio.textContent=folioVal.value;
-      var mMsg=document.getElementById('mMsg');
-      if(mMsg)mMsg.innerHTML='Tu solicitud de <strong>Arrendamiento Puro (PM)</strong> fue enviada exitosamente.<br>Un ejecutivo te contactará en 24–48 horas hábiles.';
-      var ov=document.getElementById('modalOv');
-      if(ov)ov.classList.add('on');
-    });
-}
-
-// ── Muestra el formulario AP al seleccionar la card AP ──
-// Reemplaza el listener original de la card AP para añadir lógica extra
-(function(){
-  var apCard=document.getElementById('tc-AP');
-  if(!apCard)return;
-  var apRadio=apCard.querySelector('input[type=radio]');
-  if(!apRadio)return;
-  apRadio.addEventListener('change',function(){
-    var apForm=document.getElementById('apForm');
-    if(apForm){
-      apForm.style.display='block';
-      // Scroll ligero hacia el selector de tipo
-      setTimeout(function(){apForm.scrollIntoView({behavior:'smooth',block:'start'});},200);
-    }
-  });
-})();
-
-// Oculta el formulario AP cuando se selecciona otro trámite
-document.querySelectorAll('.tipo-card').forEach(function(card){
-  var radio=card.querySelector('input[type=radio]');
-  if(!radio)return;
-  if(radio.value!=='AP'){
-    radio.addEventListener('change',function(){
-      var apForm=document.getElementById('apForm');
-      if(apForm)apForm.style.display='none';
-    });
-  }
-});
-
+/* ─── CERRAR MODAL ──────────────────────────── */
+$id('mClose').addEventListener('click', function(){ $id('modalOv').classList.remove('on'); });
+$id('modalOv').addEventListener('click', function(e){ if(e.target===$id('modalOv')) $id('modalOv').classList.remove('on'); });
 
 })();
 </script>
