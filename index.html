@@ -329,9 +329,112 @@ textarea { resize: vertical; min-height: 72px; }
   .tipo-grid { grid-template-columns: 1fr 1fr; }
   .hdr-logo { font-size: 1.75rem; }
 }
+
+/* ── Botones flotantes ── */
+.tramite-float, .whatsapp-float, .docs-float {
+  position: fixed;
+  left: 50px;
+  width: 75px; height: 75px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,.3);
+  cursor: pointer; z-index: 1000;
+  transition: all .4s cubic-bezier(.4,0,.2,1);
+  text-decoration: none;
+  border: 4px solid white;
+  overflow: hidden;
+  animation: floatBtn 3s ease-in-out infinite;
+}
+.tramite-float  { top: 50px;  background: linear-gradient(135deg,#0A1F44,#1a3a6e); }
+.docs-float     { top: 155px; background: linear-gradient(135deg,#7b3f00,#c0762a); }
+.whatsapp-float { bottom: 50px; background: linear-gradient(135deg,#25d366,#128c7e); top:auto; }
+
+.tramite-float::before, .docs-float::before, .whatsapp-float::before {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(45deg,transparent 30%,rgba(255,255,255,.2) 50%,transparent 70%);
+  animation: shine 3s infinite;
+}
+.tramite-float:hover, .docs-float:hover, .whatsapp-float:hover {
+  transform: scale(1.2) translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0,0,0,.5);
+  animation: none;
+}
+
+/* tooltip */
+.btn-tooltip {
+  position: absolute; left: 95px;
+  background: white; color: #0A1F44;
+  padding: 12px 20px; border-radius: 12px;
+  white-space: nowrap;
+  box-shadow: 0 8px 25px rgba(0,0,0,.15);
+  opacity: 0; pointer-events: none;
+  transition: all .4s cubic-bezier(.4,0,.2,1);
+  font-size: .95rem; font-weight: 600;
+  border: 1px solid rgba(0,0,0,.1);
+  z-index: 1001;
+}
+.tramite-float:hover .btn-tooltip,
+.docs-float:hover .btn-tooltip,
+.whatsapp-float:hover .btn-tooltip { opacity:1; transform:translateX(10px); }
+
+/* estado deshabilitado para docs */
+.docs-float.disabled {
+  background: linear-gradient(135deg,#888,#aaa) !important;
+  cursor: not-allowed; opacity:.65;
+  pointer-events: none;
+}
+.docs-float.disabled::before { animation:none; }
+
+.btn-icon { width:36px; height:36px; position:relative; z-index:1; fill:white; }
+
+@keyframes floatBtn {
+  0%,100% { transform:translateY(0) rotate(0deg); }
+  25%      { transform:translateY(-15px) rotate(2deg); }
+  75%      { transform:translateY(-5px) rotate(-2deg); }
+}
+@keyframes shine {
+  0%   { transform:translateX(-100%); }
+  100% { transform:translateX(100%); }
+}
+
+@media(max-width:768px){
+  .tramite-float,.docs-float,.whatsapp-float{width:60px;height:60px;left:15px;}
+  .tramite-float{top:15px;} .docs-float{top:100px;}
+  .whatsapp-float{bottom:15px;}
+  .btn-tooltip{display:none;}
+}
 </style>
 </head>
 <body>
+
+<!-- ── Botón: Iniciar Trámite ── -->
+<a href="https://www.anpai.com.mx/iniciar-tramite"
+   class="tramite-float"
+   rel="noopener noreferrer"
+   aria-label="Iniciar trámite en ANPAI">
+  <span class="btn-tooltip">📝 Iniciar trámite</span>
+  <svg class="btn-icon" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+</a>
+
+<!-- ── Botón: Documentos Oficiales (solo activo en AP) ── -->
+<a href="https://www.anpai.com.mx/documentos-oficiales"
+   id="docsOfiBtn"
+   class="docs-float disabled"
+   target="_blank"
+   rel="noopener noreferrer"
+   aria-label="Documentos oficiales ANPAI">
+  <span class="btn-tooltip">📂 Documentos oficiales</span>
+  <svg class="btn-icon" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V6h5.17l2 2H20v10z"/></svg>
+</a>
+
+<!-- ── Botón: WhatsApp ── -->
+<a href="https://wa.me/525525374608?text=Hola%20ANPAI%2C%20tengo%20una%20consulta"
+   class="whatsapp-float"
+   target="_blank"
+   aria-label="Chatear por WhatsApp con ANPAI">
+  <span class="btn-tooltip">💬 ¿Dudas? Escríbenos</span>
+  <svg class="btn-icon" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.67-1.612-.92-2.207-.24-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.76.982.998-3.675-.236-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.9 6.994c-.004 5.45-4.436 9.88-9.885 9.88m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.333.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.333 11.893-11.893 0-3.18-1.24-6.162-3.495-8.411"/></svg>
+</a>
 
 <div class="wrap">
 
@@ -1018,7 +1121,7 @@ textarea { resize: vertical; min-height: 72px; }
 
   <footer class="ft">
     <strong>AVA</strong> · Plataforma de Trámites en Línea · Datos procesados de forma segura y confidencial.<br>
-    Para consultas: <a href="mailto:info@anpai.com.mx" style="color:var(--gold)">info@anpai.com.mx</a> · <a href="tel:+525525374608" style="color:var(--gold)">+52 (55) 2537-4608</a>
+    Para consultas: <a href="/cdn-cgi/l/email-protection#cba2a5ada48baaa5bbaaa2e5a8a4a6e5a6b3" style="color:var(--gold)"><span class="__cf_email__" data-cfemail="89e0e7efe6c9e8e7f9e8e0a7eae6e4a7e4f1">[email&#160;protected]</span></a> · <a href="tel:+525525374608" style="color:var(--gold)">+52 (55) 2537-4608</a>
   </footer>
 </div>
 
@@ -1051,7 +1154,7 @@ textarea { resize: vertical; min-height: 72px; }
         <div class="success-info-txt">
           <strong>Contacto directo</strong>
           <a href="tel:+525525374608" style="color:var(--gold);font-weight:700">+52 (55) 2537-4608</a><br>
-          <a href="mailto:info@anpai.com.mx" style="color:var(--gold);font-weight:700">info@anpai.com.mx</a><br>
+          <a href="/cdn-cgi/l/email-protection#177e79717857767967767e3974787a397a6f" style="color:var(--gold);font-weight:700"><span class="__cf_email__" data-cfemail="20494e464f60414e5041490e434f4d0e4d58">[email&#160;protected]</span></a><br>
           <a href="https://www.anpai.com.mx" target="_blank" style="color:var(--gold);font-weight:700">www.anpai.com.mx</a>
         </div>
       </div>
@@ -1061,7 +1164,7 @@ textarea { resize: vertical; min-height: 72px; }
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 (function() {
 'use strict';
 
@@ -1324,6 +1427,15 @@ document.querySelectorAll('#tipoGrid .tipo-card').forEach(card => {
     if (r.value === 'SA') saInit();
     if (r.value === 'TV') tvInit();
     if (r.value === 'PC') pcInit();
+    // Habilitar botón de documentos oficiales solo en AP
+    const docsBtn = document.getElementById('docsOfiBtn');
+    if (r.value === 'AP') {
+      docsBtn.classList.remove('disabled');
+      docsBtn.style.pointerEvents = '';
+    } else {
+      docsBtn.classList.add('disabled');
+      docsBtn.style.pointerEvents = 'none';
+    }
     setTimeout(() => { const f=$(r.value.toLowerCase()+'Form'); if(f) f.scrollIntoView({behavior:'smooth',block:'start'}); }, 150);
   });
 });
@@ -1848,14 +1960,4 @@ window.pcSubmit = function() {
     tipo_tramite:'Permiso Circulación Guerrero',
     nombre:nombre, genero:V('pcGenero'), fecha_nacimiento:V('pcFNac'),
     curp:V('pcCURP'), rfc:V('pcRFC'), telefono:V('pcTelFull'), email:V('pcEmail'),
-    cp:V('pcCP'), municipio:V('pcMunicipio'), estado:V('pcEstado'),
-    tipo_vehiculo:V('pcTipoVeh'),
-    marca:V('pcMarca')==='Otra'?V('pcOtraMarca'):V('pcMarca'),
-    version:V('pcVersion'), anio:V('pcAnio'), n_serie:V('pcNSerie'), n_motor:V('pcNMotor'),
-  }, `Permiso Circulación — ${nombre}`, files, '¡Permiso Enviado!', 'Circulación Guerrero · AVA · ANPAI');
-};
-
-})();
-</script>
-</body>
-</html>
+    cp:V('pcCP'), municipio:V('pcMuni
