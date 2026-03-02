@@ -457,6 +457,24 @@ textarea{resize:vertical;min-height:76px}
   .ca-nav{flex-wrap:wrap}.ca-step-ind{width:100%;text-align:center;order:-1}
 }
 @media(max-width:420px){.tipo-grid{grid-template-columns:1fr 1fr}.hdr-logo{font-size:1.75rem}.modal{padding:2rem 1.4rem}}
+
+/* ════════════════════════════════════════════════
+   FLOATING BUTTONS
+════════════════════════════════════════════════ */
+@keyframes floatAnim{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+.wa-btn{position:fixed;bottom:1.5rem;left:1.5rem;z-index:1000;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);text-decoration:none;animation:floatAnim 3s ease-in-out infinite;transition:transform .2s,box-shadow .2s}
+.wa-btn svg{width:26px;height:26px}
+.wa-btn:hover{transform:scale(1.18)!important;box-shadow:0 8px 32px rgba(37,211,102,.55)}
+.wa-tip{position:absolute;left:60px;bottom:50%;transform:translateY(50%);background:var(--ink2);color:#fff;font-size:.75rem;white-space:nowrap;padding:.3rem .75rem;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .2s;font-family:'DM Sans',sans-serif}
+.wa-btn:hover .wa-tip{opacity:1}
+
+.tramite-float{position:fixed;top:1.5rem;left:1.5rem;z-index:1000;display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--ink2),#0A1F44);color:var(--gold2);text-decoration:none;box-shadow:0 4px 16px rgba(13,27,42,.3);transition:transform .2s,box-shadow .2s}
+.tramite-float svg{width:22px;height:22px}
+.tramite-float:hover{transform:scale(1.12);box-shadow:0 8px 28px rgba(13,27,42,.45)}
+.tramite-tooltip{position:absolute;left:56px;top:50%;transform:translateY(-50%);background:var(--ink2);color:#fff;font-size:.75rem;white-space:nowrap;padding:.3rem .75rem;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .2s;font-family:'DM Sans',sans-serif}
+.tramite-float:hover .tramite-tooltip{opacity:1}
+
 </style>
 </head>
 <body>
@@ -961,13 +979,580 @@ textarea{resize:vertical;min-height:76px}
     </div>
     <!-- /apForm -->
 
+    <!-- ═══════════════════════════════════════════════════════
+         FORMULARIO SEGURO DE AUTO (SA)
+    ═══════════════════════════════════════════════════════ -->
+    <div id="saForm" style="display:none">
+
+      <!-- STEP BAR -->
+      <div class="ca-prog" id="saProg" style="margin-top:.75rem">
+        <div class="ca-step active" data-sa-cs="1"><div class="ca-sc">1</div><span class="ca-sl">Datos<br>Personales</span></div>
+        <div class="ca-step" data-sa-cs="2"><div class="ca-sc">2</div><span class="ca-sl">Vehículo</span></div>
+        <div class="ca-step" data-sa-cs="3"><div class="ca-sc">3</div><span class="ca-sl">Docs y<br>Envío</span></div>
+      </div>
+
+      <!-- S1: DATOS PERSONALES -->
+      <div class="ca-sec active" id="sa-s1">
+        <div class="ca-sec-hdr">
+          <div class="ca-sec-ico"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v1h20v-1c0-3.3-6.7-5-10-5z"/></svg></div>
+          <div class="ca-sec-ttl">Datos Personales</div>
+        </div>
+        <div class="fgr">
+          <div class="fg"><label class="lbl req">Nombre(s)</label><input type="text" id="saNombre" name="saNombre" autocomplete="given-name" placeholder="Nombre(s)"><span class="em" id="esaNombre"></span></div>
+          <div class="fg"><label class="lbl">Segundo nombre</label><input type="text" id="saNombre2" name="saNombre2" autocomplete="given-name" placeholder="Segundo nombre (opcional)"></div>
+        </div>
+        <div class="fgr">
+          <div class="fg"><label class="lbl req">Apellido paterno</label><input type="text" id="saApellido1" name="saApellido1" autocomplete="family-name" placeholder="Apellido paterno"><span class="em" id="esaApellido1"></span></div>
+          <div class="fg"><label class="lbl req">Apellido materno</label><input type="text" id="saApellido2" name="saApellido2" autocomplete="family-name" placeholder="Apellido materno"><span class="em" id="esaApellido2"></span></div>
+        </div>
+        <div class="fgr">
+          <div class="fg"><label class="lbl req">Género</label>
+            <select id="saGenero" name="saGenero"><option value="" disabled selected>Selecciona</option><option>Masculino</option><option>Femenino</option><option>Prefiero no decir</option></select>
+            <span class="em" id="esaGenero"></span></div>
+          <div class="fg"><label class="lbl req">Fecha de nacimiento</label><input type="date" id="saFNac" name="saFNac"><span class="em" id="esaFNac"></span></div>
+        </div>
+        <div class="fgr">
+          <div class="fg"><label class="lbl req">RFC</label><input type="text" id="saRFC" name="saRFC" maxlength="13" style="text-transform:uppercase" placeholder="AAAA000000AA0"><span class="em" id="esaRFC"></span></div>
+          <div class="fg"><label class="lbl req">CURP</label><input type="text" id="saCURP" name="saCURP" maxlength="18" style="text-transform:uppercase" placeholder="18 caracteres"><span class="em" id="esaCURP"></span></div>
+        </div>
+
+        <div class="sep"><span>Contacto y Domicilio</span></div>
+
+        <!-- CP COPOMEX -->
+        <div class="fgr">
+          <div class="fg">
+            <label class="lbl req">Código Postal</label>
+            <div style="position:relative">
+              <input type="text" id="saCP" name="saCP" maxlength="5" inputmode="numeric" placeholder="5 dígitos">
+              <span class="ca-cp-spin" id="saCPSpin" style="display:none">⏳</span>
+            </div>
+            <span class="em" id="esaCP"></span>
+            <div class="cp-err-box" id="saCPErrBox" style="display:none"></div>
+            <button type="button" class="cp-retry-btn" id="saCPRetry" style="display:none" onclick="saCPFetch(document.getElementById('saCP').value)">Reintentar</button>
+          </div>
+          <div class="fg"><label class="lbl">Municipio / Alcaldía</label><input type="text" id="saMunicipio" name="saMunicipio" readonly placeholder="Auto-completado"><span class="em" id="esaMunicipio"></span></div>
+          <div class="fg"><label class="lbl">Estado</label><input type="text" id="saEstado" name="saEstado" readonly placeholder="Auto-completado"></div>
+        </div>
+        <div class="fg" id="saColBlk" style="display:none">
+          <label class="lbl req">Colonia</label>
+          <select id="saColonia" name="saColonia"><option value="" disabled selected>Selecciona tu colonia</option></select>
+          <span class="em" id="esaColonia"></span>
+          <input type="hidden" id="saColSel" name="coloniaSeleccionadaSA">
+          <span class="col-cnt" id="saColCnt"></span>
+        </div>
+
+        <!-- TELÉFONO -->
+        <div class="fg">
+          <label class="lbl req">Teléfono</label>
+          <div class="tel-wr" id="saTelWr">
+            <select class="tel-lada" id="saTelLada" name="saTelLada">
+              <option value="+52">🇲🇽 +52</option><option value="+1">🇺🇸 +1</option><option value="+34">🇪🇸 +34</option><option value="+44">🇬🇧 +44</option>
+            </select>
+            <input type="tel" class="tel-num" id="saTelNum" name="saTelNum" placeholder="10 dígitos" maxlength="15">
+            <input type="hidden" id="saTelFull" name="saTelFull">
+          </div>
+          <span class="em" id="esaTelNum"></span>
+        </div>
+        <div class="fg"><label class="lbl req">Correo electrónico</label><input type="email" id="saEmail" name="saEmail" autocomplete="email" placeholder="correo@ejemplo.com"><span class="em" id="esaEmail"></span></div>
+
+        <div class="ca-nav">
+          <button type="button" class="ca-btn ca-btn-prev" id="saBtnPrev1" disabled onclick="saSlideTo(Math.max(1,saCurStep-1))">Anterior</button>
+          <button type="button" class="ca-btn ca-btn-next" id="saBtnNext1" onclick="saNextStep(1)">Siguiente<svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></button>
+        </div>
+      </div>
+
+      <!-- S2: VEHÍCULO -->
+      <div class="ca-sec" id="sa-s2">
+        <div class="ca-sec-hdr">
+          <div class="ca-sec-ico"><svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg></div>
+          <div class="ca-sec-ttl">Datos del Vehículo</div>
+        </div>
+
+        <div class="fgr">
+          <div class="fg">
+            <label class="lbl req">Condición del vehículo</label>
+            <select id="saCondicion" name="saCondicion">
+              <option value="" disabled selected>Selecciona</option>
+              <option value="Nuevo">Nuevo</option>
+              <option value="Seminuevo">Seminuevo</option>
+              <option value="Usado">Usado</option>
+            </select>
+            <span class="em" id="esaCondicion"></span>
+          </div>
+          <div class="fg">
+            <label class="lbl req">Marca</label>
+            <select id="saMarca" name="saMarca">
+              <option value="" disabled selected>Selecciona la marca</option>
+              <optgroup label="── Marcas Chinas ──">
+                <option>BYD</option><option>Chery</option><option>BAIC</option><option>Haval</option><option>Jetour</option><option>MG</option><option>JMEV</option><option>Geely</option>
+              </optgroup>
+              <optgroup label="── Marcas Europeas ──">
+                <option>Audi</option><option>BMW</option><option>Mercedes-Benz</option><option>Volkswagen</option><option>Peugeot</option><option>Renault</option><option>SEAT</option><option>Fiat</option><option>Volvo</option>
+              </optgroup>
+              <optgroup label="── Marcas Estadounidenses ──">
+                <option>Chevrolet</option><option>Ford</option><option>RAM</option><option>Cadillac</option><option>Jeep</option><option>Dodge</option><option>GMC</option>
+              </optgroup>
+              <optgroup label="── Marcas Japonesas ──">
+                <option>Toyota</option><option>Honda</option><option>Nissan</option><option>Mazda</option><option>Mitsubishi</option><option>Subaru</option><option>Suzuki</option><option>Lexus</option>
+              </optgroup>
+              <option value="Otra">Otra marca</option>
+            </select>
+            <span class="em" id="esaMarca"></span>
+          </div>
+        </div>
+        <div class="fg" id="saOtraMarcaBlk" style="display:none">
+          <label class="lbl req">Especifica la marca</label>
+          <input type="text" id="saOtraMarca" name="saOtraMarca" placeholder="Escribe la marca" disabled>
+          <span class="em" id="esaOtraMarca"></span>
+        </div>
+        <div class="fgr">
+          <div class="fg"><label class="lbl req">Versión / Modelo</label><input type="text" id="saVersion" name="saVersion" placeholder="Ej. Hatchback GR Sport"><span class="em" id="esaVersion"></span></div>
+          <div class="fg"><label class="lbl req">Año</label><select id="saAnio" name="saAnio"><option value="" disabled selected>Año</option></select><span class="em" id="esaAnio"></span></div>
+        </div>
+        <div class="fgr">
+          <div class="fg"><label class="lbl">NIV / No. Serie</label><input type="text" id="saNIV" name="saNIV" maxlength="17" style="text-transform:uppercase" placeholder="17 caracteres (opcional)"></div>
+          <div class="fg"><label class="lbl">No. Motor</label><input type="text" id="saMotor" name="saMotor" style="text-transform:uppercase" placeholder="Número de motor"></div>
+        </div>
+        <div class="fg"><label class="lbl">Clave vehicular</label><input type="text" id="saClaveVeh" name="saClaveVeh" style="text-transform:uppercase" placeholder="Clave vehicular SAT"></div>
+
+        <!-- VALOR Y COSTO CALCULADO -->
+        <div class="fg" style="margin-top:1rem">
+          <label class="lbl req">Valor del vehículo (MX$)</label>
+          <input type="text" id="saValorVeh" name="saValorVeh" inputmode="numeric" placeholder="Ej. 350,000">
+          <span class="em" id="esaValorVeh"></span>
+        </div>
+        <div class="fg" id="saCostoBlk" style="display:none">
+          <label class="lbl">Costo estimado de seguro</label>
+          <div class="folio-field" style="background:linear-gradient(135deg,#f0faf4 0%,#e8f8f0 100%);border-color:#2E7D52">
+            <span class="folio-ico">🛡️</span>
+            <span class="folio-txt" id="saCostoTxt" style="color:#2E7D52;font-weight:700">—</span>
+          </div>
+          <input type="hidden" id="saCostoTotal" name="saCostoTotal">
+        </div>
+
+        <div class="ca-nav">
+          <button type="button" class="ca-btn ca-btn-prev" onclick="saSlideTo(1)">Anterior</button>
+          <button type="button" class="ca-btn ca-btn-next" onclick="saNextStep(2)">Siguiente<svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></button>
+        </div>
+      </div>
+
+      <!-- S3: DOCS Y ENVÍO -->
+      <div class="ca-sec" id="sa-s3">
+        <div class="ca-sec-hdr">
+          <div class="ca-sec-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div>
+          <div class="ca-sec-ttl">Documentos y Envío</div>
+        </div>
+
+        <p style="font-size:.88rem;color:var(--muted);margin-bottom:1rem">Adjunta: <strong>Factura del vehículo</strong> e <strong>INE por ambos lados</strong> (PDF, JPG o PNG, máx. 5 MB en ZIP).</p>
+
+        <!-- UPLOAD ZONE -->
+        <div class="attach-dz" id="saAttachDZ" ondragover="saOnDragOver(event)" ondragleave="saOnDragLeave(event)" ondrop="saOnDrop(event)" onclick="document.getElementById('saFileInput').click()">
+          <input type="file" id="saFileInput" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="saHandleFiles(this.files)">
+          <div class="attach-dz-ico">📎</div>
+          <div class="attach-dz-txt">Arrastra archivos aquí o <span style="color:var(--gold);font-weight:600">haz clic para seleccionar</span></div>
+          <div class="attach-dz-sub">PDF, JPG, PNG · máx. 5 MB ZIP</div>
+        </div>
+        <span class="em" id="esaUpErr" style="display:none"></span>
+
+        <div class="attach-cap-wrap" id="saCapWrap">
+          <div class="attach-cap-top">
+            <span class="attach-cap-lbl">Capacidad ZIP</span>
+            <span class="attach-cap-val" id="saCapVal">0 de 5 MB</span>
+          </div>
+          <div class="attach-bar-track"><div class="attach-bar-fill bar-ok" id="saAttachBar" style="width:0%"></div></div>
+        </div>
+        <div class="attach-stats" id="saAttachStats">
+          <span class="attach-status-dot bar-ok" id="saAttachDot"></span>
+          <span class="attach-status-txt" id="saAttachStatusTxt"></span>
+          <span class="attach-sep">·</span>
+          <span><strong id="saAttachCount">0</strong> arch.</span>
+          <span class="attach-sep">·</span>
+          <span id="saAttachWeight">0 B</span>
+        </div>
+        <div class="attach-file-list" id="saFileList"></div>
+        <div class="attach-err" id="saAttachErr"><span id="saAttachErrTxt"></span></div>
+
+        <div class="compress-prog" id="saCompressProg">
+          <div class="compress-top">
+            <span class="compress-lbl">Comprimiendo…</span>
+            <span class="compress-pct" id="saCompressPct">0%</span>
+          </div>
+          <div class="compress-bar-track"><div class="compress-bar-fill" id="saCompBar" style="width:0%"></div></div>
+          <div class="compress-stats">
+            <span id="saCompPctDone">0%</span>
+            <span>·</span><span id="saCompDone">0 B</span>/<span id="saCompRem">?</span>
+            <span>· ETA <span id="saCompEta">—</span></span>
+            <span>· <span id="saCompElapsed">0s</span></span>
+          </div>
+          <div class="compress-info" id="saCompInfo">Preparando…</div>
+        </div>
+        <div class="attach-offline" id="saOfflineMsg" style="display:none">⚠️ Sin conexión — la compresión se reanudará al reconectarte.</div>
+        <input type="hidden" id="saAttachHidden" name="Archivos_adjuntos_info_SA">
+
+        <!-- SUMMARY -->
+        <div class="ca-sum-box" id="saSumBox" style="display:none;margin-top:1.5rem">
+          <div class="ca-sum-hdr">
+            <div class="ca-sum-hdr-left">
+              <div class="ca-sum-hdr-ico"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+              <div><div class="ca-sum-ttl">Resumen de Solicitud</div><div class="ca-sum-sub">Revisa tus datos antes de enviar</div></div>
+            </div>
+            <div class="ca-sum-badge pending" id="saSumBadge"><span class="ca-sum-badge-dot"></span><span id="saSumBadgeTxt">Pendiente</span></div>
+          </div>
+          <div id="saSumCont"></div>
+          <div class="ca-sum-footer"><span>ℹ️</span><p class="ca-sum-footer-txt"><strong>Verifica la información antes de enviar.</strong></p></div>
+        </div>
+
+        <!-- DECLARACIÓN -->
+        <div class="decl-box" id="saDeclBox">
+          <div class="decl-row" id="saDeclRow" tabindex="0" role="checkbox" aria-checked="false">
+            <div class="decl-chk" id="saDeclChk"></div>
+            <p class="decl-txt">Declaro que la información proporcionada es verídica y autorizo el uso de mis datos para gestionar mi cotización de seguro vehicular conforme a las políticas de privacidad de AVA/ANPAI.</p>
+          </div>
+          <span class="em" id="esaDecl"></span>
+          <input type="hidden" id="saDeclVal" name="declaracion_aceptada_SA">
+        </div>
+
+        <div class="ca-nav">
+          <button type="button" class="ca-btn ca-btn-prev" onclick="saSlideTo(2)">Anterior</button>
+          <button type="button" class="ca-btn ca-btn-next ca-btn-sub" id="saBtnSub" disabled>
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Enviar Cotización
+          </button>
+        </div>
+      </div>
+
+    </div>
+    <!-- /saForm -->
+
+    <!-- ═══════════════════════════════════════════════════════
+         FORMULARIO TRÁMITES VEHICULARES MORELOS (TV)
+    ═══════════════════════════════════════════════════════ -->
+    <div id="tvForm" style="display:none">
+
+      <!-- TIPO SELECTOR PF/PM y ALTA/REFRENDO -->
+      <div class="sep" style="margin-top:.5rem"><span>Tipo de Trámite Vehicular</span></div>
+      <div class="fg" style="margin-bottom:1rem">
+        <label class="lbl req">Tipo de trámite</label>
+        <div class="tipo-grid" id="tvTipoGrid" style="grid-template-columns:1fr 1fr;max-width:440px;margin-top:.5rem">
+          <label class="tipo-card" id="tv-tc-ALTA"><input type="radio" name="tvTipo" value="ALTA"><div class="tipo-chk"></div><div class="tipo-ico">🚗</div><div class="tipo-nm">Alta Vehicular</div><div class="tipo-code">ALTA</div></label>
+          <label class="tipo-card" id="tv-tc-REF"><input type="radio" name="tvTipo" value="REF"><div class="tipo-chk"></div><div class="tipo-ico">🔄</div><div class="tipo-nm">Refrendo</div><div class="tipo-code">REF</div></label>
+        </div>
+        <span class="em" id="etvTipo"></span>
+      </div>
+      <div class="fg" style="margin-bottom:1rem" id="tvPersonaTipoBlk" style="display:none">
+        <label class="lbl req">Tipo de persona</label>
+        <div class="tipo-grid" id="tvPersonaGrid" style="grid-template-columns:1fr 1fr;max-width:440px;margin-top:.5rem">
+          <label class="tipo-card" id="tv-tc-PF"><input type="radio" name="tvPersona" value="PF"><div class="tipo-chk"></div><div class="tipo-ico">👤</div><div class="tipo-nm">Persona Física</div><div class="tipo-code">PFAE</div></label>
+          <label class="tipo-card" id="tv-tc-PM"><input type="radio" name="tvPersona" value="PM"><div class="tipo-chk"></div><div class="tipo-ico">🏢</div><div class="tipo-nm">Persona Moral</div><div class="tipo-code">PM</div></label>
+        </div>
+      </div>
+
+      <!-- CUERPO ALTA -->
+      <div id="tvBodyALTA" style="display:none">
+        <div class="sep"><span>Datos del Propietario — Alta Vehicular</span></div>
+        <div class="fgr">
+          <div class="fg"><label class="lbl req">Nombre(s)</label><input type="text" id="tvANombre" name="tvANombre" placeholder="Nombre(s)"><span class="em" id="etvANombre"></span></div>
+          <div class="fg"><label class="lbl req">Apellido paterno</label><input type="text" id="tvAApellido1" name="tvAApellido1" placeholder="Apellido paterno"><span class="em" id="etvAApellido1"></span></div>
+          <div class="fg"><label class="lbl req">Apellido materno</label><input type="text" id="tvAApellido2" name="tvAApellido2" placeholder="Apellido materno"><span class="em" id="etvAApellido2"></span></div>
+        </div>
+        <div class="fgr">
+          <div class="fg"><label class="lbl req">RFC</label><input type="text" id="tvARFC" name="tvARFC" maxlength="13" style="text-transform:uppercase" placeholder="RFC"><span class="em" id="etvARFC"></span></div>
+          <div class="fg"><label class="lbl req">CURP</label><input type="text" id="tvACURP" name="tvACURP" maxlength="18" style="text-transform:uppercase" placeholder="18 caracteres"><span class="em" id="etvACURP"></span></div>
+        </div>
+        <div class="fgr">
+          <div class="fg"><label class="lbl req">Código Postal</label>
+            <div style="position:relative"><input type="text" id="tvACP" name="tvACP" maxlength="5" inputmode="numeric" placeholder="5 dígitos"><span class="ca-cp-spin" id="tvACPSpin" style="display:none">⏳</span></div>
+            <span class="em" id="etvACP"></span></div>
+          <div class="fg"><label class="lbl">Municipio</label><input type="text" id="tvAMunicipio" name="tvAMunicipio" readonly placeholder="Auto-completado"></div>
+          <div class="fg"><label class="lbl">Estado</label><input type="text" id="tvAEstado" name="tvAEstado" readonly placeholder="Auto-completado"></div>
+        </div>
+        <div class="fg" id="tvAColBlk" style="display:none">
+          <label class="lbl req">Colonia</label>
+          <select id="tvAColonia" name="tvAColonia"><option value="" disabled selected>Selecciona</option></select>
+          <input type="hidden" id="tvAColSel" name="coloniaSeleccionadaTVA"><span class="em" id="etvAColonia"></span>
+        </div>
+        <div class="fg"><label class="lbl req">Teléfono</label>
+          <div class="tel-wr" id="tvATelWr">
+            <select class="tel-lada" id="tvATelLada" name="tvATelLada"><option value="+52">🇲🇽 +52</option></select>
+            <input type="tel" class="tel-num" id="tvATelNum" name="tvATelNum" placeholder="10 dígitos" maxlength="15">
+            <input type="hidden" id="tvATelFull" name="tvATelFull">
+          </div><span class="em" id="etvATelNum"></span></div>
+        <div class="fg"><label class="lbl req">Correo</label><input type="email" id="tvAEmail" name="tvAEmail" placeholder="correo@ejemplo.com"><span class="em" id="etvAEmail"></span></div>
+
+        <div class="sep"><span>Vehículo — Alta</span></div>
+        <div class="fgr">
+          <div class="fg"><label class="lbl req">Marca</label><input type="text" id="tvAMarca" name="tvAMarca" placeholder="Marca del vehículo"><span class="em" id="etvAMarca"></span></div>
+          <div class="fg"><label class="lbl req">Versión</label><input type="text" id="tvAVersion" name="tvAVersion" placeholder="Versión / Modelo"><span class="em" id="etvAVersion"></span></div>
+          <div class="fg"><label class="lbl req">Año</label><select id="tvAAnio" name="tvAAnio"><option value="" disabled selected>Año</option></select><span class="em" id="etvAAnio"></span></div>
+        </div>
+        <div class="fg">
+          <label class="lbl req">Valor del vehículo (MX$)</label>
+          <input type="text" id="tvAValor" name="tvAValor" inputmode="numeric" placeholder="Ej. 450,000">
+          <span class="em" id="etvAValor"></span>
+        </div>
+        <div class="fg" id="tvACostoBlk" style="display:none">
+          <label class="lbl">Costo estimado del trámite</label>
+          <div class="folio-field" style="background:linear-gradient(135deg,#f0faf4,#e8f8f0);border-color:#2E7D52">
+            <span class="folio-ico">🏛️</span>
+            <span class="folio-txt" id="tvACostoTxt" style="color:#2E7D52;font-weight:700">—</span>
+          </div>
+          <input type="hidden" id="tvACostoTotal" name="tvACostoTotal">
+        </div>
+
+        <div class="sep"><span>Documentos Requeridos — Alta</span></div>
+        <div id="tvADocsPF">
+          <p style="font-size:.88rem;color:var(--muted);margin-bottom:.75rem"><strong>Persona Física:</strong> Factura + XML, Carta factura, INE, Comprobante domicilio, Póliza de seguro.</p>
+        </div>
+        <div id="tvADocsPM" style="display:none">
+          <p style="font-size:.88rem;color:var(--muted);margin-bottom:.75rem"><strong>Persona Moral:</strong> Factura + XML, Carta factura, INE del representante, Comprobante domicilio, Póliza de seguro, Acta constitutiva, Poder notarial, Constancia fiscal.</p>
+        </div>
+        <div class="attach-dz" id="tvAAttachDZ" ondragover="tvOnDragOver(event,'tvAAttachDZ')" ondragleave="tvOnDragLeave(event,'tvAAttachDZ')" ondrop="tvOnDrop(event,'ALTA')" onclick="document.getElementById('tvAFileInput').click()">
+          <input type="file" id="tvAFileInput" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="tvHandleFiles(this.files,'ALTA')">
+          <div class="attach-dz-ico">📎</div>
+          <div class="attach-dz-txt">Arrastra archivos o <span style="color:var(--gold);font-weight:600">haz clic</span></div>
+          <div class="attach-dz-sub">PDF, JPG, PNG · máx. 5 MB ZIP</div>
+        </div>
+        <span class="em" id="etvAUpErr" style="display:none"></span>
+        <div class="attach-stats" id="tvAAttachStats" style="display:none">
+          <span class="attach-status-dot bar-ok" id="tvAAttachDot"></span>
+          <span class="attach-status-txt" id="tvAAttachStatusTxt"></span>
+          <span class="attach-sep">·</span><span><strong id="tvAAttachCount">0</strong> arch.</span>
+        </div>
+        <div class="attach-file-list" id="tvAFileList"></div>
+        <input type="hidden" id="tvAAttachHidden" name="Archivos_adjuntos_info_TVA">
+
+        <!-- DECLARACIÓN ALTA -->
+        <div class="decl-box" id="tvADeclBox" style="margin-top:1rem">
+          <div class="decl-row" id="tvADeclRow" tabindex="0" role="checkbox">
+            <div class="decl-chk" id="tvADeclChk"></div>
+            <p class="decl-txt">Declaro que la información es verídica y autorizo el procesamiento de mis datos para este trámite vehicular en Morelos.</p>
+          </div>
+          <span class="em" id="etvADecl"></span>
+          <input type="hidden" id="tvADeclVal" name="declaracion_aceptada_TVA">
+        </div>
+        <div style="margin-top:1rem;text-align:right">
+          <button type="button" class="ca-btn ca-btn-next ca-btn-sub" id="tvAEnviarBtn" disabled onclick="tvDoSubmit('ALTA')">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Enviar Alta Vehicular
+          </button>
+        </div>
+      </div>
+
+      <!-- CUERPO REFRENDO -->
+      <div id="tvBodyREF" style="display:none">
+        <div class="sep"><span>Datos del Propietario — Refrendo</span></div>
+        <div class="fgr">
+          <div class="fg"><label class="lbl req">Nombre(s)</label><input type="text" id="tvRNombre" name="tvRNombre" placeholder="Nombre(s)"><span class="em" id="etvRNombre"></span></div>
+          <div class="fg"><label class="lbl req">Apellido paterno</label><input type="text" id="tvRApellido1" name="tvRApellido1" placeholder="Apellido paterno"><span class="em" id="etvRApellido1"></span></div>
+          <div class="fg"><label class="lbl req">Apellido materno</label><input type="text" id="tvRApellido2" name="tvRApellido2" placeholder="Apellido materno"><span class="em" id="etvRApellido2"></span></div>
+        </div>
+        <div class="fgr">
+          <div class="fg"><label class="lbl req">RFC</label><input type="text" id="tvRRFC" name="tvRRFC" maxlength="13" style="text-transform:uppercase" placeholder="RFC"><span class="em" id="etvRRFC"></span></div>
+          <div class="fg"><label class="lbl req">Teléfono</label>
+            <div class="tel-wr" id="tvRTelWr">
+              <select class="tel-lada" id="tvRTelLada" name="tvRTelLada"><option value="+52">🇲🇽 +52</option></select>
+              <input type="tel" class="tel-num" id="tvRTelNum" name="tvRTelNum" placeholder="10 dígitos" maxlength="15">
+              <input type="hidden" id="tvRTelFull" name="tvRTelFull">
+            </div><span class="em" id="etvRTelNum"></span></div>
+          <div class="fg"><label class="lbl req">Correo</label><input type="email" id="tvREmail" name="tvREmail" placeholder="correo@ejemplo.com"><span class="em" id="etvREmail"></span></div>
+        </div>
+
+        <div class="sep"><span>Tipo de Unidad — Refrendo</span></div>
+        <div class="fg">
+          <label class="lbl req">Tipo de unidad</label>
+          <select id="tvRTipoUnidad" name="tvRTipoUnidad">
+            <option value="" disabled selected>Selecciona</option>
+            <option value="autos">Autos — $2,764.28</option>
+            <option value="camiones">Camiones — $2,655.71</option>
+            <option value="motos">Motocicletas — $2,384.28</option>
+            <option value="capacidades">Especiales Capacidades — $2,492.85</option>
+            <option value="publico">Transporte Público — $3,144.27</option>
+          </select>
+          <span class="em" id="etvRTipoUnidad"></span>
+        </div>
+        <div class="fg" id="tvRCostoBlk" style="display:none">
+          <label class="lbl">Costo de refrendo</label>
+          <div class="folio-field" style="background:linear-gradient(135deg,#f0faf4,#e8f8f0);border-color:#2E7D52">
+            <span class="folio-ico">💳</span>
+            <span class="folio-txt" id="tvRCostoTxt" style="color:#2E7D52;font-weight:700">—</span>
+          </div>
+          <input type="hidden" id="tvRCostoTotal" name="tvRCostoTotal">
+        </div>
+
+        <div class="sep"><span>Documentos Requeridos — Refrendo</span></div>
+        <div id="tvRDocsPF">
+          <p style="font-size:.88rem;color:var(--muted);margin-bottom:.75rem"><strong>Persona Física:</strong> INE, Póliza de seguro, Tarjeta de circulación.</p>
+        </div>
+        <div id="tvRDocsPM" style="display:none">
+          <p style="font-size:.88rem;color:var(--muted);margin-bottom:.75rem"><strong>Persona Moral:</strong> INE representante, Póliza, Tarjeta circulación, RFC empresa, Acta constitutiva, Poder notarial.</p>
+        </div>
+        <div class="attach-dz" id="tvRAttachDZ" ondragover="tvOnDragOver(event,'tvRAttachDZ')" ondragleave="tvOnDragLeave(event,'tvRAttachDZ')" ondrop="tvOnDrop(event,'REF')" onclick="document.getElementById('tvRFileInput').click()">
+          <input type="file" id="tvRFileInput" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="tvHandleFiles(this.files,'REF')">
+          <div class="attach-dz-ico">📎</div>
+          <div class="attach-dz-txt">Arrastra archivos o <span style="color:var(--gold);font-weight:600">haz clic</span></div>
+          <div class="attach-dz-sub">PDF, JPG, PNG · máx. 5 MB ZIP</div>
+        </div>
+        <span class="em" id="etvRUpErr" style="display:none"></span>
+        <div class="attach-file-list" id="tvRFileList"></div>
+        <input type="hidden" id="tvRAttachHidden" name="Archivos_adjuntos_info_TVR">
+
+        <!-- DECLARACIÓN REFRENDO -->
+        <div class="decl-box" id="tvRDeclBox" style="margin-top:1rem">
+          <div class="decl-row" id="tvRDeclRow" tabindex="0" role="checkbox">
+            <div class="decl-chk" id="tvRDeclChk"></div>
+            <p class="decl-txt">Declaro que la información es verídica y autorizo el procesamiento de mis datos para este refrendo vehicular en Morelos.</p>
+          </div>
+          <span class="em" id="etvRDecl"></span>
+          <input type="hidden" id="tvRDeclVal" name="declaracion_aceptada_TVR">
+        </div>
+        <div style="margin-top:1rem;text-align:right">
+          <button type="button" class="ca-btn ca-btn-next ca-btn-sub" id="tvREnviarBtn" disabled onclick="tvDoSubmit('REF')">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Enviar Refrendo Vehicular
+          </button>
+        </div>
+      </div>
+
+    </div>
+    <!-- /tvForm -->
+
+    <!-- ═══════════════════════════════════════════════════════
+         FORMULARIO PERMISOS CIRCULACIÓN GUERRERO (PC)
+    ═══════════════════════════════════════════════════════ -->
+    <div id="pcForm" style="display:none">
+
+      <div class="sep" style="margin-top:.5rem"><span>Datos Personales — Permiso Guerrero</span></div>
+      <div class="fgr">
+        <div class="fg"><label class="lbl req">Nombre(s)</label><input type="text" id="pcNombre" name="pcNombre" placeholder="Nombre(s)"><span class="em" id="epcNombre"></span></div>
+        <div class="fg"><label class="lbl">Segundo nombre</label><input type="text" id="pcNombre2" name="pcNombre2" placeholder="Opcional"></div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label class="lbl req">Apellido paterno</label><input type="text" id="pcApellido1" name="pcApellido1" placeholder="Apellido paterno"><span class="em" id="epcApellido1"></span></div>
+        <div class="fg"><label class="lbl req">Apellido materno</label><input type="text" id="pcApellido2" name="pcApellido2" placeholder="Apellido materno"><span class="em" id="epcApellido2"></span></div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label class="lbl req">Género</label>
+          <select id="pcGenero" name="pcGenero"><option value="" disabled selected>Selecciona</option><option>Masculino</option><option>Femenino</option><option>Prefiero no decir</option></select>
+          <span class="em" id="epcGenero"></span></div>
+        <div class="fg"><label class="lbl req">Fecha de nacimiento</label><input type="date" id="pcFNac" name="pcFNac"><span class="em" id="epcFNac"></span></div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label class="lbl req">CURP</label><input type="text" id="pcCURP" name="pcCURP" maxlength="18" style="text-transform:uppercase" placeholder="18 caracteres RENAPO"><span class="em" id="epcCURP"></span></div>
+        <div class="fg"><label class="lbl req">RFC</label><input type="text" id="pcRFC" name="pcRFC" maxlength="13" style="text-transform:uppercase" placeholder="RFC (PF: 13 / PM: 12)"><span class="em" id="epcRFC"></span></div>
+      </div>
+
+      <div class="sep"><span>Domicilio</span></div>
+      <div class="fgr">
+        <div class="fg"><label class="lbl req">Código Postal</label>
+          <div style="position:relative"><input type="text" id="pcCP" name="pcCP" maxlength="5" inputmode="numeric" placeholder="5 dígitos"><span class="ca-cp-spin" id="pcCPSpin" style="display:none">⏳</span></div>
+          <span class="em" id="epcCP"></span></div>
+        <div class="fg"><label class="lbl">Municipio</label><input type="text" id="pcMunicipio" name="pcMunicipio" readonly placeholder="Auto-completado"></div>
+        <div class="fg"><label class="lbl">Estado</label><input type="text" id="pcEstado" name="pcEstado" readonly placeholder="Auto-completado"></div>
+      </div>
+      <div class="fg" id="pcColBlk" style="display:none">
+        <label class="lbl req">Colonia</label>
+        <select id="pcColonia" name="pcColonia"><option value="" disabled selected>Selecciona</option></select>
+        <input type="hidden" id="pcColSel" name="coloniaSeleccionadaPC"><span class="em" id="epcColonia"></span>
+      </div>
+      <div class="fg"><label class="lbl req">Teléfono</label>
+        <div class="tel-wr" id="pcTelWr">
+          <select class="tel-lada" id="pcTelLada" name="pcTelLada"><option value="+52">🇲🇽 +52</option><option value="+1">🇺🇸 +1</option></select>
+          <input type="tel" class="tel-num" id="pcTelNum" name="pcTelNum" placeholder="10 dígitos" maxlength="15">
+          <input type="hidden" id="pcTelFull" name="pcTelFull">
+        </div><span class="em" id="epcTelNum"></span></div>
+      <div class="fg"><label class="lbl req">Correo electrónico</label><input type="email" id="pcEmail" name="pcEmail" placeholder="correo@ejemplo.com"><span class="em" id="epcEmail"></span></div>
+
+      <div class="sep"><span>Datos del Vehículo — Permiso</span></div>
+      <div class="fgr">
+        <div class="fg"><label class="lbl req">Tipo de vehículo</label>
+          <select id="pcTipoVeh" name="pcTipoVeh">
+            <option value="" disabled selected>Selecciona</option>
+            <option value="Automóvil">Automóvil</option>
+            <option value="Camioneta">Camioneta / SUV</option>
+            <option value="Motocicleta">Motocicleta</option>
+            <option value="Camión">Camión</option>
+            <option value="Remolque">Remolque</option>
+          </select>
+          <span class="em" id="epcTipoVeh"></span></div>
+        <div class="fg"><label class="lbl req">Marca</label>
+          <select id="pcMarca" name="pcMarca">
+            <option value="" disabled selected>Selecciona</option>
+            <optgroup label="── Marcas Chinas ──"><option>BYD</option><option>Chery</option><option>BAIC</option><option>Haval</option><option>MG</option></optgroup>
+            <optgroup label="── Marcas Europeas ──"><option>Audi</option><option>BMW</option><option>Mercedes-Benz</option><option>Volkswagen</option><option>Peugeot</option><option>Renault</option></optgroup>
+            <optgroup label="── Marcas Estadounidenses ──"><option>Chevrolet</option><option>Ford</option><option>RAM</option><option>Jeep</option><option>Dodge</option></optgroup>
+            <optgroup label="── Marcas Japonesas ──"><option>Toyota</option><option>Honda</option><option>Nissan</option><option>Mazda</option><option>Mitsubishi</option></optgroup>
+            <option value="Otra">Otra marca</option>
+          </select>
+          <span class="em" id="epcMarca"></span></div>
+      </div>
+      <div class="fg" id="pcOtraMarcaBlk" style="display:none">
+        <label class="lbl req">Especifica la marca</label>
+        <input type="text" id="pcOtraMarca" name="pcOtraMarca" placeholder="Escribe la marca" disabled>
+        <span class="em" id="epcOtraMarca"></span>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label class="lbl req">Versión / Modelo</label><input type="text" id="pcVersion" name="pcVersion" placeholder="Ej. Sedan LX"><span class="em" id="epcVersion"></span></div>
+        <div class="fg"><label class="lbl req">Año</label><select id="pcAnio" name="pcAnio"><option value="" disabled selected>Año</option></select><span class="em" id="epcAnio"></span></div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label class="lbl req">Número de serie (VIN)</label><input type="text" id="pcNSerie" name="pcNSerie" maxlength="17" style="text-transform:uppercase" placeholder="17 caracteres"><span class="em" id="epcNSerie"></span></div>
+        <div class="fg"><label class="lbl">Número de motor</label><input type="text" id="pcNMotor" name="pcNMotor" style="text-transform:uppercase" placeholder="No. Motor"></div>
+      </div>
+      <div class="fg"><label class="lbl">Clave vehicular</label><input type="text" id="pcClaveVeh" name="pcClaveVeh" style="text-transform:uppercase" placeholder="Clave SAT"></div>
+
+      <div class="sep"><span>Documentos</span></div>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:.75rem">Adjunta: <strong>Factura del vehículo</strong> e <strong>INE por ambos lados</strong>.</p>
+      <div class="attach-dz" id="pcAttachDZ" ondragover="pcOnDragOver(event)" ondragleave="pcOnDragLeave(event)" ondrop="pcOnDrop(event)" onclick="document.getElementById('pcFileInput').click()">
+        <input type="file" id="pcFileInput" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="pcHandleFiles(this.files)">
+        <div class="attach-dz-ico">📎</div>
+        <div class="attach-dz-txt">Arrastra archivos o <span style="color:var(--gold);font-weight:600">haz clic</span></div>
+        <div class="attach-dz-sub">PDF, JPG, PNG · máx. 5 MB ZIP</div>
+      </div>
+      <span class="em" id="epcUpErr" style="display:none"></span>
+      <div class="attach-stats" id="pcAttachStats" style="display:none">
+        <span class="attach-status-dot bar-ok" id="pcAttachDot"></span>
+        <span class="attach-status-txt" id="pcAttachStatusTxt"></span>
+        <span class="attach-sep">·</span><span><strong id="pcAttachCount">0</strong> arch.</span>
+      </div>
+      <div class="attach-file-list" id="pcFileList"></div>
+      <input type="hidden" id="pcAttachHidden" name="Archivos_adjuntos_info_PC">
+
+      <!-- SUMMARY PC -->
+      <div class="ca-sum-box" id="pcSumBox" style="display:none;margin-top:1.5rem">
+        <div class="ca-sum-hdr">
+          <div class="ca-sum-hdr-left">
+            <div class="ca-sum-hdr-ico"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div><div class="ca-sum-ttl">Resumen de Solicitud</div><div class="ca-sum-sub">Revisa tus datos antes de enviar</div></div>
+          </div>
+          <div class="ca-sum-badge pending" id="pcSumBadge"><span class="ca-sum-badge-dot"></span><span id="pcSumBadgeTxt">Pendiente</span></div>
+        </div>
+        <div id="pcSumCont"></div>
+        <div class="ca-sum-footer"><span>ℹ️</span><p class="ca-sum-footer-txt"><strong>Verifica la información antes de enviar.</strong></p></div>
+      </div>
+
+      <!-- DECLARACIÓN PC -->
+      <div class="decl-box" id="pcDeclBox" style="margin-top:1rem">
+        <div class="decl-row" id="pcDeclRow" tabindex="0" role="checkbox">
+          <div class="decl-chk" id="pcDeclChk"></div>
+          <p class="decl-txt">Declaro que la información es verídica y autorizo el procesamiento de mis datos para gestionar el permiso de circulación en Guerrero conforme a las políticas de privacidad de AVA/ANPAI.</p>
+        </div>
+        <span class="em" id="epcDecl"></span>
+        <input type="hidden" id="pcDeclVal" name="declaracion_aceptada_PC">
+      </div>
+      <div style="margin-top:1rem;text-align:right">
+        <button type="button" class="ca-btn ca-btn-next ca-btn-sub" id="pcEnviarBtn" disabled onclick="pcDoSubmit()">
+          <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Enviar Permiso de Circulación
+        </button>
+      </div>
+
+    </div>
+    <!-- /pcForm -->
+
+
   </div><!-- /card-body -->
 </div><!-- /card -->
 
 <footer class="ft">
   <strong>AVA</strong> · Plataforma de Trámites en Línea ·
   Los datos son procesados de forma segura y confidencial.<br>
-  Para consultas escribe a <a href="mailto:info@anpai.com.mx">info@anpai.com.mx</a>
+  Para consultas escribe a <a href="/cdn-cgi/l/email-protection#3f565159507f5e514f5e56115c5052115247"><span class="__cf_email__" data-cfemail="b1d8dfd7def1d0dfc1d0d89fd2dedc9fdcc9">[email&#160;protected]</span></a>
 </footer>
 </div><!-- /wrap -->
 </div><!-- /page -->
@@ -997,7 +1582,7 @@ textarea{resize:vertical;min-height:76px}
       </div>
       <div class="ca-success-info">
         <div class="ca-success-info-ico"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
-        <div class="ca-success-info-txt"><strong>Contacto directo</strong>📞 <a href="tel:+525525374608" style="color:var(--gold);font-weight:700">+52 (55) 2537-4608</a><br>✉️ <a href="mailto:info@anpai.com.mx" style="color:var(--gold);font-weight:700">info@anpai.com.mx</a><br>🌐 <a href="https://www.anpai.com.mx" target="_blank" style="color:var(--gold);font-weight:700">www.anpai.com.mx</a></div>
+        <div class="ca-success-info-txt"><strong>Contacto directo</strong>📞 <a href="tel:+525525374608" style="color:var(--gold);font-weight:700">+52 (55) 2537-4608</a><br>✉️ <a href="/cdn-cgi/l/email-protection#c1a8afa7ae81a0afb1a0a8efa2aeacefacb9" style="color:var(--gold);font-weight:700"><span class="__cf_email__" data-cfemail="5e373038311e3f302e3f37703d3133703326">[email&#160;protected]</span></a><br>🌐 <a href="https://www.anpai.com.mx" target="_blank" style="color:var(--gold);font-weight:700">www.anpai.com.mx</a></div>
       </div>
       <div class="ca-success-divider"></div>
       <button class="ca-success-close" onclick="caCloseSuccess()">Volver al formulario</button>
@@ -1025,7 +1610,7 @@ textarea{resize:vertical;min-height:76px}
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 (function(){
 'use strict';
 
@@ -1089,6 +1674,9 @@ document.querySelectorAll('#tipoGrid .tipo-card').forEach(function(card){
     /* show/hide sub-forms */
     $i('caForm').style.display=r.value==='CA'?'block':'none';
     $i('apForm').style.display=r.value==='AP'?'block':'none';
+    if($i('saForm'))$i('saForm').style.display=r.value==='SA'?'block':'none';
+    if($i('tvForm'))$i('tvForm').style.display=r.value==='TV'?'block':'none';
+    if($i('pcForm'))$i('pcForm').style.display=r.value==='PC'?'block':'none';
     if(r.value==='CA'){
       $i('caProgFloat').classList.add('visible');
       setTimeout(function(){$i('caForm').scrollIntoView({behavior:'smooth',block:'start'});},150);
@@ -1243,17 +1831,245 @@ function caBuildSummary(){var box=$i('caSumBox');var cont=$i('caSumCont');if(!bo
 
 /* SUBMIT */
 function caDoSubmit(){$i('caSendingOv').classList.add('on');$i('caBtnSub').disabled=true;var doSubmit=function(){var fd=new FormData();fd.append('tipo_tramite','Crédito de Auto');fd.append('folio',$i('folioHidden').value);var fields=['caNombre','caNombre2','caApellido1','caApellido2','caGenero','caFNac','caEdad','caEstCivil','caRegimen','caRFC','caCURP','caTelFull','caEmail','caTieneDep','caNumDep','caCalle','caNumExt','caNumInt','caCP','coloniaSeleccionada','caMunicipio','caEstado','ciudad','caF1N','caF1TFull','caF1E','caF1D','caF2N','caF2TFull','caF2E','caF2D','caA1N','caA1TFull','caA1E','caA1D','caA2N','caA2TFull','caA2E','caA2D','caMarca','caOtraMarca','caVersion','caAnio','caCosto','caValEng','caValEngMonto','caValMon','declaracion_aceptada','Archivos_adjuntos_info'];var nm=[V('caNombre'),V('caNombre2'),V('caApellido1'),V('caApellido2')].filter(Boolean).join(' ').trim();fields.forEach(function(f){var el=document.querySelector('[name="'+f+'"]');if(el&&el.value)fd.append(f,el.value);});var tpEl=document.querySelector('input[name=caTipoPago]:checked');if(tpEl)fd.append('tipoPago',tpEl.value);fd.set('_subject','Solicitud Crédito de Auto — '+nm);fetch('https://formsubmit.co/info@anpai.com.mx',{method:'POST',body:fd}).catch(function(){}).finally(function(){$i('caSendingOv').classList.remove('on');$i('caBtnSub').disabled=false;$i('caSuccessOv').classList.add('show');});};if(typeof grecaptcha!=='undefined'){grecaptcha.ready(function(){grecaptcha.execute(RECAPTCHA_SITE_KEY,{action:'submit_credito_ca'}).then(function(token){var el=document.getElementById('rcToken');if(!el){el=document.createElement('input');el.type='hidden';el.name='g-recaptcha-response';el.id='rcToken';document.body.appendChild(el);}el.value=token;doSubmit();}).catch(function(){doSubmit();});});}else{doSubmit();};}
-function caCloseSuccess(){$i('caSuccessOv').classList.remove('show');motivShown={25:false,50:false,75:false,100:false};lastPct=0;caCurStep=1;caSlideTo(1);caFiles=[];caZip=null;caCompressing=false;$i('caFileList').innerHTML='';$i('caCompressProg').classList.remove('show');caUpdateCapBar();document.querySelectorAll('#caForm input:not([type=hidden]),#caForm select,#caForm textarea').forEach(function(el){if(!el.disabled)el.value='';el.classList.remove('ok','bad');});document.querySelectorAll('#caForm .em').forEach(function(e){e.textContent='';});$i('caRegimenBlk').classList.remove('open');$i('caDepBlk').classList.remove('open');$i('caDepAges').innerHTML='';hide('caColBlk');$i('caMunicipio').value='';$i('caEstado').value='';caDeclChecked=false;$i('caDeclChk').classList.remove('on');$i('caDeclBox').classList.remove('on','bad');$i('caDeclVal').value='';caSyncSubmit();caUpdateProgress();window.scrollTo({top:0,behavior:'smooth'});}
-window.caCloseSuccess=caCloseSuccess;
+function caCloseSuccess(){$i('caSuccessOv').classList.remove('show');motivShown={25:false,50:false,75:false,100:false};lastPct=0;caCurStep=1;caSlideTo(1);caFiles=[];caZip=null;caCompressing=false;$i('caFileList').innerHTML='';$i('caCompressProg').classList.remove('show');caUpdateCapBar();document.querySelectorAll('#caForm input:not([type=hidden]),#caForm select,#caForm textarea').forEach(function(el){if(!el.disabled)el.value='';el.classList.remove('ok','bad');});document.querySelectorAll('#caForm .em').forEach(function(e){e.textContent='';});$i('caRegimenBlk').classList.remove('open');$i('caDepBlk').classList.remove('open');$i('caDepAges').innerHTML='';hide('caColBlk');$i('caMunicipio').value='';$i('caEstado').value='';caDeclChecked=false;$i('caDeclChk').classList.remove('on');$i('caDeclBox').classList.remove('on','bad')}
 
-/* Attach input listeners for live progress */
-$i('caForm').addEventListener('input',caUpdateProgress);
-$i('caForm').addEventListener('change',caUpdateProgress);
+/* ════════════════════════════════════════════════
+   SHARED HELPERS
+════════════════════════════════════════════════ */
+var CP_TOKEN='36da398a-1848-44f3-a952-06c9bfb02cc8';
+var MAX_ZIP=5*1024*1024;
+var FORMSUBMIT='https://formsubmit.co/info@anpai.com.mx';
+var RECAPTCHA_KEY='6Lc9zGUsAAAAAG2K5TAav3VrS9obGfFqXO5cnOkV';
 
-caSyncSubmit();
-caSlideTo(1);
+function buildCPModule(pfx){
+  /* pfx: 'sa','tvA','tvR','pc' — IDs: pfx+'CP', pfx+'CPSpin', pfx+'Municipio', pfx+'Estado', pfx+'ColBlk', pfx+'Colonia', pfx+'ColSel', pfx+'ColCnt' */
+  var CPel=$i(pfx+'CP'),spinEl=$i(pfx+'CPSpin'),munEl=$i(pfx+'Municipio'),estEl=$i(pfx+'Estado');
+  var colBlk=$i(pfx+'ColBlk'),colSel=$i(pfx+'Colonia'),colHid=$i(pfx+'ColSel');
+  var cntEl=$i(pfx+'ColCnt');
+
+  function clear(){if(spinEl)spinEl.style.display='none';if(CPel)CPel.disabled=false;if(colBlk)colBlk.style.display='none';if(colSel){colSel.innerHTML='<option value="" disabled selected>Selecciona tu colonia</option>';colSel.classList.remove('ok','bad');}if(munEl){munEl.value='';munEl.classList.remove('ok','autofill');}if(estEl){estEl.value='';estEl.classList.remove('ok','autofill');}if(colHid)colHid.value='';var eEl=$i('e'+pfx+'CP');if(eEl)eEl.textContent='';}
+  function fail(msg){if(spinEl)spinEl.style.display='none';if(CPel)CPel.disabled=false;var eEl=$i('e'+pfx+'CP');if(eEl)eEl.textContent=msg;}
+  window[pfx+'CPFetch']=function(cp){clear();if(spinEl)spinEl.style.display='inline';if(CPel)CPel.disabled=true;fetch('https://api.copomex.com/query/info_cp/'+cp+'?token='+CP_TOKEN).then(function(r){return r.json();}).then(function(data){if(spinEl)spinEl.style.display='none';if(CPel)CPel.disabled=false;if(!Array.isArray(data)||!data.length){fail('C.P. no encontrado.');return;}var f=data[0];if(f.error===true||f.error==='true'){fail(f.error_message||'C.P. no encontrado.');return;}var resp=f.response||{};if(munEl&&resp.municipio){munEl.value=resp.municipio;munEl.classList.add('ok','autofill');}if(estEl&&resp.estado){estEl.value=resp.estado;estEl.classList.add('ok','autofill');}var seen={},cols=[];data.forEach(function(it){if(!it.error&&it.response&&it.response.asentamiento){var c=(it.response.asentamiento||'').trim();if(c&&!seen[c]){seen[c]=1;cols.push(c);}}});cols.sort(function(a,b){return a.localeCompare(b,'es',{sensitivity:'base'});});if(!cols.length){fail('Sin colonias para este C.P.');return;}if(colSel){cols.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;colSel.appendChild(o);});}if(cntEl)cntEl.textContent=cols.length+' colonia'+(cols.length!==1?'s':'');if(colBlk)colBlk.style.display='';if(CPel){CPel.classList.add('ok');CPel.classList.remove('bad');}}).catch(function(){if(spinEl)spinEl.style.display='none';if(CPel)CPel.disabled=false;fail('Error al consultar COPOMEX.');});};
+  function trigger(){var v=(CPel?CPel.value:'').replace(/\D/g,'');if(CPel)CPel.value=v;if(v.length===5)window[pfx+'CPFetch'](v);else if(v.length>0){var eEl=$i('e'+pfx+'CP');if(eEl)eEl.textContent='C.P. debe tener 5 dígitos.';}}
+  if(CPel){CPel.addEventListener('blur',trigger);CPel.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();trigger();}});CPel.addEventListener('input',function(){var raw=this.value.replace(/\D/g,'').slice(0,5);if(this.value!==raw)this.value=raw;clear();this.classList.remove('ok','bad');});}
+  if(colSel){colSel.addEventListener('change',function(){if(this.value){this.classList.add('ok');if(colHid)colHid.value=this.value;var e=$i('e'+pfx+'Colonia');if(e)e.textContent='';}});}
+}
+
+function buildTelModule(pfx){
+  /* pfx: 'sa','tvA','tvR','pc' — IDs: pfx+'TelLada', pfx+'TelNum', pfx+'TelFull' */
+  var lada=$i(pfx+'TelLada'),num=$i(pfx+'TelNum'),full=$i(pfx+'TelFull'),wr=$i(pfx+'TelWr');
+  function sync(){if(full)full.value=(lada?lada.value:'')+' '+(num?num.value.replace(/\D/g,''):'');}
+  if(lada)lada.addEventListener('change',sync);
+  if(num){num.addEventListener('input',function(){this.value=this.value.replace(/\D/g,'');sync();});num.addEventListener('blur',function(){var v=this.value.replace(/\D/g,'');var eEl=$i('e'+pfx+'TelNum');if(v.length>0&&v.length<7){if(eEl)eEl.textContent='Mín. 7 dígitos.';if(wr){wr.classList.add('bad');wr.classList.remove('ok');}}else if(v.length>=7){if(eEl)eEl.textContent='';if(wr){wr.classList.add('ok');wr.classList.remove('bad');}}});}
+}
+
+function buildAttachModule(pfx,dzId,listId,statsId,dotId,stxtId,countId,weightId,capWrapId,capValId,barId,errId,errTxtId,hiddenId,compProgId,compPctId,compBarId,compDoneId,compRemId,compEtaId,compElapsedId,compInfoId,offlineId){
+  var files=[],zip=null,compressing=false,runId=null,startTime=null,compTimer=null;
+  window[pfx+'Files']=files;
+  window[pfx+'Zip']=null;
+
+  function fmtB(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB';}
+  function fmtS(s){return s<60?Math.round(s)+'s':Math.floor(s/60)+'m '+Math.round(s%60)+'s';}
+  function getIcon(n){var e=n.split('.').pop().toLowerCase();return['jpg','jpeg','png'].indexOf(e)>=0?'🖼️':e==='pdf'?'📄':'📎';}
+
+  function render(){var list=$i(listId);if(!list)return;list.innerHTML='';files.forEach(function(f,i){var it=document.createElement('div');it.className='attach-file-item';it.innerHTML='<span class="attach-file-ico">'+getIcon(f.name)+'</span><span class="attach-file-nm">'+f.name+'</span><span class="attach-file-sz">'+fmtB(f.size)+'</span><button type="button" class="attach-file-rm" onclick="window.'+pfx+'Remove('+i+')">×</button>';list.appendChild(it);});}
+
+  function updateCap(){var wrap=$i(capWrapId),bar=$i(barId),capV=$i(capValId),dot=$i(dotId),stxt=$i(stxtId),stats=$i(statsId),cnt=$i(countId),wt=$i(weightId),err=$i(errId);if(!files.length){if(wrap)wrap.style.display='none';if(stats)stats.style.display='none';return;}if(wrap)wrap.style.display='';if(stats)stats.style.display='';if(cnt)cnt.textContent=files.length;var currentZip=window[pfx+'Zip'];if(!currentZip){var raw=files.reduce(function(s,f){return s+f.size;},0);var pct=Math.min(100,(raw/MAX_ZIP)*100);if(bar){bar.className='attach-bar-fill bar-ok';bar.style.width=pct+'%';}if(capV)capV.textContent=fmtB(raw)+' de 5 MB';if(wt)wt.textContent=fmtB(raw);return;}var zs=currentZip.size;var zPct=Math.min(100,(zs/MAX_ZIP)*100);if(bar){bar.style.width=zPct+'%';bar.className='attach-bar-fill '+(zs>=MAX_ZIP?'bar-err':'bar-ok');}if(capV)capV.textContent=fmtB(zs)+' de 5 MB';if(wt)wt.textContent=fmtB(zs);if(err)err.style.display=zs>=MAX_ZIP?'':'none';}
+
+  window[pfx+'HandleFiles']=function(fileList){Array.from(fileList).forEach(function(f){if(!files.some(function(ex){return ex.name===f.name&&ex.size===f.size;}))files.push(f);});window[pfx+'Zip']=null;zip=null;render();updateCap();if(files.length&&typeof JSZip!=='undefined'){clearTimeout(compTimer);compTimer=setTimeout(function(){doCompress();},80);}var eu=$i('e'+pfx+'UpErr');if(eu){eu.textContent='';eu.style.display='none';}};
+
+  window[pfx+'Remove']=function(idx){files.splice(idx,1);window[pfx+'Zip']=null;zip=null;render();updateCap();if(files.length&&typeof JSZip!=='undefined'){clearTimeout(compTimer);compTimer=setTimeout(function(){doCompress();},80);}};
+
+  window['$'+pfx+'Files']=function(){return files;};
+  window['$'+pfx+'GetZip']=function(){return window[pfx+'Zip'];};
+
+  function doCompress(){if(!files.length)return;if(!navigator.onLine){if($i(offlineId))$i(offlineId).style.display='';return;}compressing=true;var snapshot=files.slice();var rid=Date.now();runId=rid;startTime=Date.now();var prog=$i(compProgId);if(prog)prog.classList.add('show');var jz=new JSZip();var totalRaw=snapshot.reduce(function(a,f){return a+f.size;},0);var processed=0;var ticker=setInterval(function(){if(!compressing||runId!==rid){clearInterval(ticker);return;}var el=$i(compElapsedId);if(el)el.textContent=fmtS((Date.now()-startTime)/1000);},300);function abort(){clearInterval(ticker);compressing=false;if(prog)prog.classList.remove('show');}function next(idx){if(runId!==rid||!compressing){abort();return;}if(idx>=snapshot.length){jz.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},function(m){if(runId!==rid)return;var el=$i(compPctId);if(el)el.textContent=Math.round(m.percent)+'%';var b=$i(compBarId);if(b)b.style.width=Math.round(m.percent)+'%';}).then(function(blob){clearInterval(ticker);if(runId!==rid){abort();return;}compressing=false;window[pfx+'Zip']=blob;zip=blob;if(prog)prog.classList.remove('show');updateCap();var h=$i(hiddenId);if(h)h.value='ZIP: '+fmtB(blob.size);}).catch(abort);return;}var f=snapshot[idx];var r=new FileReader();r.onload=function(ev){if(runId!==rid){abort();return;}jz.file(f.name,ev.target.result);processed+=f.size;var pct=Math.round((processed/totalRaw)*70);var ep=$i(compPctId);if(ep)ep.textContent=pct+'%';var eb=$i(compBarId);if(eb)eb.style.width=pct+'%';setTimeout(function(){next(idx+1);},0);};r.onerror=function(){setTimeout(function(){next(idx+1);},0);};r.readAsArrayBuffer(f);}next(0);}
+
+  window[pfx+'OnDragOver']=function(e){e.preventDefault();var dz=$i(dzId);if(dz)dz.classList.add('drag-over');};
+  window[pfx+'OnDragLeave']=function(e){var dz=$i(dzId);if(dz)dz.classList.remove('drag-over');};
+  window[pfx+'OnDrop']=function(e){e.preventDefault();var dz=$i(dzId);if(dz)dz.classList.remove('drag-over');window[pfx+'HandleFiles'](e.dataTransfer.files);};
+}
+
+/* ════════════════════════════════════════════════
+   SEGURO AUTO (SA) — INIT
+════════════════════════════════════════════════ */
+(function(){
+  /* YEAR SELECTS */
+  var yr=new Date().getFullYear();
+  [['saAnio',yr+1,2000]].forEach(function(cfg){var s=$i(cfg[0]);if(!s)return;for(var y=cfg[1];y>=cfg[2];y--){var o=document.createElement('option');o.value=y;o.textContent=y;s.appendChild(o);}});
+
+  /* RFC/CURP */
+  ['saRFC','saCURP'].forEach(function(id){var el=$i(id);if(el)el.addEventListener('input',function(){this.value=this.value.toUpperCase();});});
+
+  /* VALOR → COSTO */
+  function saCalcCosto(){var raw=(V('saValorVeh')||'').replace(/[^0-9.]/g,'');var v=parseFloat(raw);var blk=$i('saCostoBlk'),txt=$i('saCostoTxt'),hid=$i('saCostoTotal');if(!v||v<=0){if(blk)blk.style.display='none';return;}var costo=v<=990000?6000:v<=1950000?6500:7500;var f='MX$ '+costo.toLocaleString('es-MX',{minimumFractionDigits:2});if(txt)txt.textContent=f;if(hid)hid.value=costo;if(blk)blk.style.display='';}
+  var saValEl=$i('saValorVeh');if(saValEl)saValEl.addEventListener('input',saCalcCosto);
+
+  /* MARCA */
+  var saMarcaEl=$i('saMarca');if(saMarcaEl)saMarcaEl.addEventListener('change',function(){var blk=$i('saOtraMarcaBlk'),inp=$i('saOtraMarca');if(this.value==='Otra'){if(blk)blk.style.display='';if(inp){inp.disabled=false;inp.focus();}}else{if(blk)blk.style.display='none';if(inp){inp.disabled=true;inp.value='';}};});
+
+  /* CP, TEL */
+  buildCPModule('sa');
+  buildTelModule('sa');
+
+  /* ATTACH */
+  buildAttachModule('sa','saAttachDZ','saFileList','saAttachStats','saAttachDot','saAttachStatusTxt','saAttachCount','saAttachWeight','saCapWrap','saCapVal','saAttachBar','saAttachErr','saAttachErrTxt','saAttachHidden','saCompressProg','saCompressPct','saCompBar','saCompDone','saCompRem','saCompEta','saCompElapsed','saCompInfo','saOfflineMsg');
+
+  /* STEP STATE */
+  var saCurStep=1,SA_TOTAL=3;
+  window.saCurStep=1;
+
+  function saSetStep(n){document.querySelectorAll('#saForm .ca-sec').forEach(function(s){s.classList.remove('active');});var s=$i('sa-s'+n);if(s)s.classList.add('active');document.querySelectorAll('#saForm .ca-step').forEach(function(s,i){s.classList.remove('active','done');if(i+1<n)s.classList.add('done');if(i+1===n)s.classList.add('active');});saCurStep=n;window.saCurStep=n;var prev=$i('saBtnPrev1');if(prev)prev.disabled=(n===1);if(n===SA_TOTAL)saBuildSummary();window.scrollTo({top:($i('saProg')||{}).offsetTop||0,behavior:'smooth'});}
+  window.saSlideTo=saSetStep;
+
+  function saValidate(step){var ok=true;function reqF(id,msg){var el=$i(id);if(!el||!el.value.trim()){var e=$i('e'+id);if(e)e.textContent=msg||'Campo requerido.';if(el)el.classList.add('bad');ok=false;}else{var e=$i('e'+id);if(e)e.textContent='';if($i(id))$i(id).classList.remove('bad');}}
+    if(step===1){reqF('saNombre','Solo letras, mín. 2 caracteres.');reqF('saApellido1','Solo letras, mín. 2 caracteres.');reqF('saApellido2','Solo letras, mín. 2 caracteres.');reqF('saGenero','Selecciona una opción.');reqF('saFNac','Selecciona fecha.');reqF('saRFC','RFC requerido.');reqF('saCURP','CURP requerido.');reqF('saEmail','Correo inválido.');var tn=(V('saTelNum')||'').replace(/\D/g,'');var tw=$i('saTelWr');if(tn.length<7){var et=$i('esaTelNum');if(et)et.textContent='Mín. 7 dígitos.';if(tw){tw.classList.add('bad');tw.classList.remove('ok');}ok=false;}else{var et2=$i('esaTelNum');if(et2)et2.textContent='';if(tw){tw.classList.add('ok');tw.classList.remove('bad');}}}
+    if(step===2){reqF('saCondicion','Selecciona la condición.');reqF('saMarca','Selecciona la marca.');if(V('saMarca')==='Otra')reqF('saOtraMarca','Escribe la marca.');reqF('saVersion','Ingresa la versión.');reqF('saAnio','Selecciona el año.');reqF('saValorVeh','Ingresa el valor.');}
+    if(step===3){var eu=$i('esaUpErr');var saFilesArr=window['$saFiles']?window['$saFiles']():[];if(!saFilesArr.length){if(eu){eu.textContent='Adjunta al menos un documento.';eu.style.display='block';}ok=false;}else{if(eu){eu.textContent='';eu.style.display='none';}}if(!saDeclChecked){var ed=$i('esaDecl');if(ed)ed.textContent='Debes aceptar la declaración.';$i('saDeclBox').classList.add('bad');ok=false;}else{var ed2=$i('esaDecl');if(ed2)ed2.textContent='';$i('saDeclBox').classList.remove('bad');}}
+    return ok;}
+
+  window.saNextStep=function(cur){if(saValidate(cur)&&cur<SA_TOTAL)saSetStep(cur+1);};
+
+  /* DECL */
+  var saDeclChecked=false;
+  var saDeclRow=$i('saDeclRow');if(saDeclRow){saDeclRow.addEventListener('click',function(){saDeclChecked=!saDeclChecked;$i('saDeclChk').classList.toggle('on',saDeclChecked);$i('saDeclBox').classList.toggle('on',saDeclChecked);$i('saDeclVal').value=saDeclChecked?'Acepto':'';if(saDeclChecked){$i('saDeclBox').classList.remove('bad');var ed=$i('esaDecl');if(ed)ed.textContent='';}var btn=$i('saBtnSub');if(btn)btn.disabled=!saDeclChecked;});saDeclRow.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();saDeclRow.click();}});}
+
+  /* SUMMARY */
+  function saBuildSummary(){var box=$i('saSumBox'),cont=$i('saSumCont');if(!box||!cont)return;function mkR(k,v){var empty=!v||!String(v).trim();return'<div class="ca-sum-row"><span class="ca-sum-k">'+k+':</span>'+(empty?'<span class="ca-sum-v empty">—</span>':'<span class="ca-sum-v">'+String(v)+'</span>')+'</div>';}function mkG(ico,ttl,rows){return'<div class="ca-sum-grp"><div class="ca-sum-grp-lbl"><span class="ca-sum-grp-ico">'+ico+'</span><span class="ca-sum-grp-txt">'+ttl+'</span></div>'+rows+'</div>';}var nombre=[V('saNombre'),V('saNombre2'),V('saApellido1'),V('saApellido2')].filter(Boolean).join(' ');var mStr=V('saMarca')==='Otra'?'Otra ('+V('saOtraMarca')+')':V('saMarca');var archArr=window['$saFiles']?window['$saFiles']():[];var archStr=archArr.length?archArr.length+' archivo(s)':'Sin documentos';var g1=mkG('👤','Datos Personales',mkR('Nombre',nombre)+mkR('Género',V('saGenero'))+mkR('Fecha nac.',V('saFNac'))+mkR('RFC',V('saRFC'))+mkR('CURP',V('saCURP')));var g2=mkG('📍','Contacto y Domicilio',mkR('Teléfono',V('saTelFull')||V('saTelNum'))+mkR('Correo',V('saEmail'))+mkR('C.P.',V('saCP'))+mkR('Municipio',V('saMunicipio'))+mkR('Estado',V('saEstado')));var g3=mkG('🚗','Vehículo',mkR('Condición',V('saCondicion'))+mkR('Marca',mStr)+mkR('Versión',V('saVersion'))+mkR('Año',V('saAnio'))+mkR('Valor','MX$ '+V('saValorVeh'))+mkR('Costo seguro',$i('saCostoTxt')?$i('saCostoTxt').textContent:''));var g4=mkG('📎','Documentos',mkR('Archivos',archStr));cont.innerHTML=g1+g2+g3+g4;box.style.display='';var badge=$i('saSumBadge'),btxt=$i('saSumBadgeTxt');badge.classList.remove('pending','warn','ok');var filled=[V('saNombre'),V('saApellido1'),V('saApellido2'),V('saGenero'),V('saFNac'),V('saRFC'),V('saCURP'),V('saEmail'),V('saTelNum'),V('saCondicion'),V('saMarca'),V('saVersion'),V('saAnio'),V('saValorVeh')].filter(Boolean).length;var total=14;var pct=Math.floor((filled/total)*100)+(archArr.length?7:0)+(saDeclChecked?7:0);if(pct>=100){badge.classList.add('ok');btxt.textContent='Listo';}else if(pct>=30){badge.classList.add('warn');btxt.textContent='Incompleto';}else{badge.classList.add('pending');btxt.textContent='Pendiente';}}
+
+  /* SUBMIT SA */
+  var saBtnSub=$i('saBtnSub');
+  if(saBtnSub)saBtnSub.addEventListener('click',function(){if(!saValidate(3))return;saDoSubmit();});
+
+  window.saDoSubmit=function(){var ov=document.createElement('div');ov.className='ca-sending';ov.id='saSendingOv';ov.innerHTML='<div class="ca-send-ring"></div><div class="ca-send-msg">Enviando cotización de seguro…</div>';document.body.appendChild(ov);ov.style.display='flex';var doSend=function(){var fd=new FormData();fd.append('tipo_tramite','Seguro de Auto');fd.append('folio',V('folioHidden'));var fields=['saNombre','saNombre2','saApellido1','saApellido2','saGenero','saFNac','saRFC','saCURP','saTelFull','saEmail','saCP','saColSel','saMunicipio','saEstado','saCondicion','saMarca','saOtraMarca','saVersion','saAnio','saValorVeh','saCostoTotal'];fields.forEach(function(f){var el=$i(f)||document.querySelector('[name="'+f+'"]');if(el&&el.value)fd.append(f,el.value);});var nm=[V('saNombre'),V('saApellido1'),V('saApellido2')].filter(Boolean).join(' ');fd.set('_subject','Cotización Seguro Auto — '+nm);var saFilesArr=window['$saFiles']?window['$saFiles']():[];var saZipBlob=window['$saGetZip']?window['$saGetZip']():null;if(saZipBlob)fd.append('documentos',saZipBlob,'docs-SA-'+nm+'.zip');else if(saFilesArr.length)saFilesArr.forEach(function(f){fd.append('documentos',f,f.name);});fetch(FORMSUBMIT,{method:'POST',body:fd}).catch(function(){}).finally(function(){if(ov)ov.remove();showSASuccess();});};if(typeof grecaptcha!=='undefined'){grecaptcha.ready(function(){grecaptcha.execute(RECAPTCHA_KEY,{action:'submit_seguro_sa'}).then(function(tok){fd&&null;doSend();}).catch(doSend);});}else doSend();};
+
+  function showSASuccess(){var m=document.createElement('div');m.className='ca-success-ov';m.style.display='flex';m.innerHTML='<div class="ca-success-crd"><div class="ca-success-hdr"><div class="ca-success-chk"><svg viewBox="0 0 36 36" fill="none"><path d="M7 18l7 7L29 11" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ca-success-ttl">¡Cotización Enviada!</div><div class="ca-success-sub">Seguro de Auto · AVA · ANPAI</div></div><div class="ca-success-body"><div class="ca-success-info"><div class="ca-success-info-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><div class="ca-success-info-txt"><strong>Siguiente paso</strong>Un ejecutivo revisará tu cotización y te contactará en 24–48 horas hábiles.</div></div><div class="ca-success-divider"></div><button class="ca-success-close" onclick="this.closest(\'.ca-success-ov\').remove()">Volver al formulario</button></div></div>';document.body.appendChild(m);}
 
 })();
+
+/* ════════════════════════════════════════════════
+   TRÁMITES VEHICULARES MORELOS (TV) — INIT
+════════════════════════════════════════════════ */
+(function(){
+  var TV_REFCOSTOS={autos:2764.28,camiones:2655.71,motos:2384.28,capacidades:2492.85,publico:3144.27};
+  var tvTipoActual=null,tvPersonaActual='PF';
+
+  /* YEAR SELECTS */
+  var yr=new Date().getFullYear();
+  ['tvAAnio'].forEach(function(id){var s=$i(id);if(!s)return;for(var y=yr+1;y>=1990;y--){var o=document.createElement('option');o.value=y;o.textContent=y;s.appendChild(o);}});
+
+  /* TIPO SELECTOR */
+  document.querySelectorAll('#tvTipoGrid .tipo-card').forEach(function(card){var r=card.querySelector('input');if(!r)return;r.addEventListener('change',function(){document.querySelectorAll('#tvTipoGrid .tipo-card').forEach(function(c){c.classList.remove('sel');});card.classList.add('sel');tvTipoActual=r.value;$i('tvBodyALTA').style.display=r.value==='ALTA'?'block':'none';$i('tvBodyREF').style.display=r.value==='REF'?'block':'none';if(r.value==='ALTA'){$i('tvPersonaTipoBlk').style.display='';}else{$i('tvPersonaTipoBlk').style.display='none';}var e=$i('etvTipo');if(e)e.textContent='';});});
+
+  /* PERSONA SELECTOR */
+  document.querySelectorAll('#tvPersonaGrid .tipo-card').forEach(function(card){var r=card.querySelector('input');if(!r)return;r.addEventListener('change',function(){document.querySelectorAll('#tvPersonaGrid .tipo-card').forEach(function(c){c.classList.remove('sel');});card.classList.add('sel');tvPersonaActual=r.value;$i('tvADocsPF').style.display=r.value==='PF'?'':'none';$i('tvADocsPM').style.display=r.value==='PM'?'':'none';$i('tvRDocsPF').style.display=r.value==='PF'?'':'none';$i('tvRDocsPM').style.display=r.value==='PM'?'':'none';});});
+
+  /* ALTA VALOR → COSTO */
+  var tvAValEl=$i('tvAValor');if(tvAValEl)tvAValEl.addEventListener('input',function(){var raw=this.value.replace(/[^0-9.]/g,'');var v=parseFloat(raw);var blk=$i('tvACostoBlk'),txt=$i('tvACostoTxt'),hid=$i('tvACostoTotal');if(!v||v<=0){if(blk)blk.style.display='none';return;}var costo=v<=990000?6000:v<=1950000?6500:7500;var f='MX$ '+costo.toLocaleString('es-MX',{minimumFractionDigits:2});if(txt)txt.textContent=f;if(hid)hid.value=costo;if(blk)blk.style.display='';});
+
+  /* REFRENDO TIPO UNIDAD → COSTO */
+  var tvRTUEl=$i('tvRTipoUnidad');if(tvRTUEl)tvRTUEl.addEventListener('change',function(){var costo=TV_REFCOSTOS[this.value];var blk=$i('tvRCostoBlk'),txt=$i('tvRCostoTxt'),hid=$i('tvRCostoTotal');if(!costo){if(blk)blk.style.display='none';return;}if(txt)txt.textContent='MX$ '+costo.toLocaleString('es-MX',{minimumFractionDigits:2});if(hid)hid.value=costo;if(blk)blk.style.display='';});
+
+  /* CP */
+  buildCPModule('tvA');
+
+  /* TEL */
+  buildTelModule('tvA');
+  buildTelModule('tvR');
+
+  /* ATTACH */
+  buildAttachModule('tvAlt','tvAAttachDZ','tvAFileList','tvAAttachStats','tvAAttachDot','tvAAttachStatusTxt','tvAAttachCount',null,null,null,null,null,null,'tvAAttachHidden',null,null,null,null,null,null,null,null,'tvAOfflineMsg');
+  buildAttachModule('tvRef','tvRAttachDZ','tvRFileList',null,null,null,null,null,null,null,null,null,null,'tvRAttachHidden',null,null,null,null,null,null,null,null,null);
+  // Override drag/drop for TV to accept the suffix
+  window.tvOnDragOver=function(e,dzId){e.preventDefault();var dz=$i(dzId);if(dz)dz.classList.add('drag-over');};
+  window.tvOnDragLeave=function(e,dzId){var dz=$i(dzId);if(dz)dz.classList.remove('drag-over');};
+  window.tvOnDrop=function(e,tipo){e.preventDefault();var dzId=tipo==='ALTA'?'tvAAttachDZ':'tvRAttachDZ';var dz=$i(dzId);if(dz)dz.classList.remove('drag-over');if(tipo==='ALTA')window.tvAltHandleFiles(e.dataTransfer.files);else window.tvRefHandleFiles(e.dataTransfer.files);};
+  window.tvHandleFiles=function(fileList,tipo){if(tipo==='ALTA')window.tvAltHandleFiles(fileList);else window.tvRefHandleFiles(fileList);};
+
+  /* DECL */
+  ['tvA','tvR'].forEach(function(pfx){var declChecked=false;var row=$i(pfx+'DeclRow'),chk=$i(pfx+'DeclChk'),box=$i(pfx+'DeclBox'),val=$i(pfx+'DeclVal'),btn=$i(pfx==='tvA'?'tvAEnviarBtn':'tvREnviarBtn');if(!row)return;row.addEventListener('click',function(){declChecked=!declChecked;if(chk)chk.classList.toggle('on',declChecked);if(box){box.classList.toggle('on',declChecked);if(declChecked)box.classList.remove('bad');}if(val)val.value=declChecked?'Acepto':'';if(btn)btn.disabled=!declChecked;var e=$i('e'+pfx+'Decl');if(declChecked&&e)e.textContent='';});row.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();row.click();}});});
+
+  /* SUBMIT */
+  window.tvDoSubmit=function(tipo){var prefix=tipo==='ALTA'?'tvA':'tvR';var ov=document.createElement('div');ov.className='ca-sending';ov.style.display='flex';ov.innerHTML='<div class="ca-send-ring"></div><div class="ca-send-msg">Enviando trámite vehicular…</div>';document.body.appendChild(ov);var doSend=function(){var fd=new FormData();fd.append('tipo_tramite',tipo==='ALTA'?'Alta Vehicular Morelos':'Refrendo Vehicular Morelos');fd.append('tipo_persona',tvPersonaActual);fd.append('folio',V('folioHidden'));var scope=$i(tipo==='ALTA'?'tvBodyALTA':'tvBodyREF');if(scope)scope.querySelectorAll('input[name],select[name],textarea[name]').forEach(function(el){if(el.type!=='radio'&&el.type!=='checkbox'&&el.value)fd.append(el.name,el.value);});fd.set('_subject',(tipo==='ALTA'?'Alta':'Refrendo')+' Vehicular Morelos — '+fd.get('folio'));var filesArr=window['$'+(tipo==='ALTA'?'tvAlt':'tvRef')+'Files']?window['$'+(tipo==='ALTA'?'tvAlt':'tvRef')+'Files']():[];var zipBlob=window['$'+(tipo==='ALTA'?'tvAlt':'tvRef')+'GetZip']?window['$'+(tipo==='ALTA'?'tvAlt':'tvRef')+'GetZip']():null;if(zipBlob)fd.append('documentos',zipBlob,'docs-TV-'+tipo+'.zip');else filesArr.forEach(function(f){fd.append('documentos',f,f.name);});fetch(FORMSUBMIT,{method:'POST',body:fd}).catch(function(){}).finally(function(){if(ov)ov.remove();var m=document.createElement('div');m.className='ca-success-ov';m.style.display='flex';m.innerHTML='<div class="ca-success-crd"><div class="ca-success-hdr"><div class="ca-success-chk"><svg viewBox="0 0 36 36" fill="none"><path d="M7 18l7 7L29 11" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ca-success-ttl">¡Trámite Enviado!</div><div class="ca-success-sub">'+(tipo==='ALTA'?'Alta':'Refrendo')+' Vehicular · Morelos · AVA</div></div><div class="ca-success-body"><div class="ca-success-divider"></div><button class="ca-success-close" onclick="this.closest(\'.ca-success-ov\').remove()">Volver</button></div></div>';document.body.appendChild(m);});};if(typeof grecaptcha!=='undefined'){grecaptcha.ready(function(){grecaptcha.execute(RECAPTCHA_KEY,{action:'submit_tv'}).then(doSend).catch(doSend);});}else doSend();};
+})();
+
+/* ════════════════════════════════════════════════
+   PERMISOS CIRCULACIÓN GUERRERO (PC) — INIT
+════════════════════════════════════════════════ */
+(function(){
+  /* YEAR SELECT */
+  var yr=new Date().getFullYear();
+  var pcAEl=$i('pcAnio');if(pcAEl){for(var y=yr+1;y>=1960;y--){var o=document.createElement('option');o.value=y;o.textContent=y;pcAEl.appendChild(o);}}
+
+  /* RFC/CURP */
+  ['pcRFC','pcCURP'].forEach(function(id){var el=$i(id);if(el){el.addEventListener('input',function(){this.value=this.value.toUpperCase();});el.addEventListener('blur',function(){var v=this.value.trim();if(!v)return;var id2=this.id;var e=$i('e'+id2);if(id2==='pcCURP'){if(!/^[A-Z]{4}\d{6}[HM][A-Z]{2}[B-DF-HJ-NP-TV-Z]{3}[A-Z0-9]\d$/.test(v)){if(e)e.textContent='CURP inválido (18 caracteres RENAPO).';}else{if(e)e.textContent='';}}if(id2==='pcRFC'){if(!/^[A-ZÑ&]{3,4}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[A-Z\d]{2,3}$/.test(v)){if(e)e.textContent='RFC inválido.';}else{if(e)e.textContent='';}}});}});
+
+  /* MARCA */
+  var pcMarcaEl=$i('pcMarca');if(pcMarcaEl)pcMarcaEl.addEventListener('change',function(){var blk=$i('pcOtraMarcaBlk'),inp=$i('pcOtraMarca');if(this.value==='Otra'){if(blk)blk.style.display='';if(inp){inp.disabled=false;inp.focus();}}else{if(blk)blk.style.display='none';if(inp){inp.disabled=true;inp.value='';}};});
+
+  /* CP, TEL */
+  buildCPModule('pc');
+  buildTelModule('pc');
+
+  /* ATTACH */
+  buildAttachModule('pc','pcAttachDZ','pcFileList','pcAttachStats','pcAttachDot','pcAttachStatusTxt','pcAttachCount',null,null,null,null,null,null,'pcAttachHidden',null,null,null,null,null,null,null,null,null);
+
+  /* DECL */
+  var pcDeclChecked=false;
+  var pcDeclRow=$i('pcDeclRow');
+  if(pcDeclRow){pcDeclRow.addEventListener('click',function(){pcDeclChecked=!pcDeclChecked;var chk=$i('pcDeclChk'),box=$i('pcDeclBox'),val=$i('pcDeclVal'),btn=$i('pcEnviarBtn');if(chk)chk.classList.toggle('on',pcDeclChecked);if(box){box.classList.toggle('on',pcDeclChecked);if(pcDeclChecked)box.classList.remove('bad');}if(val)val.value=pcDeclChecked?'Acepto':'';if(btn)btn.disabled=!pcDeclChecked;var e=$i('epcDecl');if(pcDeclChecked&&e)e.textContent='';});pcDeclRow.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();pcDeclRow.click();}});}
+
+  /* SUMMARY */
+  function pcBuildSummary(){var box=$i('pcSumBox'),cont=$i('pcSumCont');if(!box||!cont)return;function mkR(k,v){var empty=!v||!String(v).trim();return'<div class="ca-sum-row"><span class="ca-sum-k">'+k+':</span>'+(empty?'<span class="ca-sum-v empty">—</span>':'<span class="ca-sum-v">'+String(v)+'</span>')+'</div>';}function mkG(ico,ttl,rows){return'<div class="ca-sum-grp"><div class="ca-sum-grp-lbl"><span class="ca-sum-grp-ico">'+ico+'</span><span class="ca-sum-grp-txt">'+ttl+'</span></div>'+rows+'</div>';}var nombre=[V('pcNombre'),V('pcNombre2'),V('pcApellido1'),V('pcApellido2')].filter(Boolean).join(' ');var mStr=V('pcMarca')==='Otra'?'Otra ('+V('pcOtraMarca')+')':V('pcMarca');var pcFilesArr=window['$pcFiles']?window['$pcFiles']():[];var archStr=pcFilesArr.length?pcFilesArr.length+' archivo(s)':'Sin documentos';var g1=mkG('👤','Datos Personales',mkR('Nombre',nombre)+mkR('Género',V('pcGenero'))+mkR('Fecha nac.',V('pcFNac'))+mkR('CURP',V('pcCURP'))+mkR('RFC',V('pcRFC')));var g2=mkG('📍','Domicilio',mkR('Teléfono',V('pcTelFull')||V('pcTelNum'))+mkR('Correo',V('pcEmail'))+mkR('C.P.',V('pcCP'))+mkR('Municipio',V('pcMunicipio'))+mkR('Estado',V('pcEstado')));var g3=mkG('🚗','Vehículo',mkR('Tipo',V('pcTipoVeh'))+mkR('Marca',mStr)+mkR('Versión',V('pcVersion'))+mkR('Año',V('pcAnio'))+mkR('No. Serie',V('pcNSerie')));var g4=mkG('📎','Documentos',mkR('Archivos',archStr));cont.innerHTML=g1+g2+g3+g4;box.style.display='';var badge=$i('pcSumBadge'),btxt=$i('pcSumBadgeTxt');badge.classList.remove('pending','warn','ok');var filled=[V('pcNombre'),V('pcApellido1'),V('pcApellido2'),V('pcGenero'),V('pcFNac'),V('pcCURP'),V('pcRFC'),V('pcEmail'),V('pcTelNum'),V('pcTipoVeh'),V('pcMarca'),V('pcVersion'),V('pcAnio'),V('pcNSerie')].filter(Boolean).length;var total=14;var pct=Math.floor((filled/total)*100)+(pcFilesArr.length?7:0)+(pcDeclChecked?7:0);if(pct>=100){badge.classList.add('ok');btxt.textContent='Listo';}else if(pct>=30){badge.classList.add('warn');btxt.textContent='Incompleto';}else{badge.classList.add('pending');btxt.textContent='Pendiente';}}
+
+  /* Build summary when key fields change */
+  ['pcNombre','pcApellido1','pcMarca','pcVersion','pcNSerie'].forEach(function(id){var el=$i(id);if(el)el.addEventListener('input',pcBuildSummary);});
+  ['pcGenero','pcTipoVeh','pcMarca','pcAnio'].forEach(function(id){var el=$i(id);if(el)el.addEventListener('change',pcBuildSummary);});
+
+  /* SUBMIT */
+  window.pcDoSubmit=function(){if(!pcDeclChecked){var e=$i('epcDecl');if(e)e.textContent='Debes aceptar la declaración.';var b=$i('pcDeclBox');if(b)b.classList.add('bad');return;}pcBuildSummary();var ov=document.createElement('div');ov.className='ca-sending';ov.style.display='flex';ov.innerHTML='<div class="ca-send-ring"></div><div class="ca-send-msg">Enviando permiso de circulación…</div>';document.body.appendChild(ov);var doSend=function(){var fd=new FormData();fd.append('tipo_tramite','Permiso de Circulación Guerrero');fd.append('folio',V('folioHidden'));document.querySelectorAll('#pcForm input[name],#pcForm select[name],#pcForm textarea[name]').forEach(function(el){if(el.type!=='radio'&&el.type!=='checkbox'&&el.value)fd.append(el.name,el.value);});var nm=[V('pcNombre'),V('pcApellido1'),V('pcApellido2')].filter(Boolean).join(' ');fd.set('_subject','Permiso Circulación Guerrero — '+nm);var pcFilesArr=window['$pcFiles']?window['$pcFiles']():[];var pcZipBlob=window['$pcGetZip']?window['$pcGetZip']():null;if(pcZipBlob)fd.append('documentos',pcZipBlob,'docs-PC.zip');else pcFilesArr.forEach(function(f){fd.append('documentos',f,f.name);});fetch(FORMSUBMIT,{method:'POST',body:fd}).catch(function(){}).finally(function(){if(ov)ov.remove();var m=document.createElement('div');m.className='ca-success-ov';m.style.display='flex';m.innerHTML='<div class="ca-success-crd"><div class="ca-success-hdr"><div class="ca-success-chk"><svg viewBox="0 0 36 36" fill="none"><path d="M7 18l7 7L29 11" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ca-success-ttl">¡Permiso Enviado!</div><div class="ca-success-sub">Circulación Guerrero · AVA · ANPAI</div></div><div class="ca-success-body"><div class="ca-success-divider"></div><button class="ca-success-close" onclick="this.closest(\'.ca-success-ov\').remove()">Volver</button></div></div>';document.body.appendChild(m);});};if(typeof grecaptcha!=='undefined'){grecaptcha.ready(function(){grecaptcha.execute(RECAPTCHA_KEY,{action:'submit_pc'}).then(doSend).catch(doSend);});}else doSend();};
+})();
+
+/* ════════════════════════════════════════════════
+   TIPO SELECTOR — SCROLL FOR SA, TV, PC
+════════════════════════════════════════════════ */
+(function(){
+  document.querySelectorAll('#tipoGrid .tipo-card').forEach(function(card){
+    var r=card.querySelector('input[type=radio]');
+    if(!r)return;
+    r.addEventListener('change',function(){
+      if(['SA','TV','PC'].indexOf(r.value)>=0){
+        setTimeout(function(){
+          var fEl=document.getElementById({'SA':'saForm','TV':'tvForm','PC':'pcForm'}[r.value]);
+          if(fEl)fEl.scrollIntoView({behavior:'smooth',block:'start'});
+        },150);
+      }
+    });
+  });
+})();
+
+/* ════════════════════════════════════════════════
+   FLOATING ACTION BUTTONS
+════════════════════════════════════════════════ */
+(function(){
+  var waBtn=document.createElement('a');
+  waBtn.href='https://wa.me/527771234567';
+  waBtn.target='_blank';
+  waBtn.rel='noopener';
+  waBtn.className='wa-btn';
+  waBtn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span class="wa-tip">💬 ¿Dudas? Chatea con nosotros</span>';
+  document.body.appendChild(waBtn);
+
+  var tramiteBtn=document.createElement('a');
+  tramiteBtn.href='https://www.anpai.com.mx/iniciar-tramite';
+  tramiteBtn.target='_blank';
+  tramiteBtn.rel='noopener';
+  tramiteBtn.className='tramite-float';
+  tramiteBtn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-2 8H7v-2h4v2zm4-4H7v-2h8v2z"/></svg><span class="tramite-tooltip">📝 Iniciar trámite</span>';
+  document.body.appendChild(tramiteBtn);
+})();
+
+});
 </script>
 </body>
 </html>
