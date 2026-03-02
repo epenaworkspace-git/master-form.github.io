@@ -4,21 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trámites en Línea — AVA</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://www.google.com/recaptcha/api.js?render=6Lc9zGUsAAAAAG2K5TAav3VrS9obGfFqXO5cnOkV" async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
+/* ═══════════════════════════════════════════════════════════
+   MASTER DESIGN TOKENS
+═══════════════════════════════════════════════════════════ */
 :root{
   --ink:#0D1B2A; --ink2:#1E3148; --gold:#C9A84C; --gold2:#F0CC7A;
   --cream:#F7F4EE; --paper:#FDFBF7; --line:#DDD8CE; --muted:#7A7265;
   --err:#C0392B; --ok:#2E7D52; --warn:#C47B0A; --r:8px;
   --shadow:0 4px 24px rgba(13,27,42,.10);
   --shadow-lg:0 12px 48px rgba(13,27,42,.18);
+  --a:#C9A84C; /* accent = gold */
+  --p:#1E3148; /* primary = ink2 */
+  --e:#C0392B;
+  --bd:#DDD8CE;
+  --bg:#F7F4EE;
+  --mid:#7A7265;
+  --lt:#A39D95;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 10% 0%,rgba(201,168,76,.07) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 90% 100%,rgba(13,27,42,.05) 0%,transparent 60%);pointer-events:none;z-index:0}
 .page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
-.wrap{max-width:780px;margin:0 auto;padding:2.5rem 1.25rem 5rem;width:100%}
+.wrap{max-width:880px;margin:0 auto;padding:2.5rem 1.25rem 5rem;width:100%}
 
 /* HEADER */
 .hdr{text-align:center;padding-bottom:2.5rem;margin-bottom:2.5rem;border-bottom:1px solid var(--line);position:relative}
@@ -41,19 +53,26 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* FORM UTILITIES */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem}
 .fg{display:flex;flex-direction:column;gap:.35rem}
 .lbl{font-size:.78rem;font-weight:600;color:var(--ink);letter-spacing:.02em}
 .lbl.req::after{content:' *';color:var(--gold)}
+.lbl .note{font-size:.7rem;font-weight:400;color:var(--muted)}
 .em{font-size:.71rem;color:var(--err);font-weight:500;min-height:.9rem}
-.sep{display:flex;align-items:center;gap:.75rem;padding:.4rem 0;margin:.5rem 0 .25rem}
+.sep{display:flex;align-items:center;gap:.75rem;padding:.4rem 0;margin:.75rem 0 .25rem}
 .sep span{font-size:.69rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 .sep::before,.sep::after{content:'';flex:1;height:1px;background:var(--line)}
+.full{grid-column:1/-1}
+.note-inline{font-size:.7rem;font-weight:400;color:var(--muted)}
 
 /* INPUTS */
 input,select,textarea{width:100%;padding:.6rem .85rem;border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;appearance:none;-webkit-appearance:none;transition:border-color .18s,box-shadow .18s,background .18s}
-input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15);background:#fffef9}
-input.bad,select.bad{border-color:var(--err)}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15);background:#fffef9}
+input.bad,select.bad,textarea.bad{border-color:var(--err)!important;box-shadow:0 0 0 3px rgba(192,57,43,.08)!important}
+input.ok,select.ok{border-color:var(--gold)}
+input:disabled,select:disabled{background:var(--cream);color:var(--muted);cursor:not-allowed;opacity:.7}
 select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath fill='%237A7265' d='M5.5 7L0 0h11z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center}
+textarea{resize:vertical;min-height:76px}
 
 /* FOLIO FIELD */
 .folio-field{display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;background:var(--cream);border:1.5px solid var(--line);border-radius:var(--r)}
@@ -62,7 +81,7 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 .folio-txt.empty{color:var(--muted);font-weight:400;font-size:.84rem;letter-spacing:0}
 .folio-status{margin-left:auto;font-size:.72rem;font-weight:600;padding:.18rem .6rem;border-radius:4px;white-space:nowrap}
 .folio-status.pen{background:rgba(201,168,76,.12);color:var(--warn)}
-.folio-status.ok{background:rgba(46,125,82,.1);color:var(--ok)}
+.folio-status.ok-st{background:rgba(46,125,82,.1);color:var(--ok)}
 
 /* TIPO CARDS */
 .tipo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.85rem}
@@ -82,10 +101,12 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 /* LADA */
 .tel-wr{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:var(--r);overflow:hidden;background:#fff;transition:border-color .18s,box-shadow .18s}
 .tel-wr:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15)}
+.tel-wr.bad{border-color:var(--err)!important}
+.tel-wr.ok{border-color:var(--gold)}
 .lada-sel{border:none;border-right:1.5px solid var(--line);border-radius:0;background:#F5F3EE;padding:.6rem .45rem .6rem .7rem;font-size:.8rem;font-weight:600;color:var(--ink2);flex-shrink:0;min-width:82px;max-width:110px;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%237A7265' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .4rem center;padding-right:1.4rem;outline:none;cursor:pointer;box-shadow:none}
-.tel-num{border:none !important;border-radius:0 !important;flex:1;min-width:0;box-shadow:none !important;background:transparent !important}
+.tel-num{border:none!important;border-radius:0!important;flex:1;min-width:0;box-shadow:none!important;background:transparent!important}
 
-/* AP — RADIO PILLS */
+/* RADIO PILLS */
 .pills{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.35rem}
 .rpill{display:inline-flex;align-items:center;gap:.45rem;padding:.45rem .95rem;border:1.5px solid var(--line);border-radius:6px;background:#fff;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--muted);transition:all .18s;user-select:none;position:relative}
 .rpill input{position:absolute;opacity:0;width:0;height:0}
@@ -94,19 +115,19 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 .rdot{width:10px;height:10px;border-radius:50%;border:2px solid currentColor;position:relative;flex-shrink:0}
 .rpill.on .rdot::after{content:'';position:absolute;inset:1px;background:var(--gold);border-radius:50%}
 
-/* AP — CHECKBOX PILLS */
+/* CHECKBOX PILLS */
 .cpill{display:inline-flex;align-items:center;gap:.5rem;padding:.45rem .95rem;border:1.5px solid var(--line);border-radius:6px;background:#fff;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--muted);transition:all .18s;user-select:none;position:relative}
 .cpill input{position:absolute;opacity:0;width:0;height:0}
 .cpill:hover{border-color:var(--gold);color:var(--ink2)}
 .cpill.on{border-color:var(--gold);background:rgba(201,168,76,.08);color:var(--ink2)}
 .cbox{width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;font-weight:700;line-height:1;color:var(--gold)}
 
-/* AP — INMUEBLE TOGGLE */
+/* INMUEBLE TOGGLE */
 .imm-btns{display:flex;gap:.5rem;margin-bottom:.85rem}
 .imm-btn{padding:.45rem 1.1rem;border-radius:6px;border:1.5px solid var(--line);background:var(--cream);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .18s}
 .imm-btn.on{background:var(--ink2);color:#fff;border-color:var(--ink2)}
 
-/* AP — MINI TABLES */
+/* MINI TABLES */
 .ap-tbl{width:100%;border-collapse:collapse;font-size:.83rem}
 .ap-tbl th{padding:.5rem .8rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1.5px solid var(--line);background:var(--cream)}
 .ap-tbl td{padding:.35rem .6rem;border-bottom:1px solid var(--line)}
@@ -145,17 +166,262 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 @keyframes spin{to{transform:rotate(360deg)}}
 .legal{font-size:.72rem;color:var(--muted);text-align:center;line-height:1.65;margin-top:.75rem}
 
-/* FOOTER */
-.ft{text-align:center;padding:1.5rem 1rem;font-size:.72rem;color:var(--muted);border-top:1px solid var(--line);margin-top:2.5rem}
-.ft strong{color:var(--ink2)}
+/* ═══════════════════════════════════════════════════════════
+   STEPBAR — CRÉDITO DE AUTO (CA)
+═══════════════════════════════════════════════════════════ */
+.ca-prog{display:flex;align-items:center;margin-bottom:1.75rem;padding:1rem 1.25rem;background:var(--cream);border:1px solid var(--line);border-radius:10px}
+.ca-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:.28rem;position:relative;cursor:pointer}
+.ca-step:not(:last-child)::after{content:'';position:absolute;top:14px;left:calc(50% + 15px);width:calc(100% - 30px);height:2px;background:var(--line);z-index:0;transition:background .3s}
+.ca-step.done:not(:last-child)::after{background:var(--gold)}
+.ca-sc{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;background:#fff;color:var(--muted);position:relative;z-index:1;transition:all .25s}
+.ca-step.active .ca-sc{border-color:var(--gold);background:var(--gold);color:#fff;box-shadow:0 0 0 4px rgba(201,168,76,.2)}
+.ca-step.done .ca-sc{border-color:var(--gold);background:var(--gold);color:#fff}
+.ca-sl{font-size:.58rem;font-weight:600;color:var(--muted);text-align:center;line-height:1.2;transition:color .2s}
+.ca-step.active .ca-sl,.ca-step.done .ca-sl{color:var(--gold)}
 
-/* OVERLAY ENVIANDO */
+/* CA sections */
+.ca-sec{display:none}
+.ca-sec.active{display:block}
+
+/* CA — SEC HEADER */
+.ca-sec-hdr{display:flex;align-items:center;gap:.7rem;padding-bottom:1.1rem;border-bottom:1px solid var(--line);margin-bottom:1.5rem;border-top:3px solid var(--gold);padding-top:.75rem;border-radius:0}
+.ca-sec-ico{width:34px;height:34px;border-radius:7px;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ca-sec-ico svg{width:18px;height:18px;fill:var(--ink2)}
+.ca-sec-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:600;color:var(--ink2)}
+
+/* CA — COND BLOCK */
+.cond-block{overflow:hidden;transition:max-height .38s cubic-bezier(.4,0,.2,1),opacity .3s ease;max-height:0;opacity:0}
+.cond-block.open{max-height:800px;opacity:1}
+
+/* CA — CURRENCY PREFIX */
+.cur-wr{position:relative}
+.cur-pre{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);font-size:.84rem;font-weight:600;color:var(--muted);pointer-events:none}
+.cur-wr input{padding-left:3rem}
+
+/* CA — CP SPINNER */
+.cp-wr{position:relative}
+.cp-spin{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);width:14px;height:14px;border:2px solid rgba(201,168,76,.25);border-top-color:var(--gold);border-radius:50%;animation:spin .65s linear infinite}
+
+/* CA — AUTOFILL */
+.autofill{border-color:var(--gold)!important;background:rgba(201,168,76,.04)!important;color:var(--ink2)!important;font-weight:600}
+
+/* CA — REFERENCIAS */
+.ref-box{border:1.5px solid var(--line);border-radius:9px;padding:1rem 1.1rem;margin-bottom:.85rem;transition:border-color .18s}
+.ref-box:focus-within{border-color:var(--gold)}
+.ref-ttl{font-size:.82rem;font-weight:600;color:var(--ink2);margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+.ref-ttl::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+
+/* CA — PAGO INICIAL */
+.pay-box{border:1.5px solid var(--line);border-radius:9px;padding:1.1rem;background:var(--cream);transition:border-color .18s}
+.pay-box:focus-within{border-color:var(--gold)}
+.pay-ttl{font-size:.82rem;font-weight:600;color:var(--ink2);margin-bottom:.85rem}
+.pay-row{display:flex;gap:1rem;flex-wrap:wrap}
+.pay-radios{display:flex;flex-direction:column;gap:.55rem;min-width:148px}
+.pay-rlbl{display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.84rem;font-weight:500;padding:.45rem .7rem;border-radius:6px;border:1.5px solid var(--line);background:#fff;transition:all .18s;user-select:none}
+.pay-rlbl:hover{border-color:var(--gold)}
+.pay-rlbl input[type=radio]{display:none}
+.pay-rc{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s}
+.pay-rc::after{content:'';width:5px;height:5px;border-radius:50%;background:#fff;opacity:0;transition:opacity .18s}
+.pay-rlbl input:checked~.pay-rc{border-color:var(--gold);background:var(--gold)}
+.pay-rlbl input:checked~.pay-rc::after{opacity:1}
+.pay-rlbl:has(input:checked){border-color:var(--gold);background:rgba(201,168,76,.07);color:var(--ink2)}
+.pay-in{flex:1;min-width:185px}
+
+/* CA — ENGANCHE STEPPER */
+.eng-stepper{display:flex;align-items:center;gap:.5rem}
+.eng-btn{width:34px;height:34px;border-radius:6px;background:var(--cream);border:1.5px solid var(--line);font-size:1.1rem;font-weight:700;cursor:pointer;color:var(--ink2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-family:'DM Sans',sans-serif}
+.eng-btn:hover{border-color:var(--gold);background:rgba(201,168,76,.1)}
+
+/* CA — DEP GRID */
+.dep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:.75rem;margin-top:.5rem}
+.dep-item{display:flex;flex-direction:column;gap:.28rem}
+.dep-lbl-sm{font-size:.74rem;font-weight:600;color:var(--ink2)}
+
+/* CA — ADJUNTOS */
+.attach-wrap{border:2px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;transition:border-color .25s}
+.attach-dropzone{border:none;border-bottom:2px dashed var(--line);border-radius:0;padding:28px 20px 22px;text-align:center;cursor:pointer;transition:all .3s;background:transparent;position:relative;overflow:hidden}
+.attach-dropzone:hover,.attach-dropzone.drag-over{background:rgba(201,168,76,.04)}
+.attach-dropzone.drag-over{border-color:var(--gold)}
+.attach-dropzone.drag-over::before{content:'Suelta aquí';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--gold);background:rgba(201,168,76,.06);z-index:2}
+.attach-folder-icon{font-size:46px;margin-bottom:10px;display:block}
+.attach-dz-text{font-size:13.5px;color:#555;line-height:1.6}
+.attach-dz-text a{color:var(--gold);font-weight:700;cursor:pointer;text-decoration:none}
+.attach-dz-text a:hover{text-decoration:underline}
+.attach-formats-line{font-size:12px;color:var(--muted);margin-top:4px}
+.attach-auto-compress-line{font-size:12px;color:var(--gold);font-weight:700;margin-top:3px}
+.attach-limit-line{font-size:12px;color:var(--muted);margin-top:2px}
+.attach-limit-line strong{color:var(--ink)}
+.attach-realtime-stats{display:none;align-items:center;gap:10px;justify-content:center;margin:8px auto 0;font-size:12.5px;font-weight:600;color:#444;background:rgba(201,168,76,.08);border-radius:7px;padding:7px 18px;width:fit-content;min-width:200px}
+.attach-realtime-stats.visible{display:flex}
+.attach-stats-sep{color:var(--line);font-weight:300}
+.attach-capacity-wrap{padding:12px 16px 0;display:none}
+.attach-capacity-wrap.visible{display:block}
+.attach-cap-hdr{display:flex;justify-content:space-between;margin-bottom:6px}
+.attach-cap-lbl{font-size:10.5px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.5px}
+.attach-cap-val{font-size:11.5px;color:var(--muted);font-weight:500}
+.attach-bar-track{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.attach-bar-fill{height:100%;border-radius:99px;transition:width .4s ease;position:relative;overflow:hidden}
+.attach-bar-fill::after{content:'';position:absolute;top:0;left:-60px;width:50px;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);animation:barShine 1.8s infinite}
+@keyframes barShine{0%{left:-60px}100%{left:calc(100% + 20px)}}
+.attach-bar-fill.bar-ok{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.attach-bar-fill.bar-warn{background:linear-gradient(90deg,#E87B35,#F0A860)}
+.attach-bar-fill.bar-err{background:linear-gradient(90deg,var(--err),#E05C4E);animation:none}
+.attach-bar-fill.bar-err::after{display:none}
+.attach-status{margin-top:5px;font-size:12px;display:flex;align-items:center;gap:6px;padding-bottom:12px}
+.attach-status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.attach-status-dot.bar-ok{background:var(--gold)}
+.attach-status-dot.bar-err{background:var(--err);animation:pulse-err 1s infinite}
+@keyframes pulse-err{0%,100%{opacity:1}50%{opacity:.35}}
+.attach-err-msg{background:rgba(192,57,43,.07);border:1.5px solid rgba(192,57,43,.3);border-radius:9px;padding:9px 13px;font-size:12px;color:var(--err);margin:10px 16px 0;display:none;align-items:center;gap:7px}
+.attach-err-msg.show{display:flex}
+.attach-leg{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px 0}
+.attach-leg-card{display:flex;align-items:flex-start;gap:10px;border-radius:9px;padding:10px 12px;font-size:12px;line-height:1.5}
+.attach-leg-card.ok{background:#f5fbf5;border:1.5px solid #b7ddb7}
+.attach-leg-card.bad{background:#fdf5f5;border:1.5px solid #f0aaaa}
+.attach-leg-ico{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:1px}
+.attach-leg-card.ok .attach-leg-ico{background:var(--ok);color:#fff}
+.attach-leg-card.bad .attach-leg-ico{background:var(--err);color:#fff}
+.attach-leg-title{font-weight:800;font-size:11.5px;letter-spacing:.3px;text-transform:uppercase;margin-bottom:1px}
+.attach-leg-card.ok .attach-leg-title{color:#1a4d1a}
+.attach-leg-card.bad .attach-leg-title{color:#7a1a1a}
+.attach-leg-desc{color:#666;font-size:11px}
+.attach-docs-req{border:2px solid #d9e8f7;border-radius:11px;background:#eef5fb;padding:12px 16px 10px;margin-top:10px}
+.attach-docs-req-ttl{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;color:#1e4080;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px}
+.attach-docs-list{list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+.attach-docs-list li{display:flex;align-items:flex-start;flex-wrap:wrap;gap:5px;font-size:12.5px;line-height:1.5}
+.attach-docs-badge{display:inline-flex;align-items:center;background:var(--ink2);color:#fff;font-size:10px;font-weight:700;border-radius:4px;padding:1px 6px;letter-spacing:.3px;text-transform:uppercase;flex-shrink:0;margin-top:2px}
+.attach-docs-name{font-weight:700;color:#1a3a6a}
+.attach-docs-desc{font-size:11.5px;color:#4b6cb0;flex-basis:100%;padding-left:1px}
+.attach-docs-note{font-size:11.5px;color:#374151;line-height:1.6;background:rgba(255,255,255,.65);border-radius:7px;padding:7px 11px;display:flex;align-items:flex-start;gap:6px;border:1px solid #c7d8f7;margin-top:6px}
+.attach-file-list{padding:10px 14px;display:flex;flex-direction:column;gap:7px}
+.attach-file-list:empty{padding:0}
+.attach-file-item{display:flex;align-items:center;gap:9px;background:var(--cream);border:1px solid var(--line);border-radius:9px;padding:9px 12px;transition:border-color .15s}
+.attach-file-item:hover{border-color:var(--gold)}
+.attach-file-ico{font-size:17px;flex-shrink:0}
+.attach-file-nm{flex:1;font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.attach-file-sz{font-size:11.5px;color:var(--muted);flex-shrink:0;margin-right:3px}
+.attach-file-rm{width:24px;height:24px;border-radius:50%;border:none;background:rgba(192,57,43,.1);color:var(--err);cursor:pointer;font-size:14px;font-weight:700;transition:all .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.attach-file-rm:hover{background:var(--err);color:#fff}
+.compress-prog{display:none;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;margin-top:12px}
+.compress-prog.show{display:block}
+.compress-hdr{background:var(--ink2);padding:10px 14px;display:flex;align-items:center;gap:7px}
+.compress-hdr-txt{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff}
+.compress-pct-val{font-weight:700;color:var(--gold2);font-size:12px;margin-left:auto}
+.compress-body{padding:12px 14px;background:#fff}
+.compress-stat-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.compress-stat{text-align:center}
+.compress-stat-v{font-size:15px;font-weight:800;color:var(--ink2)}
+.compress-stat-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
+.compress-bar-track{height:7px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:7px}
+.compress-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:99px;width:0%;transition:width .3s ease;position:relative;overflow:hidden}
+.compress-bar-fill::after{content:'';position:absolute;top:0;left:-60px;width:50px;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:barShine 1.5s infinite}
+.compress-info-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.offline-msg{background:rgba(192,57,43,.07);border:1.5px solid rgba(192,57,43,.25);border-radius:9px;padding:9px 13px;font-size:12px;color:var(--err);margin-top:8px;display:none;align-items:center;gap:7px}
+.offline-msg.show{display:flex}
+
+/* CA — RESUMEN */
+.ca-sumbox{background:var(--paper);border:1.5px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:1.25rem;animation:sumReveal .4s ease forwards}
+@keyframes sumReveal{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ca-sum-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--ink2);position:relative;overflow:hidden}
+.ca-sum-hd::before{content:'';position:absolute;top:-25px;right:-25px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.2) 0%,transparent 70%);pointer-events:none}
+.ca-sum-hd-l{display:flex;align-items:center;gap:9px;position:relative;z-index:1}
+.ca-sum-hd-ico{width:30px;height:30px;border-radius:7px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center}
+.ca-sum-hd-ico svg{width:15px;height:15px;fill:#fff}
+.ca-sum-ttl{font-family:'Playfair Display',serif;font-size:12.5px;font-weight:700;color:#fff;letter-spacing:.05em;text-transform:uppercase}
+.ca-sum-sub{font-size:10.5px;color:rgba(255,255,255,.5);margin-top:1px}
+.ca-sum-badge{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:4px 12px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;position:relative;z-index:1;transition:all .4s}
+.ca-sum-badge.pending{background:rgba(163,157,149,.15);border:1px solid rgba(163,157,149,.35);color:var(--muted)}
+.ca-sum-badge.warn{background:rgba(196,123,10,.15);border:1px solid rgba(196,123,10,.4);color:#E09010}
+.ca-sum-badge.ok{background:rgba(46,125,82,.15);border:1px solid rgba(46,125,82,.4);color:#3d9e6a}
+.badge-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:currentColor}
+.ca-sum-grp{padding:10px 18px}
+.ca-sum-grp+.ca-sum-grp{border-top:1px solid var(--line)}
+.ca-sum-grp-lbl{display:flex;align-items:center;gap:6px;margin-bottom:7px}
+.ca-sum-grp-ico{font-size:13px}
+.ca-sum-grp-txt{font-size:10.5px;font-weight:800;color:var(--gold);letter-spacing:.1em;text-transform:uppercase}
+.ca-sum-row{display:flex;align-items:baseline;gap:7px;font-size:12.5px;line-height:1.85}
+.ca-sum-k{color:var(--muted);font-weight:500;min-width:138px;flex-shrink:0;font-size:11.5px}
+.ca-sum-v{color:var(--ink);font-weight:600;word-break:break-word;text-transform:uppercase}
+.ca-sum-v.empty{color:var(--lt);font-weight:400;font-style:italic;text-transform:none}
+.ca-sum-chip{display:inline-flex;align-items:center;background:rgba(201,168,76,.1);color:var(--ink2);border:1px solid rgba(201,168,76,.25);border-radius:99px;padding:2px 9px;font-size:10.5px;font-weight:700}
+.ca-sum-chip.files{background:rgba(46,125,82,.08);color:#2a6a42;border-color:rgba(46,125,82,.2)}
+.ca-sum-ft{border-top:1px solid var(--line);padding:9px 18px;background:var(--cream);display:flex;align-items:flex-start;gap:7px}
+.ca-sum-ft-txt{font-size:11.5px;color:var(--muted);line-height:1.6}
+.ca-sum-ft-txt strong{color:var(--ink2)}
+
+/* CA — NAV */
+.ca-nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.25rem 0;border-top:1px solid var(--line);margin-top:1.5rem;flex-wrap:wrap}
+.ca-btn{display:inline-flex;align-items:center;gap:.42rem;padding:.55rem 1.4rem;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:600;cursor:pointer;border:2px solid transparent;transition:all .18s;user-select:none}
+.ca-btn-prev{background:var(--cream);color:var(--ink2);border-color:var(--line)}
+.ca-btn-prev:hover:not(:disabled){border-color:var(--gold);background:#fffef9}
+.ca-btn-prev:disabled{opacity:.4;cursor:not-allowed}
+.ca-btn-next{background:var(--ink2);color:#fff;border-color:var(--ink2)}
+.ca-btn-next:hover:not(:disabled){background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.ca-btn-next:disabled{background:var(--line);color:var(--muted);border-color:var(--line);cursor:not-allowed}
+.ca-step-ind{font-size:.77rem;color:var(--muted);font-weight:500}
+.ca-btn-sub{background:var(--ink2);color:#fff;border:2px solid var(--ink2);padding:.6rem 1.8rem;font-size:.86rem;letter-spacing:.04em;text-transform:uppercase;display:none}
+.ca-btn-sub:hover:not(:disabled){background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.ca-btn-sub:disabled{background:var(--line);color:var(--muted);border-color:var(--line);cursor:not-allowed}
+.ca-btn svg{width:13px;height:13px;fill:currentColor}
+
+/* CA — FLOATING PROGRESS */
+.ca-prog-float{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:1500;display:none;width:calc(100% - 180px);max-width:700px;min-width:260px;pointer-events:none}
+.ca-prog-float.visible{display:block}
+.ca-prog-pill{background:var(--paper);border-radius:60px;padding:9px 18px 9px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(13,27,42,.14),0 1px 4px rgba(13,27,42,.08);border:1px solid rgba(13,27,42,.07)}
+.ca-prog-track{flex:1;height:7px;background:var(--line);border-radius:99px;overflow:hidden}
+.ca-prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:99px;width:0%;transition:width .45s cubic-bezier(.4,0,.2,1)}
+.ca-prog-txt{font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap;flex-shrink:0;min-width:120px;text-align:right}
+.ca-prog-txt strong{color:var(--gold);font-weight:700}
+
+/* CA — MOTIVATIONAL MODALS */
+.motiv-ov{position:fixed;inset:0;background:rgba(13,27,42,.65);backdrop-filter:blur(8px);z-index:8000;display:none;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.motiv-ov.show{display:flex;opacity:1;pointer-events:all}
+.motiv-crd{background:var(--paper);border-radius:24px;width:100%;max-width:380px;box-shadow:var(--shadow-lg);overflow:hidden;transform:scale(.87) translateY(28px);transition:transform .42s cubic-bezier(.34,1.56,.64,1)}
+.motiv-ov.show .motiv-crd{transform:scale(1) translateY(0)}
+.motiv-crd-top{padding:32px 28px 20px;position:relative;overflow:hidden}
+.motiv-deco{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.motiv-deco::before{content:'';position:absolute;top:-50px;right:-50px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.1) 0%,transparent 70%)}
+.motiv-emoji{font-size:58px;line-height:1;margin-bottom:12px;display:block;filter:drop-shadow(0 5px 12px rgba(0,0,0,.15));animation:emojiBounce .5s .1s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes emojiBounce{from{opacity:0;transform:scale(.3) translateY(-15px) rotate(-12deg)}to{opacity:1;transform:scale(1) translateY(0) rotate(0deg)}}
+.motiv-title{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.25}
+.motiv-text{font-size:13px;color:var(--muted);line-height:1.62}
+.motiv-crd-bot{padding:16px 24px 24px}
+.motiv-btn{width:100%;padding:13px 20px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:all .22s;letter-spacing:.3px;font-family:'DM Sans',sans-serif;background:var(--ink2);color:#fff}
+.motiv-btn:hover{background:var(--gold);color:var(--ink);transform:translateY(-1px)}
+
+/* CA — ÉXITO MODAL */
+.ca-success-ov{display:none;position:fixed;inset:0;background:rgba(13,27,42,.75);backdrop-filter:blur(6px);z-index:9000;align-items:center;justify-content:center;padding:20px}
+.ca-success-ov.show{display:flex}
+.ca-success-crd{background:var(--paper);border-radius:24px;width:100%;max-width:440px;box-shadow:var(--shadow-lg);animation:popIn .42s cubic-bezier(.34,1.56,.64,1);overflow:hidden}
+@keyframes popIn{from{opacity:0;transform:scale(.82) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.ca-success-hdr{background:var(--ink2);padding:36px 36px 32px;position:relative;overflow:hidden;text-align:center}
+.ca-success-hdr::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.25) 0%,transparent 70%)}
+.ca-success-chk{width:66px;height:66px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;position:relative;z-index:1;box-shadow:0 8px 22px rgba(201,168,76,.4);animation:checkPop .48s .28s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes checkPop{from{transform:scale(0) rotate(-18deg)}to{transform:scale(1) rotate(0deg)}}
+.ca-success-chk svg{width:32px;height:32px}
+.ca-success-ttl{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#fff;margin-bottom:6px;position:relative;z-index:1}
+.ca-success-sub{font-size:12.5px;color:rgba(255,255,255,.55);letter-spacing:.12em;text-transform:uppercase;position:relative;z-index:1}
+.ca-success-body{padding:24px 28px 28px}
+.ca-success-info{display:flex;align-items:flex-start;gap:12px;background:var(--cream);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.ca-success-info-ico{width:35px;height:35px;border-radius:9px;background:rgba(201,168,76,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ca-success-info-ico svg{width:16px;height:16px;stroke:var(--ink2);fill:none;stroke-width:1.8;stroke-linecap:round}
+.ca-success-info-txt{font-size:12.5px;color:var(--muted);line-height:1.6}
+.ca-success-info-txt strong{display:block;color:var(--ink);font-size:13.5px;font-weight:700;margin-bottom:3px}
+.ca-success-divider{height:1px;background:var(--line);margin:18px 0}
+.ca-success-close{width:100%;background:var(--ink2);color:#fff;border:none;border-radius:12px;padding:14px 24px;font-size:14px;font-weight:700;cursor:pointer;transition:all .22s;font-family:'DM Sans',sans-serif}
+.ca-success-close:hover{background:var(--gold);color:var(--ink);transform:translateY(-1px)}
+
+/* CA — SENDING OVERLAY */
+.ca-sending{position:fixed;inset:0;background:rgba(13,27,42,.62);backdrop-filter:blur(5px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:9998;opacity:0;visibility:hidden;transition:.25s}
+.ca-sending.on{opacity:1;visibility:visible}
+.ca-send-ring{width:44px;height:44px;border:4px solid rgba(255,255,255,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .7s linear infinite}
+.ca-send-msg{font-size:.93rem;font-weight:600;color:#fff;letter-spacing:.03em}
+
+/* GLOBAL OVERLAYS */
 .sending-ov{position:fixed;inset:0;background:rgba(13,27,42,.65);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:9998;opacity:0;visibility:hidden;transition:.25s}
 .sending-ov.on{opacity:1;visibility:visible}
 .send-ring{width:48px;height:48px;border:4px solid rgba(255,255,255,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .7s linear infinite}
 .send-msg{font-size:.95rem;font-weight:600;color:#fff;letter-spacing:.03em}
-
-/* MODAL ÉXITO */
 .overlay{position:fixed;inset:0;background:rgba(13,27,42,.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1.5rem;opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
 .overlay.on{opacity:1;visibility:visible}
 .modal{background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-lg);max-width:440px;width:100%;padding:2.5rem 2rem;text-align:center;transform:scale(.92) translateY(12px);transition:transform .38s cubic-bezier(.34,1.56,.64,1)}
@@ -170,21 +436,27 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 .modal-btn{background:var(--ink2);color:#fff;border:none;padding:.62rem 2rem;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.87rem;font-weight:600;cursor:pointer;transition:background .18s,transform .15s;letter-spacing:.03em}
 .modal-btn:hover{background:var(--gold);color:var(--ink);transform:translateY(-1px)}
 
+/* FOOTER */
+.ft{text-align:center;padding:1.5rem 1rem;font-size:.72rem;color:var(--muted);border-top:1px solid var(--line);margin-top:2.5rem}
+.ft strong{color:var(--ink2)}
+
 /* RESPONSIVE */
 @media(max-width:700px){.tipo-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:640px){
-  .wrap{padding:1.5rem .85rem 4rem}
-  .hdr-logo{font-size:2rem}
+  .wrap{padding:1.5rem .85rem 4rem}.hdr-logo{font-size:2rem}
   .card-top{flex-direction:column;align-items:flex-start;gap:.6rem}
   .card-body{padding:1.35rem 1.25rem 2rem}
-  .g2{grid-template-columns:1fr}
+  .g2,.g3{grid-template-columns:1fr}
   .docs-grid{grid-template-columns:1fr}
+  .ca-sum-k{min-width:100px}
 }
-@media(max-width:420px){
-  .tipo-grid{grid-template-columns:1fr 1fr}
-  .hdr-logo{font-size:1.75rem}
-  .modal{padding:2rem 1.4rem}
+@media(max-width:580px){
+  .ca-prog{padding:.65rem .45rem}.ca-sc{width:25px;height:25px;font-size:.64rem}
+  .ca-sl{font-size:.53rem}
+  .ca-step:not(:last-child)::after{left:calc(50% + 13px);width:calc(100% - 26px);top:12px}
+  .ca-nav{flex-wrap:wrap}.ca-step-ind{width:100%;text-align:center;order:-1}
 }
+@media(max-width:420px){.tipo-grid{grid-template-columns:1fr 1fr}.hdr-logo{font-size:1.75rem}.modal{padding:2rem 1.4rem}}
 </style>
 </head>
 <body>
@@ -213,7 +485,7 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
 
   <div class="card-body">
 
-    <!-- SELECTOR TIPO DE TRÁMITE -->
+    <!-- TIPO SELECTOR -->
     <div class="sep"><span>Tipo de Trámite</span></div>
     <div class="fg" style="margin-bottom:1.25rem">
       <label class="lbl req">Selecciona el tipo de trámite</label>
@@ -268,35 +540,324 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
       <input type="hidden" id="folioHidden">
     </div>
 
-    <!-- ══════════════════════════════════════════════
-         FORMULARIO ARRENDAMIENTO PURO
-         (separado del grid, flujo propio)
-    ══════════════════════════════════════════════ -->
-    <div id="apForm" style="display:none">
+    <!-- ═══════════════════════════════════════════════════════
+         FORMULARIO CRÉDITO DE AUTO (CA)
+    ═══════════════════════════════════════════════════════ -->
+    <div id="caForm" style="display:none">
 
-      <!-- Selector PF / PM -->
+      <!-- STEPBAR -->
+      <div class="ca-prog" id="caProg" style="margin-top:.75rem">
+        <div class="ca-step active" data-cs="1"><div class="ca-sc">1</div><span class="ca-sl">Datos<br>Personales</span></div>
+        <div class="ca-step" data-cs="2"><div class="ca-sc">2</div><span class="ca-sl">Datos de<br>Domicilio</span></div>
+        <div class="ca-step" data-cs="3"><div class="ca-sc">3</div><span class="ca-sl">Referencias</span></div>
+        <div class="ca-step" data-cs="4"><div class="ca-sc">4</div><span class="ca-sl">Vehículo<br>y Financ.</span></div>
+        <div class="ca-step" data-cs="5"><div class="ca-sc">5</div><span class="ca-sl">Docs y<br>Envío</span></div>
+      </div>
+
+      <!-- ─── SECCIÓN 1: DATOS PERSONALES ─── -->
+      <div class="ca-sec active" id="ca-s1">
+        <div class="ca-sec-hdr">
+          <div class="ca-sec-ico"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v1h20v-1c0-3.3-6.7-5-10-5z"/></svg></div>
+          <h2 class="ca-sec-title">Datos Personales</h2>
+        </div>
+        <div class="g2">
+          <div class="fg"><label class="lbl req" for="caNombre">Primer Nombre</label><input id="caNombre" name="caNombre" type="text" placeholder="Tu primer nombre" autocomplete="given-name" style="text-transform:uppercase"><span class="em" id="ecaNombre"></span></div>
+          <div class="fg"><label class="lbl" for="caNombre2">Segundo Nombre <span class="note-inline">(opcional)</span></label><input id="caNombre2" name="caNombre2" type="text" placeholder="Tu segundo nombre" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="lbl req" for="caApellido1">Primer Apellido</label><input id="caApellido1" name="caApellido1" type="text" placeholder="Tu primer apellido" autocomplete="family-name" style="text-transform:uppercase"><span class="em" id="ecaApellido1"></span></div>
+          <div class="fg"><label class="lbl req" for="caApellido2">Segundo Apellido</label><input id="caApellido2" name="caApellido2" type="text" placeholder="Tu segundo apellido" style="text-transform:uppercase"><span class="em" id="ecaApellido2"></span></div>
+          <div class="fg"><label class="lbl req" for="caGenero">Género</label><select id="caGenero" name="caGenero"><option value="" disabled selected>Selecciona</option><option>Masculino</option><option>Femenino</option></select><span class="em" id="ecaGenero"></span></div>
+          <div class="fg"><label class="lbl req" for="caFNac">Fecha de Nacimiento</label><input id="caFNac" name="caFNac" type="date" autocomplete="bday"><span class="em" id="ecaFNac"></span></div>
+          <div class="fg"><label class="lbl" for="caEdad">Edad <span class="note-inline">(calculada automáticamente)</span></label><input id="caEdad" name="caEdad" type="text" readonly disabled placeholder="—"></div>
+          <div class="fg"><label class="lbl req" for="caEstCivil">Estado Civil</label><select id="caEstCivil" name="caEstCivil"><option value="" disabled selected>Selecciona</option><option value="Soltero(a)">Soltero(a)</option><option value="Casado(a)">Casado(a)</option></select><span class="em" id="ecaEstCivil"></span></div>
+          <div class="fg cond-block" id="caRegimenBlk"><label class="lbl req" for="caRegimen">Régimen Matrimonial</label><select id="caRegimen" name="caRegimen" disabled><option value="" disabled selected>Selecciona</option><option value="Bienes Mancomunados">Bienes Mancomunados</option><option value="Bienes Separados">Bienes Separados</option></select><span class="em" id="ecaRegimen"></span></div>
+          <div class="fg"><label class="lbl req" for="caRFC">RFC <span class="note-inline">13 caracteres con homoclave</span></label><input id="caRFC" name="caRFC" type="text" placeholder="ABCD123456AB1" maxlength="13" style="text-transform:uppercase;letter-spacing:.06em" autocomplete="off"><span class="em" id="ecaRFC"></span></div>
+          <div class="fg"><label class="lbl req" for="caCURP">CURP <span class="note-inline">18 caracteres</span></label><input id="caCURP" name="caCURP" type="text" placeholder="ABCD123456HDFLRN01" maxlength="18" style="text-transform:uppercase;letter-spacing:.04em" autocomplete="off"><span class="em" id="ecaCURP"></span></div>
+          <div class="fg"><label class="lbl req" for="caTelNum">Teléfono</label>
+            <div class="tel-wr" id="caTelWr"><select class="lada-sel" id="caTelLada" name="caTelLada"></select><input class="tel-num" id="caTelNum" name="caTelNum" type="tel" placeholder="7771234567" maxlength="15" inputmode="numeric"></div>
+            <input type="hidden" id="caTelFull" name="telefonoPersonal">
+            <span class="em" id="ecaTelNum"></span>
+          </div>
+          <div class="fg"><label class="lbl req" for="caEmail">Correo Electrónico</label><input id="caEmail" name="caEmail" type="email" placeholder="nombre@correo.com" autocomplete="email"><span class="em" id="ecaEmail"></span></div>
+          <div class="fg"><label class="lbl req" for="caTieneDep">¿Tiene Dependientes Económicos?</label><select id="caTieneDep" name="caTieneDep"><option value="" disabled selected>Selecciona</option><option value="No">No</option><option value="Si">Sí</option></select><span class="em" id="ecaTieneDep"></span></div>
+          <div class="full cond-block" id="caDepBlk">
+            <div class="g2" style="margin-bottom:.75rem">
+              <div class="fg"><label class="lbl req" for="caNumDep">Número de Dependientes</label><select id="caNumDep" name="caNumDep" disabled><option value="" disabled selected>Selecciona</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select><span class="em" id="ecaNumDep"></span></div>
+            </div>
+            <div class="dep-grid" id="caDepAges"></div>
+            <span class="em" id="ecaDepAges"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN 2: DOMICILIO ─── -->
+      <div class="ca-sec" id="ca-s2">
+        <div class="ca-sec-hdr">
+          <div class="ca-sec-ico"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+          <h2 class="ca-sec-title">Datos de Domicilio</h2>
+        </div>
+        <div class="g2">
+          <div class="fg full"><label class="lbl req" for="caCalle">Calle o Avenida</label><input id="caCalle" name="caCalle" type="text" placeholder="Nombre de la calle o avenida" autocomplete="street-address" style="text-transform:uppercase"><span class="em" id="ecaCalle"></span></div>
+          <div class="fg"><label class="lbl req" for="caNumExt">Número Exterior</label><input id="caNumExt" name="caNumExt" type="text" placeholder="Ej. 142" style="text-transform:uppercase"><span class="em" id="ecaNumExt"></span></div>
+          <div class="fg"><label class="lbl" for="caNumInt">Número Interior <span class="note-inline">(opcional)</span></label><input id="caNumInt" name="caNumInt" type="text" placeholder="Ej. Depto. 3B" style="text-transform:uppercase"></div>
+          <div class="fg">
+            <label class="lbl req" for="caCP">Código Postal</label>
+            <div class="cp-wr" id="caCPWr"><input id="caCP" name="codigoPostal" type="text" placeholder="12345" maxlength="5" inputmode="numeric" autocomplete="postal-code"><div class="cp-spin" id="caCPSpin" style="display:none"></div></div>
+            <small style="color:var(--muted);font-size:.67rem;margin-top:.1rem">Escribe el C.P. y presiona Tab o Enter para buscar</small>
+            <span class="em" id="ecaCP"></span>
+            <div id="caCPErrBox" style="display:none;font-size:.74rem;color:var(--err);font-weight:500;padding:.38rem .65rem;background:rgba(192,57,43,.05);border:1px solid rgba(192,57,43,.18);border-radius:6px;margin-top:.28rem"></div>
+            <button type="button" id="caCPRetry" style="display:none;margin-top:.35rem;padding:.3rem .8rem;border-radius:6px;background:var(--ink2);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.73rem;font-weight:600">↺ Reintentar</button>
+          </div>
+          <div class="fg" id="caColBlk" style="display:none">
+            <label class="lbl req" for="caColonia">Colonia <span id="caColCnt" style="font-size:.67rem;font-weight:500;color:var(--gold);background:rgba(201,168,76,.1);border-radius:6px;padding:.06rem .45rem;margin-left:.25rem"></span></label>
+            <select id="caColonia" name="caColonia"><option value="" disabled selected>Selecciona tu colonia</option></select>
+            <span class="em" id="ecaColonia"></span>
+            <input id="caColSel" name="coloniaSeleccionada" type="text" readonly style="display:none;border:2px solid var(--gold);background:rgba(201,168,76,.04);font-weight:600;color:var(--ink2);cursor:default;margin-top:.3rem" placeholder="Colonia registrada">
+          </div>
+          <div class="fg"><label class="lbl req" for="caMunicipio">Delegación o Municipio</label><input id="caMunicipio" name="caMunicipio" type="text" placeholder="Se completa con el C.P." readonly><span class="em" id="ecaMunicipio"></span></div>
+          <div class="fg"><label class="lbl req" for="caEstado">Estado de la República</label><input id="caEstado" name="caEstado" type="text" placeholder="Se completa con el C.P." readonly><span class="em" id="ecaEstado"></span></div>
+          <input type="hidden" id="caHCiu" name="ciudad">
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN 3: REFERENCIAS ─── -->
+      <div class="ca-sec" id="ca-s3">
+        <div class="ca-sec-hdr">
+          <div class="ca-sec-ico"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+          <h2 class="ca-sec-title">Referencias</h2>
+        </div>
+
+        <p style="font-size:.8rem;font-weight:700;color:var(--ink2);margin-bottom:.3rem">Referencias Familiares</p>
+        <p style="font-size:.75rem;color:var(--muted);margin-bottom:.85rem">No conviven con el solicitante</p>
+
+        <div class="ref-box"><div class="ref-ttl">Familiar 1</div><div class="g2">
+          <div class="fg full"><label class="lbl req" for="caF1N">Nombre Completo</label><input id="caF1N" name="caF1N" type="text" placeholder="Nombre completo" style="text-transform:uppercase"><span class="em" id="ecaF1N"></span></div>
+          <div class="fg"><label class="lbl req">Teléfono</label><div class="tel-wr" id="caF1TWr"><select class="lada-sel" id="caF1TLada"></select><input class="tel-num" id="caF1T" name="caF1T" type="tel" placeholder="2221234567" maxlength="15" inputmode="numeric"></div><input type="hidden" id="caF1TFull" name="caF1TFull"><span class="em" id="ecaF1T"></span></div>
+          <div class="fg"><label class="lbl req" for="caF1E">Correo</label><input id="caF1E" name="caF1E" type="email" placeholder="nombre@correo.com"><span class="em" id="ecaF1E"></span></div>
+          <div class="fg full"><label class="lbl req" for="caF1D">Dirección</label><textarea id="caF1D" name="caF1D" rows="2" placeholder="Calle, número, colonia, ciudad, estado, C.P." style="text-transform:uppercase"></textarea><span class="em" id="ecaF1D"></span></div>
+        </div></div>
+
+        <div class="ref-box"><div class="ref-ttl">Familiar 2</div><div class="g2">
+          <div class="fg full"><label class="lbl req" for="caF2N">Nombre Completo</label><input id="caF2N" name="caF2N" type="text" placeholder="Nombre completo" style="text-transform:uppercase"><span class="em" id="ecaF2N"></span></div>
+          <div class="fg"><label class="lbl req">Teléfono</label><div class="tel-wr" id="caF2TWr"><select class="lada-sel" id="caF2TLada"></select><input class="tel-num" id="caF2T" name="caF2T" type="tel" placeholder="2221234567" maxlength="15" inputmode="numeric"></div><input type="hidden" id="caF2TFull" name="caF2TFull"><span class="em" id="ecaF2T"></span></div>
+          <div class="fg"><label class="lbl req" for="caF2E">Correo</label><input id="caF2E" name="caF2E" type="email" placeholder="nombre@correo.com"><span class="em" id="ecaF2E"></span></div>
+          <div class="fg full"><label class="lbl req" for="caF2D">Dirección</label><textarea id="caF2D" name="caF2D" rows="2" placeholder="Calle, número, colonia, ciudad, estado, C.P." style="text-transform:uppercase"></textarea><span class="em" id="ecaF2D"></span></div>
+        </div></div>
+
+        <p style="font-size:.8rem;font-weight:700;color:var(--ink2);margin-bottom:.85rem;margin-top:.6rem">Referencias de Amistad</p>
+
+        <div class="ref-box"><div class="ref-ttl">Amistad 1</div><div class="g2">
+          <div class="fg full"><label class="lbl req" for="caA1N">Nombre Completo</label><input id="caA1N" name="caA1N" type="text" placeholder="Nombre completo" style="text-transform:uppercase"><span class="em" id="ecaA1N"></span></div>
+          <div class="fg"><label class="lbl req">Teléfono</label><div class="tel-wr" id="caA1TWr"><select class="lada-sel" id="caA1TLada"></select><input class="tel-num" id="caA1T" name="caA1T" type="tel" placeholder="2221234567" maxlength="15" inputmode="numeric"></div><input type="hidden" id="caA1TFull" name="caA1TFull"><span class="em" id="ecaA1T"></span></div>
+          <div class="fg"><label class="lbl req" for="caA1E">Correo</label><input id="caA1E" name="caA1E" type="email" placeholder="nombre@correo.com"><span class="em" id="ecaA1E"></span></div>
+          <div class="fg full"><label class="lbl req" for="caA1D">Dirección</label><textarea id="caA1D" name="caA1D" rows="2" placeholder="Calle, número, colonia, ciudad, estado, C.P." style="text-transform:uppercase"></textarea><span class="em" id="ecaA1D"></span></div>
+        </div></div>
+
+        <div class="ref-box"><div class="ref-ttl">Amistad 2</div><div class="g2">
+          <div class="fg full"><label class="lbl req" for="caA2N">Nombre Completo</label><input id="caA2N" name="caA2N" type="text" placeholder="Nombre completo" style="text-transform:uppercase"><span class="em" id="ecaA2N"></span></div>
+          <div class="fg"><label class="lbl req">Teléfono</label><div class="tel-wr" id="caA2TWr"><select class="lada-sel" id="caA2TLada"></select><input class="tel-num" id="caA2T" name="caA2T" type="tel" placeholder="2221234567" maxlength="15" inputmode="numeric"></div><input type="hidden" id="caA2TFull" name="caA2TFull"><span class="em" id="ecaA2T"></span></div>
+          <div class="fg"><label class="lbl req" for="caA2E">Correo</label><input id="caA2E" name="caA2E" type="email" placeholder="nombre@correo.com"><span class="em" id="ecaA2E"></span></div>
+          <div class="fg full"><label class="lbl req" for="caA2D">Dirección</label><textarea id="caA2D" name="caA2D" rows="2" placeholder="Calle, número, colonia, ciudad, estado, C.P." style="text-transform:uppercase"></textarea><span class="em" id="ecaA2D"></span></div>
+        </div></div>
+      </div>
+
+      <!-- ─── SECCIÓN 4: VEHÍCULO Y FINANCIAMIENTO ─── -->
+      <div class="ca-sec" id="ca-s4">
+        <div class="ca-sec-hdr">
+          <div class="ca-sec-ico"><svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z"/></svg></div>
+          <h2 class="ca-sec-title">Vehículo y Financiamiento</h2>
+        </div>
+        <div class="g2">
+          <div class="fg"><label class="lbl req" for="caMarca">Marca</label>
+            <select id="caMarca" name="caMarca">
+              <option value="" disabled selected>Selecciona marca</option>
+              <optgroup label="── Chinas ──"><option>BAIC</option><option>BYD</option><option>Changan</option><option>Chirey / Omoda / Exeed</option><option>GAC Motor</option><option>Geely</option><option>GWM / Wey</option><option>JAC</option><option>Jetour</option><option>MG / IM</option><option>Neta</option><option>Zeekr</option></optgroup>
+              <optgroup label="── Europeas ──"><option>Alfa Romeo</option><option>Audi</option><option>BMW</option><option>Cupra</option><option>Fiat</option><option>Land Rover</option><option>Mercedes-Benz</option><option>Mini Cooper</option><option>Peugeot</option><option>Porsche</option><option>Renault</option><option>Seat</option><option>Volkswagen</option><option>Volvo</option></optgroup>
+              <optgroup label="── Estadounidenses ──"><option>Buick</option><option>Cadillac</option><option>Chevrolet</option><option>Dodge</option><option>Ford</option><option>GMC</option><option>Jeep</option><option>Lincoln</option><option>Ram</option><option>Tesla</option></optgroup>
+              <optgroup label="── Japonesas / Coreanas ──"><option>Honda</option><option>Hyundai</option><option>Infiniti</option><option>Kia</option><option>Lexus</option><option>Mazda</option><option>Mitsubishi</option><option>Nissan</option><option>Subaru</option><option>Suzuki</option><option>Toyota</option></optgroup>
+              <optgroup label="── Mexicanas ──"><option>Zacua</option></optgroup>
+              <option value="Otra">Otra marca…</option>
+            </select>
+            <span class="em" id="ecaMarca"></span>
+          </div>
+          <div class="fg" id="caOtraMarcaBlk" style="display:none"><label class="lbl req" for="caOtraMarca">Especifica la Marca</label><input id="caOtraMarca" name="caOtraMarca" type="text" placeholder="Escribe la marca del vehículo" disabled style="text-transform:uppercase"><span class="em" id="ecaOtraMarca"></span></div>
+          <div class="fg"><label class="lbl req" for="caVersion">Versión / Trim</label><input id="caVersion" name="caVersion" type="text" placeholder="Ej: Jetta Highline 1.4T AT" style="text-transform:uppercase"><span class="em" id="ecaVersion"></span></div>
+          <div class="fg"><label class="lbl req" for="caAnio">Año</label><select id="caAnio" name="caAnio"><option value="" disabled selected>Selecciona año</option></select><span class="em" id="ecaAnio"></span></div>
+          <div class="fg"><label class="lbl req" for="caCosto">Costo Total del Vehículo</label>
+            <div class="cur-wr"><span class="cur-pre">MX$</span><input id="caCosto" name="caCosto" type="text" placeholder="0.00" inputmode="decimal"></div>
+            <span class="em" id="ecaCosto"></span>
+          </div>
+          <div class="fg full">
+            <label class="lbl req">Pago Inicial</label>
+            <div class="pay-box">
+              <div class="pay-ttl">Selecciona el tipo de pago inicial</div>
+              <div class="pay-row">
+                <div class="pay-radios">
+                  <label class="pay-rlbl"><input type="radio" name="caTipoPago" value="enganche"><span class="pay-rc"></span>Enganche</label>
+                  <label class="pay-rlbl"><input type="radio" name="caTipoPago" value="monto"><span class="pay-rc"></span>Monto Inicial</label>
+                </div>
+                <div class="pay-in">
+                  <div id="caPayH" style="color:var(--muted);font-size:.82rem;padding:.55rem 0">← Selecciona tipo de pago</div>
+                  <div id="caEngF" class="fg" style="display:none">
+                    <label class="lbl req" for="caValEng">Enganche</label>
+                    <div style="display:flex;gap:.55rem;margin-bottom:.45rem">
+                      <label class="pay-rlbl" style="font-size:.78rem;padding:.3rem .6rem"><input type="radio" name="caEngTipo" value="porcentaje" id="caEngPct" checked><span class="pay-rc"></span>Porcentaje %</label>
+                      <label class="pay-rlbl" style="font-size:.78rem;padding:.3rem .6rem"><input type="radio" name="caEngTipo" value="monto_eng" id="caEngMon"><span class="pay-rc"></span>Monto fijo $</label>
+                    </div>
+                    <div id="caEngPctCtrl">
+                      <div class="eng-stepper">
+                        <button type="button" id="caEngMinus" class="eng-btn">−</button>
+                        <div style="position:relative;flex:1"><input id="caValEng" name="caValEng" type="text" placeholder="10%" style="padding-right:2rem;text-align:center;font-weight:600"><span style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);font-size:.86rem;font-weight:700;color:var(--gold);pointer-events:none">%</span></div>
+                        <button type="button" id="caEngPlus" class="eng-btn">+</button>
+                      </div>
+                      <small style="color:var(--muted);font-size:.66rem;margin-top:.2rem;display:block">Botones de 5 en 5 (mínimo 10%) o escribe libremente.</small>
+                    </div>
+                    <div id="caEngMonCtrl" style="display:none"><div class="cur-wr"><span class="cur-pre">MX$</span><input id="caValEngMonto" name="caValEngMonto" type="text" placeholder="0.00" inputmode="decimal"></div></div>
+                    <span class="em" id="ecaValEng"></span>
+                  </div>
+                  <div id="caMonF" class="fg" style="display:none">
+                    <label class="lbl req" for="caValMon">Monto Inicial</label>
+                    <div class="cur-wr"><span class="cur-pre">MX$</span><input id="caValMon" name="caValMon" type="text" placeholder="0.00" inputmode="decimal"></div>
+                    <span class="em" id="ecaValMon"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <span class="em" id="ecaTipoPago"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN 5: DOCUMENTOS Y ENVÍO ─── -->
+      <div class="ca-sec" id="ca-s5">
+        <div class="ca-sec-hdr">
+          <div class="ca-sec-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></div>
+          <h2 class="ca-sec-title">Documentos y Envío</h2>
+        </div>
+
+        <!-- ADJUNTOS -->
+        <div class="fg" style="margin-bottom:1.5rem">
+          <label class="lbl req">Adjuntar Documentos</label>
+          <div class="attach-wrap">
+            <div class="attach-dropzone" id="caAttachDZ" ondragover="caOnDragOver(event)" ondragleave="caOnDragLeave(event)" ondrop="caOnDrop(event)" onclick="document.getElementById('caFileInput').click()">
+              <span class="attach-folder-icon">📁</span>
+              <div class="attach-dz-text">Arrastra tus archivos aquí o <a onclick="event.stopPropagation();document.getElementById('caFileInput').click()">haz clic para seleccionarlos</a></div>
+              <div class="attach-formats-line">Formatos: <strong>PDF, JPG, PNG</strong></div>
+              <div class="attach-auto-compress-line">✨ Compresión automática incluida</div>
+              <div class="attach-limit-line">📏 Límite total: <strong>5 MB</strong></div>
+              <div class="attach-realtime-stats" id="caAttachStats">
+                <span>📦 <strong id="caAttachCount">0</strong> archivo(s)</span>
+                <span class="attach-stats-sep">|</span>
+                <span>Peso: <strong id="caAttachWeight">—</strong></span>
+              </div>
+              <input type="file" id="caFileInput" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="caHandleFiles(this.files)">
+            </div>
+            <div class="attach-capacity-wrap" id="caCapWrap">
+              <div class="attach-cap-hdr">
+                <span class="attach-cap-lbl">Capacidad Utilizada</span>
+                <span class="attach-cap-val" id="caCapVal">0 KB de 5 MB</span>
+              </div>
+              <div class="attach-bar-track"><div class="attach-bar-fill bar-ok" id="caAttachBar" style="width:0%"></div></div>
+              <div class="attach-status" id="caAttachStatus">
+                <span class="attach-status-dot bar-ok" id="caAttachDot"></span>
+                <span id="caAttachStatusTxt">ZIP listo — capacidad disponible</span>
+              </div>
+            </div>
+            <div class="attach-file-list" id="caFileList"></div>
+            <div class="attach-err-msg" id="caAttachErr" style="margin-bottom:10px"><span>⚠️</span><span id="caAttachErrTxt">El ZIP excede 5 MB.</span></div>
+          </div>
+
+          <div class="attach-docs-req" style="margin-top:10px">
+            <div class="attach-docs-req-ttl"><span>📋</span> Documentos Requeridos</div>
+            <ul class="attach-docs-list">
+              <li><span class="attach-docs-badge">Obligatorio</span><span class="attach-docs-name">Identificación Oficial Vigente</span><span class="attach-docs-desc">(INE, Pasaporte o FM2) — PDF completo o ambos lados</span></li>
+            </ul>
+            <div class="attach-docs-note"><span>ℹ️</span><span>En la mayoría de los casos es suficiente. Si fuera necesario, podría requerirse <strong>comprobante de ingresos</strong> y <strong>comprobante de domicilio</strong>.</span></div>
+          </div>
+
+          <div class="attach-leg" style="margin-top:8px">
+            <div class="attach-leg-card ok"><div class="attach-leg-ico">✓</div><div><div class="attach-leg-title">Legible</div><div class="attach-leg-desc">Foto nítida, bien iluminada, encuadre completo.</div></div></div>
+            <div class="attach-leg-card bad"><div class="attach-leg-ico">✕</div><div><div class="attach-leg-title">No Legible</div><div class="attach-leg-desc">Borrosa, oscura o con datos tapados.</div></div></div>
+          </div>
+
+          <div class="compress-prog" id="caCompressProg" style="margin-top:10px">
+            <div class="compress-hdr"><span>⚡</span><span class="compress-hdr-txt">Comprimiendo…</span><span id="caCompressPct" class="compress-pct-val">0%</span></div>
+            <div class="compress-body">
+              <div class="compress-stat-row">
+                <div class="compress-stat"><div class="compress-stat-v" id="caCompDone">0 KB</div><div class="compress-stat-l">Comprimido</div></div>
+                <div class="compress-stat"><div class="compress-stat-v" id="caCompRem">0 KB</div><div class="compress-stat-l">Restante</div></div>
+                <div class="compress-stat"><div class="compress-stat-v" id="caCompElapsed">0s</div><div class="compress-stat-l">Transcurrido</div></div>
+                <div class="compress-stat"><div class="compress-stat-v" id="caCompEta">—</div><div class="compress-stat-l">Estimado</div></div>
+              </div>
+              <div class="compress-bar-track"><div class="compress-bar-fill" id="caCompBar"></div></div>
+              <div class="compress-info-row"><span id="caCompInfo">Preparando…</span><span id="caCompPctDone">0%</span></div>
+            </div>
+          </div>
+          <div class="offline-msg" id="caOfflineMsg"><span>📡</span><span>Sin conexión. Se reanudará automáticamente.</span></div>
+          <input type="hidden" id="caAttachHidden" name="Archivos_adjuntos_info">
+          <span class="em" id="ecaUpErr" style="display:block;margin-top:.45rem"></span>
+        </div>
+
+        <!-- RESUMEN -->
+        <div class="ca-sumbox" id="caSumBox" style="display:none">
+          <div class="ca-sum-hd">
+            <div class="ca-sum-hd-l">
+              <div class="ca-sum-hd-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div>
+              <div>
+                <div class="ca-sum-ttl">Resumen de Solicitud</div>
+                <div class="ca-sum-sub">Revisa tus datos antes de enviar</div>
+              </div>
+            </div>
+            <div class="ca-sum-badge pending" id="caSumBadge"><span class="badge-dot"></span><span id="caSumBadgeTxt">Pendiente</span></div>
+          </div>
+          <div id="caSumCont"></div>
+          <div class="ca-sum-ft">
+            <span>ℹ️</span>
+            <p class="ca-sum-ft-txt"><strong>Verifica la información antes de enviar.</strong> Si detectas algún error, regresa al paso correspondiente para corregirlo.</p>
+          </div>
+        </div>
+
+        <!-- DECLARACIÓN -->
+        <div class="decl" id="caDeclBox" style="margin-top:1.25rem">
+          <div class="decl-inner" id="caDeclRow" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="decl-chk-box" id="caDeclChk"><svg viewBox="0 0 16 12" fill="none"><path d="M1 6l4.5 4.5L15 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div>
+              <div class="decl-ttl">Declaración de veracidad y autenticidad <span style="font-size:.7rem;font-weight:600;color:var(--gold);background:rgba(201,168,76,.1);border-radius:4px;padding:.1rem .4rem;margin-left:.3rem;vertical-align:middle">Obligatorio</span></div>
+              <div class="decl-txt">Bajo protesta de decir verdad, declaro que toda la información y documentación proporcionada es auténtica. Al marcar esta casilla, manifiesto mi conformidad otorgando a esta acción el mismo valor jurídico que mi firma autógrafa, de conformidad con el artículo 89 del Código de Comercio y la NOM-151-SCFI-2016.</div>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="caDeclVal" name="declaracion_aceptada" value="">
+        <span class="em" id="ecaDecl" style="margin-top:.45rem;display:block"></span>
+      </div>
+
+      <!-- NAV -->
+      <div class="ca-nav">
+        <button type="button" class="ca-btn ca-btn-prev" id="caBtnPrev" disabled>
+          <svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>Anterior
+        </button>
+        <span class="ca-step-ind">Paso <strong id="caCurS">1</strong> de <strong>5</strong></span>
+        <button type="button" class="ca-btn ca-btn-next" id="caBtnNext">
+          Siguiente<svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+        </button>
+        <button type="button" class="ca-btn ca-btn-next ca-btn-sub" id="caBtnSub" disabled>
+          <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Enviar Solicitud
+        </button>
+      </div>
+    </div>
+    <!-- /caForm -->
+
+    <!-- ═══════════════════════════════════════════════════════
+         FORMULARIO ARRENDAMIENTO PURO (AP) — Sin cambios
+    ═══════════════════════════════════════════════════════ -->
+    <div id="apForm" style="display:none">
       <div class="sep" style="margin-top:.5rem"><span>Arrendamiento Puro — Perfil del Solicitante</span></div>
       <div class="fg" style="margin-bottom:.5rem">
         <label class="lbl req">Tipo de solicitante</label>
         <div class="tipo-grid" id="apTipoGrid" style="grid-template-columns:1fr 1fr;max-width:440px;margin-top:.5rem">
-          <label class="tipo-card" id="ap-tc-PF">
-            <input type="radio" name="apTipo" value="PF">
-            <div class="tipo-chk"></div>
-            <div class="tipo-ico">👤</div>
-            <div class="tipo-nm">Persona Física</div>
-            <div class="tipo-code">PFAE</div>
-          </label>
-          <label class="tipo-card" id="ap-tc-PM">
-            <input type="radio" name="apTipo" value="PM">
-            <div class="tipo-chk"></div>
-            <div class="tipo-ico">🏢</div>
-            <div class="tipo-nm">Persona Moral</div>
-            <div class="tipo-code">PM</div>
-          </label>
+          <label class="tipo-card" id="ap-tc-PF"><input type="radio" name="apTipo" value="PF"><div class="tipo-chk"></div><div class="tipo-ico">👤</div><div class="tipo-nm">Persona Física</div><div class="tipo-code">PFAE</div></label>
+          <label class="tipo-card" id="ap-tc-PM"><input type="radio" name="apTipo" value="PM"><div class="tipo-chk"></div><div class="tipo-ico">🏢</div><div class="tipo-nm">Persona Moral</div><div class="tipo-code">PM</div></label>
         </div>
       </div>
-
-      <!-- Banners documentos -->
       <div class="docs-ban" id="apDocsPF">
         <div class="docs-ban-ttl">Documentos requeridos — Persona Física (PFAE)</div>
         <div class="docs-grid">
@@ -325,37 +886,22 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
           <div class="docs-item"><span class="docs-bullet">•</span>Recibo predial del año en curso</div>
         </div>
       </div>
-
-      <!-- ╔══════════════════════════════════╗
-           ║   PERSONA FÍSICA (PFAE)          ║
-           ╚══════════════════════════════════╝ -->
+      <!-- AP BODY PF / PM abbreviated placeholders — kept full below -->
       <div id="apBodyPF" style="display:none">
-
         <div class="sep" style="margin-top:1.5rem"><span>💼 Datos del Negocio / PFAE</span></div>
         <div class="g2">
-          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Nombre del cliente / PFAE</label><input type="text" name="ap_nombre_cliente" placeholder="Nombre completo" style="text-transform:uppercase"></div>
+          <div class="fg full"><label class="lbl req">Nombre del cliente / PFAE</label><input type="text" name="ap_nombre_cliente" placeholder="Nombre completo" style="text-transform:uppercase"></div>
           <div class="fg"><label class="lbl req">R.F.C.</label><input type="text" name="ap_rfc" placeholder="RFC con homoclave" maxlength="13" style="text-transform:uppercase"></div>
           <div class="fg"><label class="lbl req">Actividad principal</label><input type="text" name="ap_actividad" placeholder="Descripción de actividad" style="text-transform:uppercase"></div>
-          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Régimen fiscal <span style="font-weight:400;color:var(--muted);font-size:.72rem">(transcribir de la Constancia)</span></label><input type="text" name="ap_regimen" style="text-transform:uppercase"></div>
+          <div class="fg full"><label class="lbl req">Régimen fiscal</label><input type="text" name="ap_regimen" style="text-transform:uppercase"></div>
           <div class="fg"><label class="lbl req">Nombre comercial</label><input type="text" name="ap_nombre_comercial" style="text-transform:uppercase"></div>
           <div class="fg"><label class="lbl req">Fundador del negocio</label><input type="text" name="ap_fundador" style="text-transform:uppercase"></div>
           <div class="fg"><label class="lbl req">Fecha inicio del negocio</label><input type="date" name="ap_fecha_inicio"></div>
           <div class="fg"><label class="lbl req">Número de empleados</label><input type="number" name="ap_empleados" placeholder="0" min="0"></div>
-          <div class="fg" style="grid-column:1/-1"><label class="lbl">Sitio web / Facebook</label><input type="text" name="ap_web" placeholder="https://"></div>
+          <div class="fg full"><label class="lbl">Sitio web / Facebook</label><input type="text" name="ap_web" placeholder="https://"></div>
         </div>
-
         <div class="sep"><span>Sector</span></div>
-        <div class="fg" style="margin-bottom:.5rem">
-          <label class="lbl req">Selecciona el o los sectores que apliquen</label>
-          <div class="pills" id="pfSectorPills">
-            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Manufactura"><span class="cbox"></span>Manufactura</label>
-            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Servicios"><span class="cbox"></span>Servicios</label>
-            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Comercio al por mayor"><span class="cbox"></span>Comercio al por mayor</label>
-            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Comercio al menudeo"><span class="cbox"></span>Comercio al menudeo</label>
-            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Construcción"><span class="cbox"></span>Construcción</label>
-          </div>
-        </div>
-
+        <div class="fg" style="margin-bottom:.5rem"><label class="lbl req">Sectores que apliquen</label><div class="pills"><label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Manufactura"><span class="cbox"></span>Manufactura</label><label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Servicios"><span class="cbox"></span>Servicios</label><label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Comercio al por mayor"><span class="cbox"></span>Comercio al por mayor</label><label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Comercio al menudeo"><span class="cbox"></span>Comercio al menudeo</label><label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector" value="Construcción"><span class="cbox"></span>Construcción</label></div></div>
         <div class="sep"><span>Contacto y Finanzas del Negocio</span></div>
         <div class="g2">
           <div class="fg"><label class="lbl req">Persona que dirige el negocio</label><input type="text" name="ap_director" style="text-transform:uppercase"></div>
@@ -363,356 +909,57 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
           <div class="fg"><label class="lbl req">Cuenta CLABE</label><input type="text" name="ap_clabe" placeholder="18 dígitos" maxlength="18"></div>
           <div class="fg"><label class="lbl req">Banco</label><input type="text" name="ap_banco" style="text-transform:uppercase"></div>
           <div class="fg"><label class="lbl req">Contacto de pagos</label><input type="text" name="ap_contacto_pagos" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Teléfono negocio</label>
-            <div class="tel-wr"><select class="lada-sel" id="pf_t1_l"></select><input class="tel-num" type="tel" id="pf_t1_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_tel_negocio" id="pf_t1_v">
-          </div>
-          <div class="fg"><label class="lbl req">Celular negocio</label>
-            <div class="tel-wr"><select class="lada-sel" id="pf_t2_l"></select><input class="tel-num" type="tel" id="pf_t2_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_cel_negocio" id="pf_t2_v">
-          </div>
+          <div class="fg"><label class="lbl req">Teléfono negocio</label><div class="tel-wr"><select class="lada-sel" id="pf_t1_l"></select><input class="tel-num" type="tel" id="pf_t1_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_tel_negocio" id="pf_t1_v"></div>
+          <div class="fg"><label class="lbl req">Celular negocio</label><div class="tel-wr"><select class="lada-sel" id="pf_t2_l"></select><input class="tel-num" type="tel" id="pf_t2_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_cel_negocio" id="pf_t2_v"></div>
           <div class="fg"><label class="lbl req">Correo electrónico</label><input type="email" name="ap_email_negocio" placeholder="correo@ejemplo.com"></div>
         </div>
-
         <div class="sep"><span>Principales Clientes</span></div>
-        <div class="fg">
-          <table class="ap-tbl"><thead><tr><th>Nombre</th><th>Teléfono</th><th>% Ventas</th><th>Contacto</th></tr></thead>
-          <tbody id="pfTbClientes">
-            <tr><td><input type="text" name="c1_nombre"></td><td><input type="tel" name="c1_tel" style="text-transform:none"></td><td><input type="number" name="c1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="c1_contacto"></td></tr>
-            <tr><td><input type="text" name="c2_nombre"></td><td><input type="tel" name="c2_tel" style="text-transform:none"></td><td><input type="number" name="c2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="c2_contacto"></td></tr>
-          </tbody></table>
-          <button type="button" class="add-row" onclick="addRow('pfTbClientes',['nombre','tel','pct','contacto'],'c')">+ Agregar cliente</button>
-        </div>
-
+        <div class="fg"><table class="ap-tbl"><thead><tr><th>Nombre</th><th>Teléfono</th><th>% Ventas</th><th>Contacto</th></tr></thead><tbody id="pfTbClientes"><tr><td><input type="text" name="c1_nombre"></td><td><input type="tel" name="c1_tel" style="text-transform:none"></td><td><input type="number" name="c1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="c1_contacto"></td></tr><tr><td><input type="text" name="c2_nombre"></td><td><input type="tel" name="c2_tel" style="text-transform:none"></td><td><input type="number" name="c2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="c2_contacto"></td></tr></tbody></table><button type="button" class="add-row" onclick="addRow('pfTbClientes',['nombre','tel','pct','contacto'],'c')">+ Agregar cliente</button></div>
         <div class="sep"><span>Principales Proveedores</span></div>
-        <div class="fg">
-          <table class="ap-tbl"><thead><tr><th>Nombre</th><th>Teléfono</th><th>% Compras</th><th>Contacto</th></tr></thead>
-          <tbody id="pfTbProv">
-            <tr><td><input type="text" name="p1_nombre"></td><td><input type="tel" name="p1_tel" style="text-transform:none"></td><td><input type="number" name="p1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="p1_contacto"></td></tr>
-            <tr><td><input type="text" name="p2_nombre"></td><td><input type="tel" name="p2_tel" style="text-transform:none"></td><td><input type="number" name="p2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="p2_contacto"></td></tr>
-          </tbody></table>
-          <button type="button" class="add-row" onclick="addRow('pfTbProv',['nombre','tel','pct','contacto'],'p')">+ Agregar proveedor</button>
-        </div>
-
+        <div class="fg"><table class="ap-tbl"><thead><tr><th>Nombre</th><th>Teléfono</th><th>% Compras</th><th>Contacto</th></tr></thead><tbody id="pfTbProv"><tr><td><input type="text" name="p1_nombre"></td><td><input type="tel" name="p1_tel" style="text-transform:none"></td><td><input type="number" name="p1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="p1_contacto"></td></tr><tr><td><input type="text" name="p2_nombre"></td><td><input type="tel" name="p2_tel" style="text-transform:none"></td><td><input type="number" name="p2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="p2_contacto"></td></tr></tbody></table><button type="button" class="add-row" onclick="addRow('pfTbProv',['nombre','tel','pct','contacto'],'p')">+ Agregar proveedor</button></div>
         <div class="sep"><span>Primer Cuadro Directivo</span></div>
-        <div class="fg">
-          <table class="ap-tbl"><thead><tr><th>Nombre completo</th><th>Cargo</th><th>Años exp.</th></tr></thead>
-          <tbody id="pfTbDir">
-            <tr><td><input type="text" name="d1_nombre"></td><td><input type="text" name="d1_cargo"></td><td><input type="number" name="d1_exp" min="0" style="text-transform:none"></td></tr>
-            <tr><td><input type="text" name="d2_nombre"></td><td><input type="text" name="d2_cargo"></td><td><input type="number" name="d2_exp" min="0" style="text-transform:none"></td></tr>
-          </tbody></table>
-          <button type="button" class="add-row" onclick="addRow('pfTbDir',['nombre','cargo','exp'],'d')">+ Agregar directivo</button>
-        </div>
-
+        <div class="fg"><table class="ap-tbl"><thead><tr><th>Nombre completo</th><th>Cargo</th><th>Años exp.</th></tr></thead><tbody id="pfTbDir"><tr><td><input type="text" name="d1_nombre"></td><td><input type="text" name="d1_cargo"></td><td><input type="number" name="d1_exp" min="0" style="text-transform:none"></td></tr><tr><td><input type="text" name="d2_nombre"></td><td><input type="text" name="d2_cargo"></td><td><input type="number" name="d2_exp" min="0" style="text-transform:none"></td></tr></tbody></table><button type="button" class="add-row" onclick="addRow('pfTbDir',['nombre','cargo','exp'],'d')">+ Agregar directivo</button></div>
         <div class="sep" style="margin-top:.5rem"><span>📍 Domicilio Fiscal del Negocio</span></div>
-        <div class="g2">
-          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Calle</label><input type="text" name="ap_f_calle" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">No. Ext.</label><input type="text" name="ap_f_noext" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl">No. Int.</label><input type="text" name="ap_f_noint" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Colonia</label><input type="text" name="ap_f_colonia" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">C.P.</label><input type="text" name="ap_f_cp" maxlength="5" placeholder="00000"></div>
-          <div class="fg"><label class="lbl req">Ciudad</label><input type="text" name="ap_f_ciudad" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Estado</label><input type="text" name="ap_f_estado" style="text-transform:uppercase"></div>
-        </div>
-
+        <div class="g2"><div class="fg full"><label class="lbl req">Calle</label><input type="text" name="ap_f_calle" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">No. Ext.</label><input type="text" name="ap_f_noext" style="text-transform:uppercase"></div><div class="fg"><label class="lbl">No. Int.</label><input type="text" name="ap_f_noint" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Colonia</label><input type="text" name="ap_f_colonia" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">C.P.</label><input type="text" name="ap_f_cp" maxlength="5" placeholder="00000"></div><div class="fg"><label class="lbl req">Ciudad</label><input type="text" name="ap_f_ciudad" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Estado</label><input type="text" name="ap_f_estado" style="text-transform:uppercase"></div></div>
         <div class="sep"><span>Tipo de Inmueble Fiscal</span></div>
-        <div>
-          <div class="imm-btns">
-            <button type="button" class="imm-btn on" id="pfImmP" onclick="toggleImm('PF','propio')">Propio</button>
-            <button type="button" class="imm-btn" id="pfImmR" onclick="toggleImm('PF','rentado')">Rentado</button>
-          </div>
-          <div class="g2" id="pfImmPropio">
-            <div class="fg" style="grid-column:1/-1"><label class="lbl req">A nombre de quién está registrado</label><input type="text" name="ap_ip_titular" style="text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Tipo de inmueble</label><input type="text" name="ap_ip_tipo" placeholder="Planta, oficina…" style="text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Tamaño (m²)</label><input type="number" name="ap_ip_m2" placeholder="0" min="0"></div>
-            <div class="fg"><label class="lbl req">Presenta gravamen</label>
-              <select name="ap_ip_gravamen"><option value="">Seleccionar</option><option>No presenta gravamen</option><option>Hipoteca</option><option>Embargo</option><option>Otro</option></select>
-            </div>
-          </div>
-          <div class="g2" id="pfImmRentado" style="display:none">
-            <div class="fg" style="grid-column:1/-1"><label class="lbl req">Nombre del arrendador</label><input type="text" name="ap_ir_arrendador" style="text-transform:uppercase"></div>
-            <div class="fg"><label class="lbl req">Teléfono arrendador</label>
-              <div class="tel-wr"><select class="lada-sel" id="pf_t3_l"></select><input class="tel-num" type="tel" id="pf_t3_n" placeholder="55 0000 0000"></div>
-              <input type="hidden" name="ap_ir_tel" id="pf_t3_v">
-            </div>
-            <div class="fg"><label class="lbl req">Inicio contrato</label><input type="date" name="ap_ir_inicio"></div>
-            <div class="fg"><label class="lbl req">Término contrato</label><input type="date" name="ap_ir_termino"></div>
-          </div>
-        </div>
-
+        <div><div class="imm-btns"><button type="button" class="imm-btn on" id="pfImmP" onclick="toggleImm('PF','propio')">Propio</button><button type="button" class="imm-btn" id="pfImmR" onclick="toggleImm('PF','rentado')">Rentado</button></div><div class="g2" id="pfImmPropio"><div class="fg full"><label class="lbl req">A nombre de quién está registrado</label><input type="text" name="ap_ip_titular" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Tipo de inmueble</label><input type="text" name="ap_ip_tipo" placeholder="Planta, oficina…" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Tamaño (m²)</label><input type="number" name="ap_ip_m2" placeholder="0" min="0"></div><div class="fg"><label class="lbl req">Presenta gravamen</label><select name="ap_ip_gravamen"><option value="">Seleccionar</option><option>No presenta gravamen</option><option>Hipoteca</option><option>Embargo</option><option>Otro</option></select></div></div><div class="g2" id="pfImmRentado" style="display:none"><div class="fg full"><label class="lbl req">Nombre del arrendador</label><input type="text" name="ap_ir_arrendador" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Teléfono arrendador</label><div class="tel-wr"><select class="lada-sel" id="pf_t3_l"></select><input class="tel-num" type="tel" id="pf_t3_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_ir_tel" id="pf_t3_v"></div><div class="fg"><label class="lbl req">Inicio contrato</label><input type="date" name="ap_ir_inicio"></div><div class="fg"><label class="lbl req">Término contrato</label><input type="date" name="ap_ir_termino"></div></div></div>
         <div class="sep" style="margin-top:.5rem"><span>🤝 Datos Personales del PFAE</span></div>
-        <div class="g2">
-          <div class="fg"><label class="lbl req">Lugar y fecha de nacimiento</label><input type="text" name="ap_nacimiento" placeholder="Ciudad, DD/MM/AAAA" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Profesión</label><input type="text" name="ap_profesion" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Puesto en el negocio</label><input type="text" name="ap_puesto" placeholder="Director, Propietario…" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Antigüedad en el negocio</label><input type="text" name="ap_antiguedad" placeholder="Ej. 5 años" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Email personal</label><input type="email" name="ap_email_personal" placeholder="correo@ejemplo.com"></div>
-          <div class="fg"><label class="lbl req">Teléfono particular</label>
-            <div class="tel-wr"><select class="lada-sel" id="pf_t4_l"></select><input class="tel-num" type="tel" id="pf_t4_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_tel_particular" id="pf_t4_v">
-          </div>
-          <div class="fg" style="grid-column:1/-1">
-            <label class="lbl req">Estado civil</label>
-            <div class="pills" id="pfEstCivil">
-              <label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',true)"><input type="radio" name="ap_estado_civil" value="Casado-Sep. bienes"><span class="rdot"></span>Casado(a) Sep. bienes</label>
-              <label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',true)"><input type="radio" name="ap_estado_civil" value="Casado-Mancomunados"><span class="rdot"></span>Casado(a) Mancomunados</label>
-              <label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',false)"><input type="radio" name="ap_estado_civil" value="Soltero"><span class="rdot"></span>Soltero(a)</label>
-              <label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',false)"><input type="radio" name="ap_estado_civil" value="Divorciado"><span class="rdot"></span>Divorciado(a)</label>
-              <label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',false)"><input type="radio" name="ap_estado_civil" value="Viudo"><span class="rdot"></span>Viudo(a)</label>
-            </div>
-          </div>
-          <div class="fg" id="pfConNombre" style="display:none"><label class="lbl req">Nombre del cónyuge</label><input type="text" name="ap_conyuge_nombre" style="text-transform:uppercase"></div>
-          <div class="fg" id="pfConRfc" style="display:none"><label class="lbl req">RFC del cónyuge</label><input type="text" name="ap_conyuge_rfc" maxlength="13" style="text-transform:uppercase"></div>
-        </div>
-
+        <div class="g2"><div class="fg"><label class="lbl req">Lugar y fecha de nacimiento</label><input type="text" name="ap_nacimiento" placeholder="Ciudad, DD/MM/AAAA" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Profesión</label><input type="text" name="ap_profesion" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Puesto en el negocio</label><input type="text" name="ap_puesto" placeholder="Director, Propietario…" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Antigüedad en el negocio</label><input type="text" name="ap_antiguedad" placeholder="Ej. 5 años" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Email personal</label><input type="email" name="ap_email_personal" placeholder="correo@ejemplo.com"></div><div class="fg"><label class="lbl req">Teléfono particular</label><div class="tel-wr"><select class="lada-sel" id="pf_t4_l"></select><input class="tel-num" type="tel" id="pf_t4_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_tel_particular" id="pf_t4_v"></div><div class="fg full"><label class="lbl req">Estado civil</label><div class="pills" id="pfEstCivil"><label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',true)"><input type="radio" name="ap_estado_civil" value="Casado-Sep. bienes"><span class="rdot"></span>Casado(a) Sep. bienes</label><label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',true)"><input type="radio" name="ap_estado_civil" value="Casado-Mancomunados"><span class="rdot"></span>Casado(a) Mancomunados</label><label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',false)"><input type="radio" name="ap_estado_civil" value="Soltero"><span class="rdot"></span>Soltero(a)</label><label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',false)"><input type="radio" name="ap_estado_civil" value="Divorciado"><span class="rdot"></span>Divorciado(a)</label><label class="rpill" onclick="pickRpill(this,'pfEstCivil');showConyuge('PF',false)"><input type="radio" name="ap_estado_civil" value="Viudo"><span class="rdot"></span>Viudo(a)</label></div></div><div class="fg" id="pfConNombre" style="display:none"><label class="lbl req">Nombre del cónyuge</label><input type="text" name="ap_conyuge_nombre" style="text-transform:uppercase"></div><div class="fg" id="pfConRfc" style="display:none"><label class="lbl req">RFC del cónyuge</label><input type="text" name="ap_conyuge_rfc" maxlength="13" style="text-transform:uppercase"></div></div>
         <div class="sep" style="margin-top:.5rem"><span>🚗 Equipos / Vehículos Solicitados</span></div>
-        <div class="fg">
-          <table class="ap-tbl"><thead><tr><th>Descripción</th><th>Año</th><th>Valor (IVA incl.)</th><th>Plazo</th><th>Usuario</th></tr></thead>
-          <tbody id="pfTbEquipos">
-            <tr><td><input type="text" name="eq1_desc"></td><td><input type="number" name="eq1_anio" placeholder="2025" style="text-transform:none"></td><td><input type="number" name="eq1_valor" placeholder="$0" style="text-transform:none"></td><td><input type="text" name="eq1_plazo" placeholder="Meses"></td><td><input type="text" name="eq1_usuario"></td></tr>
-          </tbody></table>
-          <button type="button" class="add-row" onclick="addRow('pfTbEquipos',['desc','anio','valor','plazo','usuario'],'eq')">+ Agregar equipo</button>
-        </div>
-
+        <div class="fg"><table class="ap-tbl"><thead><tr><th>Descripción</th><th>Año</th><th>Valor (IVA incl.)</th><th>Plazo</th><th>Usuario</th></tr></thead><tbody id="pfTbEquipos"><tr><td><input type="text" name="eq1_desc"></td><td><input type="number" name="eq1_anio" placeholder="2025" style="text-transform:none"></td><td><input type="number" name="eq1_valor" placeholder="$0" style="text-transform:none"></td><td><input type="text" name="eq1_plazo" placeholder="Meses"></td><td><input type="text" name="eq1_usuario"></td></tr></tbody></table><button type="button" class="add-row" onclick="addRow('pfTbEquipos',['desc','anio','valor','plazo','usuario'],'eq')">+ Agregar equipo</button></div>
         <div class="sep" style="margin-top:.5rem"><span>👥 Referencias Personales</span></div>
-        <div class="g2">
-          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Referencia 1 — Nombre completo</label><input type="text" name="ap_ref1_nombre" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Parentesco</label><input type="text" name="ap_ref1_parentesco" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Teléfono Ref. 1</label>
-            <div class="tel-wr"><select class="lada-sel" id="pf_t5_l"></select><input class="tel-num" type="tel" id="pf_t5_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_ref1_tel" id="pf_t5_v">
-          </div>
-          <div class="fg"><label class="lbl req">Celular Ref. 1</label>
-            <div class="tel-wr"><select class="lada-sel" id="pf_t6_l"></select><input class="tel-num" type="tel" id="pf_t6_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_ref1_cel" id="pf_t6_v">
-          </div>
-          <div style="height:1px;background:var(--line);grid-column:1/-1"></div>
-          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Referencia 2 — Nombre completo</label><input type="text" name="ap_ref2_nombre" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Parentesco</label><input type="text" name="ap_ref2_parentesco" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Teléfono Ref. 2</label>
-            <div class="tel-wr"><select class="lada-sel" id="pf_t7_l"></select><input class="tel-num" type="tel" id="pf_t7_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_ref2_tel" id="pf_t7_v">
-          </div>
-          <div class="fg"><label class="lbl req">Celular Ref. 2</label>
-            <div class="tel-wr"><select class="lada-sel" id="pf_t8_l"></select><input class="tel-num" type="tel" id="pf_t8_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_ref2_cel" id="pf_t8_v">
-          </div>
-        </div>
-
+        <div class="g2"><div class="fg full"><label class="lbl req">Referencia 1 — Nombre completo</label><input type="text" name="ap_ref1_nombre" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Parentesco</label><input type="text" name="ap_ref1_parentesco" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Teléfono Ref. 1</label><div class="tel-wr"><select class="lada-sel" id="pf_t5_l"></select><input class="tel-num" type="tel" id="pf_t5_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_ref1_tel" id="pf_t5_v"></div><div class="fg"><label class="lbl req">Celular Ref. 1</label><div class="tel-wr"><select class="lada-sel" id="pf_t6_l"></select><input class="tel-num" type="tel" id="pf_t6_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_ref1_cel" id="pf_t6_v"></div><div style="height:1px;background:var(--line);grid-column:1/-1"></div><div class="fg full"><label class="lbl req">Referencia 2 — Nombre completo</label><input type="text" name="ap_ref2_nombre" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Parentesco</label><input type="text" name="ap_ref2_parentesco" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Teléfono Ref. 2</label><div class="tel-wr"><select class="lada-sel" id="pf_t7_l"></select><input class="tel-num" type="tel" id="pf_t7_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_ref2_tel" id="pf_t7_v"></div><div class="fg"><label class="lbl req">Celular Ref. 2</label><div class="tel-wr"><select class="lada-sel" id="pf_t8_l"></select><input class="tel-num" type="tel" id="pf_t8_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_ref2_cel" id="pf_t8_v"></div></div>
         <div class="sep" style="margin-top:.5rem"><span>📋 Contacto para Visita al Negocio</span></div>
-        <div class="g2">
-          <div class="fg"><label class="lbl req">Nombre</label><input type="text" name="ap_visita_nombre" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Puesto</label><input type="text" name="ap_visita_puesto" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Teléfono</label>
-            <div class="tel-wr"><select class="lada-sel" id="pf_t9_l"></select><input class="tel-num" type="tel" id="pf_t9_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_visita_tel" id="pf_t9_v">
-          </div>
-          <div class="fg"><label class="lbl req">Celular</label>
-            <div class="tel-wr"><select class="lada-sel" id="pf_t10_l"></select><input class="tel-num" type="tel" id="pf_t10_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_visita_cel" id="pf_t10_v">
-          </div>
-        </div>
-
+        <div class="g2"><div class="fg"><label class="lbl req">Nombre</label><input type="text" name="ap_visita_nombre" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Puesto</label><input type="text" name="ap_visita_puesto" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Teléfono</label><div class="tel-wr"><select class="lada-sel" id="pf_t9_l"></select><input class="tel-num" type="tel" id="pf_t9_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_visita_tel" id="pf_t9_v"></div><div class="fg"><label class="lbl req">Celular</label><div class="tel-wr"><select class="lada-sel" id="pf_t10_l"></select><input class="tel-num" type="tel" id="pf_t10_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_visita_cel" id="pf_t10_v"></div></div>
         <div class="sep" style="margin-top:.5rem"><span>✍️ Firma y Declaración</span></div>
-        <div class="g2">
-          <div class="fg"><label class="lbl req">Lugar y fecha de elaboración</label><input type="text" name="ap_lugar_fecha" placeholder="Ciudad, DD/MM/AAAA" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Nombre del firmante</label><input type="text" name="ap_firmante" style="text-transform:uppercase"></div>
-        </div>
-        <div class="decl" id="pfDecl" onclick="toggleDecl('PF')" style="margin-top:1rem">
-          <div class="decl-inner">
-            <div class="decl-chk-box"><svg viewBox="0 0 16 12" fill="none"><path d="M1 6l4.5 4.5L15 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <div><div class="decl-ttl">Declaración de veracidad y autenticidad</div><div class="decl-txt">Bajo protesta de decir verdad, declaro que toda la información y documentación proporcionada es auténtica. Al marcar esta casilla, manifiesto mi conformidad otorgando a esta acción el mismo valor jurídico que mi firma autógrafa, de conformidad con el artículo 89 del Código de Comercio y la NOM-151-SCFI-2016.</div></div>
-          </div>
-        </div>
-        <button type="button" class="btn-env" id="pfEnviarBtn" onclick="apEnviar('PF')" disabled>
-          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
-          <span id="pfEnviarTxt">Confirma la declaración para enviar</span>
-          <div class="btn-spin" id="pfSpin"></div>
-        </button>
+        <div class="g2"><div class="fg"><label class="lbl req">Lugar y fecha de elaboración</label><input type="text" name="ap_lugar_fecha" placeholder="Ciudad, DD/MM/AAAA" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Nombre del firmante</label><input type="text" name="ap_firmante" style="text-transform:uppercase"></div></div>
+        <div class="decl" id="pfDecl" onclick="toggleDecl('PF')" style="margin-top:1rem"><div class="decl-inner"><div class="decl-chk-box"><svg viewBox="0 0 16 12" fill="none"><path d="M1 6l4.5 4.5L15 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="decl-ttl">Declaración de veracidad y autenticidad</div><div class="decl-txt">Bajo protesta de decir verdad, declaro que toda la información y documentación proporcionada es auténtica. Al marcar esta casilla, manifiesto mi conformidad otorgando a esta acción el mismo valor jurídico que mi firma autógrafa, de conformidad con el artículo 89 del Código de Comercio y la NOM-151-SCFI-2016.</div></div></div></div>
+        <button type="button" class="btn-env" id="pfEnviarBtn" onclick="apEnviar('PF')" disabled><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg><span id="pfEnviarTxt">Confirma la declaración para enviar</span><div class="btn-spin" id="pfSpin"></div></button>
         <p class="legal">Al enviar, tu información será procesada de forma segura y confidencial.</p>
-
-      </div><!-- /apBodyPF -->
-
-      <!-- ╔══════════════════════════════════╗
-           ║   PERSONA MORAL (PM)             ║
-           ╚══════════════════════════════════╝ -->
+      </div>
       <div id="apBodyPM" style="display:none">
-
         <div class="sep" style="margin-top:1.5rem"><span>🏢 Datos de la Empresa</span></div>
-        <div class="g2">
-          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Razón social</label><input type="text" name="ap_razon_social" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">R.F.C. de la empresa</label><input type="text" name="ap_rfc_pm" maxlength="13" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Actividad principal</label><input type="text" name="ap_actividad_pm" style="text-transform:uppercase"></div>
-          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Régimen fiscal</label><input type="text" name="ap_regimen_pm" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Nombre comercial</label><input type="text" name="ap_nombre_comercial_pm" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Fundador</label><input type="text" name="ap_fundador_pm" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Fecha de inicio</label><input type="date" name="ap_fecha_inicio_pm"></div>
-          <div class="fg"><label class="lbl req">Número de empleados</label><input type="number" name="ap_empleados_pm" min="0"></div>
-          <div class="fg" style="grid-column:1/-1"><label class="lbl">Sitio web / Facebook</label><input type="text" name="ap_web_pm" placeholder="https://"></div>
-        </div>
-
+        <div class="g2"><div class="fg full"><label class="lbl req">Razón social</label><input type="text" name="ap_razon_social" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">R.F.C. de la empresa</label><input type="text" name="ap_rfc_pm" maxlength="13" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Actividad principal</label><input type="text" name="ap_actividad_pm" style="text-transform:uppercase"></div><div class="fg full"><label class="lbl req">Régimen fiscal</label><input type="text" name="ap_regimen_pm" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Nombre comercial</label><input type="text" name="ap_nombre_comercial_pm" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Fundador</label><input type="text" name="ap_fundador_pm" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Fecha de inicio</label><input type="date" name="ap_fecha_inicio_pm"></div><div class="fg"><label class="lbl req">Número de empleados</label><input type="number" name="ap_empleados_pm" min="0"></div><div class="fg full"><label class="lbl">Sitio web / Facebook</label><input type="text" name="ap_web_pm" placeholder="https://"></div></div>
         <div class="sep"><span>Sector</span></div>
-        <div class="fg" style="margin-bottom:.5rem">
-          <label class="lbl req">Selecciona el o los sectores que apliquen</label>
-          <div class="pills">
-            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Manufactura"><span class="cbox"></span>Manufactura</label>
-            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Servicios"><span class="cbox"></span>Servicios</label>
-            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Comercio al por mayor"><span class="cbox"></span>Comercio al por mayor</label>
-            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Comercio al menudeo"><span class="cbox"></span>Comercio al menudeo</label>
-            <label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Construcción"><span class="cbox"></span>Construcción</label>
-          </div>
-        </div>
-
+        <div class="fg" style="margin-bottom:.5rem"><label class="lbl req">Sectores que apliquen</label><div class="pills"><label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Manufactura"><span class="cbox"></span>Manufactura</label><label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Servicios"><span class="cbox"></span>Servicios</label><label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Comercio al por mayor"><span class="cbox"></span>Comercio al por mayor</label><label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Comercio al menudeo"><span class="cbox"></span>Comercio al menudeo</label><label class="cpill" onclick="toggleCpill(this)"><input type="checkbox" name="ap_sector_pm" value="Construcción"><span class="cbox"></span>Construcción</label></div></div>
         <div class="sep"><span>Contacto y Finanzas</span></div>
-        <div class="g2">
-          <div class="fg"><label class="lbl req">Cuenta CLABE</label><input type="text" name="ap_clabe_pm" maxlength="18"></div>
-          <div class="fg"><label class="lbl req">Banco</label><input type="text" name="ap_banco_pm" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Teléfono empresa</label>
-            <div class="tel-wr"><select class="lada-sel" id="pm_t1_l"></select><input class="tel-num" type="tel" id="pm_t1_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_tel_empresa" id="pm_t1_v">
-          </div>
-          <div class="fg"><label class="lbl req">Celular empresa</label>
-            <div class="tel-wr"><select class="lada-sel" id="pm_t2_l"></select><input class="tel-num" type="tel" id="pm_t2_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_cel_empresa" id="pm_t2_v">
-          </div>
-          <div class="fg"><label class="lbl req">Correo electrónico</label><input type="email" name="ap_email_empresa" placeholder="correo@ejemplo.com"></div>
-        </div>
-
+        <div class="g2"><div class="fg"><label class="lbl req">Cuenta CLABE</label><input type="text" name="ap_clabe_pm" maxlength="18"></div><div class="fg"><label class="lbl req">Banco</label><input type="text" name="ap_banco_pm" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Teléfono empresa</label><div class="tel-wr"><select class="lada-sel" id="pm_t1_l"></select><input class="tel-num" type="tel" id="pm_t1_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_tel_empresa" id="pm_t1_v"></div><div class="fg"><label class="lbl req">Celular empresa</label><div class="tel-wr"><select class="lada-sel" id="pm_t2_l"></select><input class="tel-num" type="tel" id="pm_t2_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_cel_empresa" id="pm_t2_v"></div><div class="fg"><label class="lbl req">Correo electrónico</label><input type="email" name="ap_email_empresa" placeholder="correo@ejemplo.com"></div></div>
         <div class="sep"><span>Accionistas</span></div>
-        <div class="fg">
-          <table class="ap-tbl"><thead><tr><th>Nombre completo</th><th>Participación %</th><th>RFC</th></tr></thead>
-          <tbody id="pmTbAcc">
-            <tr><td><input type="text" name="acc1_nombre"></td><td><input type="number" name="acc1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="acc1_rfc"></td></tr>
-            <tr><td><input type="text" name="acc2_nombre"></td><td><input type="number" name="acc2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="acc2_rfc"></td></tr>
-          </tbody></table>
-          <button type="button" class="add-row" onclick="addRow('pmTbAcc',['nombre','pct','rfc'],'acc')">+ Agregar accionista</button>
-        </div>
-
-        <div class="sep"><span>Principales Clientes</span></div>
-        <div class="fg">
-          <table class="ap-tbl"><thead><tr><th>Nombre</th><th>Teléfono</th><th>% Ventas</th><th>Contacto</th></tr></thead>
-          <tbody id="pmTbCli">
-            <tr><td><input type="text" name="cpm1_nombre"></td><td><input type="tel" name="cpm1_tel" style="text-transform:none"></td><td><input type="number" name="cpm1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="cpm1_contacto"></td></tr>
-            <tr><td><input type="text" name="cpm2_nombre"></td><td><input type="tel" name="cpm2_tel" style="text-transform:none"></td><td><input type="number" name="cpm2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="cpm2_contacto"></td></tr>
-          </tbody></table>
-          <button type="button" class="add-row" onclick="addRow('pmTbCli',['nombre','tel','pct','contacto'],'cpm')">+ Agregar cliente</button>
-        </div>
-
-        <div class="sep"><span>Principales Proveedores</span></div>
-        <div class="fg">
-          <table class="ap-tbl"><thead><tr><th>Nombre</th><th>Teléfono</th><th>% Compras</th><th>Contacto</th></tr></thead>
-          <tbody id="pmTbProv">
-            <tr><td><input type="text" name="ppm1_nombre"></td><td><input type="tel" name="ppm1_tel" style="text-transform:none"></td><td><input type="number" name="ppm1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="ppm1_contacto"></td></tr>
-            <tr><td><input type="text" name="ppm2_nombre"></td><td><input type="tel" name="ppm2_tel" style="text-transform:none"></td><td><input type="number" name="ppm2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="ppm2_contacto"></td></tr>
-          </tbody></table>
-          <button type="button" class="add-row" onclick="addRow('pmTbProv',['nombre','tel','pct','contacto'],'ppm')">+ Agregar proveedor</button>
-        </div>
-
-        <div class="sep"><span>Primer Cuadro Directivo</span></div>
-        <div class="fg">
-          <table class="ap-tbl"><thead><tr><th>Nombre completo</th><th>Cargo</th><th>Años exp.</th></tr></thead>
-          <tbody id="pmTbDir">
-            <tr><td><input type="text" name="dpm1_nombre"></td><td><input type="text" name="dpm1_cargo"></td><td><input type="number" name="dpm1_exp" min="0" style="text-transform:none"></td></tr>
-            <tr><td><input type="text" name="dpm2_nombre"></td><td><input type="text" name="dpm2_cargo"></td><td><input type="number" name="dpm2_exp" min="0" style="text-transform:none"></td></tr>
-          </tbody></table>
-          <button type="button" class="add-row" onclick="addRow('pmTbDir',['nombre','cargo','exp'],'dpm')">+ Agregar directivo</button>
-        </div>
-
-        <div class="sep" style="margin-top:.5rem"><span>📍 Domicilio Fiscal de la Empresa</span></div>
-        <div class="g2">
-          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Calle</label><input type="text" name="ap_fpm_calle" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">No. Ext.</label><input type="text" name="ap_fpm_noext" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl">No. Int.</label><input type="text" name="ap_fpm_noint" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Colonia</label><input type="text" name="ap_fpm_colonia" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">C.P.</label><input type="text" name="ap_fpm_cp" maxlength="5" placeholder="00000"></div>
-          <div class="fg"><label class="lbl req">Ciudad</label><input type="text" name="ap_fpm_ciudad" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Estado</label><input type="text" name="ap_fpm_estado" style="text-transform:uppercase"></div>
-        </div>
-
-        <div class="sep" style="margin-top:.5rem"><span>🚗 Equipos / Vehículos Solicitados</span></div>
-        <div class="fg">
-          <table class="ap-tbl"><thead><tr><th>Descripción</th><th>Año</th><th>Valor (IVA incl.)</th><th>Plazo</th><th>Usuario</th></tr></thead>
-          <tbody id="pmTbEquipos">
-            <tr><td><input type="text" name="eqpm1_desc"></td><td><input type="number" name="eqpm1_anio" placeholder="2025" style="text-transform:none"></td><td><input type="number" name="eqpm1_valor" placeholder="$0" style="text-transform:none"></td><td><input type="text" name="eqpm1_plazo" placeholder="Meses"></td><td><input type="text" name="eqpm1_usuario"></td></tr>
-          </tbody></table>
-          <button type="button" class="add-row" onclick="addRow('pmTbEquipos',['desc','anio','valor','plazo','usuario'],'eqpm')">+ Agregar equipo</button>
-        </div>
-
+        <div class="fg"><table class="ap-tbl"><thead><tr><th>Nombre completo</th><th>Participación %</th><th>RFC</th></tr></thead><tbody id="pmTbAcc"><tr><td><input type="text" name="acc1_nombre"></td><td><input type="number" name="acc1_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="acc1_rfc"></td></tr><tr><td><input type="text" name="acc2_nombre"></td><td><input type="number" name="acc2_pct" placeholder="%" style="text-transform:none"></td><td><input type="text" name="acc2_rfc"></td></tr></tbody></table><button type="button" class="add-row" onclick="addRow('pmTbAcc',['nombre','pct','rfc'],'acc')">+ Agregar accionista</button></div>
         <div class="sep" style="margin-top:.5rem"><span>🤝 Datos del Accionista / Aval</span></div>
-        <div class="g2">
-          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Nombre completo del aval</label><input type="text" name="ap_aval_nombre" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">R.F.C. del aval</label><input type="text" name="ap_aval_rfc" maxlength="13" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Nacimiento (lugar y fecha)</label><input type="text" name="ap_aval_nacimiento" placeholder="Ciudad, DD/MM/AAAA" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Cargo en la empresa</label><input type="text" name="ap_aval_puesto" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Email del aval</label><input type="email" name="ap_aval_email" placeholder="correo@ejemplo.com"></div>
-          <div class="fg"><label class="lbl req">Teléfono del aval</label>
-            <div class="tel-wr"><select class="lada-sel" id="pm_t3_l"></select><input class="tel-num" type="tel" id="pm_t3_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_aval_tel" id="pm_t3_v">
-          </div>
-          <div class="fg"><label class="lbl req">Celular del aval</label>
-            <div class="tel-wr"><select class="lada-sel" id="pm_t4_l"></select><input class="tel-num" type="tel" id="pm_t4_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_aval_cel" id="pm_t4_v">
-          </div>
-          <div class="fg" style="grid-column:1/-1">
-            <label class="lbl req">Estado civil del aval</label>
-            <div class="pills" id="pmEstCivil">
-              <label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',true)"><input type="radio" name="ap_aval_est_civil" value="Casado-Sep. bienes"><span class="rdot"></span>Casado(a) Sep. bienes</label>
-              <label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',true)"><input type="radio" name="ap_aval_est_civil" value="Casado-Mancomunados"><span class="rdot"></span>Casado(a) Mancomunados</label>
-              <label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',false)"><input type="radio" name="ap_aval_est_civil" value="Soltero"><span class="rdot"></span>Soltero(a)</label>
-              <label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',false)"><input type="radio" name="ap_aval_est_civil" value="Divorciado"><span class="rdot"></span>Divorciado(a)</label>
-              <label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',false)"><input type="radio" name="ap_aval_est_civil" value="Viudo"><span class="rdot"></span>Viudo(a)</label>
-            </div>
-          </div>
-          <div class="fg" id="pmConNombre" style="display:none"><label class="lbl req">Nombre del cónyuge (aval)</label><input type="text" name="ap_aval_conyuge_nombre" style="text-transform:uppercase"></div>
-          <div class="fg" id="pmConRfc" style="display:none"><label class="lbl req">RFC del cónyuge (aval)</label><input type="text" name="ap_aval_conyuge_rfc" maxlength="13" style="text-transform:uppercase"></div>
-        </div>
-
+        <div class="g2"><div class="fg full"><label class="lbl req">Nombre completo del aval</label><input type="text" name="ap_aval_nombre" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">R.F.C. del aval</label><input type="text" name="ap_aval_rfc" maxlength="13" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Nacimiento (lugar y fecha)</label><input type="text" name="ap_aval_nacimiento" placeholder="Ciudad, DD/MM/AAAA" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Cargo en la empresa</label><input type="text" name="ap_aval_puesto" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Email del aval</label><input type="email" name="ap_aval_email" placeholder="correo@ejemplo.com"></div><div class="fg"><label class="lbl req">Teléfono del aval</label><div class="tel-wr"><select class="lada-sel" id="pm_t3_l"></select><input class="tel-num" type="tel" id="pm_t3_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_aval_tel" id="pm_t3_v"></div><div class="fg"><label class="lbl req">Celular del aval</label><div class="tel-wr"><select class="lada-sel" id="pm_t4_l"></select><input class="tel-num" type="tel" id="pm_t4_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_aval_cel" id="pm_t4_v"></div><div class="fg full"><label class="lbl req">Estado civil del aval</label><div class="pills" id="pmEstCivil"><label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',true)"><input type="radio" name="ap_aval_est_civil" value="Casado-Sep. bienes"><span class="rdot"></span>Casado(a) Sep. bienes</label><label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',true)"><input type="radio" name="ap_aval_est_civil" value="Casado-Mancomunados"><span class="rdot"></span>Casado(a) Mancomunados</label><label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',false)"><input type="radio" name="ap_aval_est_civil" value="Soltero"><span class="rdot"></span>Soltero(a)</label><label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',false)"><input type="radio" name="ap_aval_est_civil" value="Divorciado"><span class="rdot"></span>Divorciado(a)</label><label class="rpill" onclick="pickRpill(this,'pmEstCivil');showConyuge('PM',false)"><input type="radio" name="ap_aval_est_civil" value="Viudo"><span class="rdot"></span>Viudo(a)</label></div></div><div class="fg" id="pmConNombre" style="display:none"><label class="lbl req">Nombre del cónyuge (aval)</label><input type="text" name="ap_aval_conyuge_nombre" style="text-transform:uppercase"></div><div class="fg" id="pmConRfc" style="display:none"><label class="lbl req">RFC del cónyuge (aval)</label><input type="text" name="ap_aval_conyuge_rfc" maxlength="13" style="text-transform:uppercase"></div></div>
         <div class="sep" style="margin-top:.5rem"><span>Domicilio Particular del Aval</span></div>
-        <div class="g2">
-          <div class="fg" style="grid-column:1/-1"><label class="lbl req">Calle</label><input type="text" name="ap_avaldom_calle" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">No. Ext.</label><input type="text" name="ap_avaldom_noext" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl">No. Int.</label><input type="text" name="ap_avaldom_noint" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Colonia</label><input type="text" name="ap_avaldom_colonia" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">C.P.</label><input type="text" name="ap_avaldom_cp" maxlength="5" placeholder="00000"></div>
-          <div class="fg"><label class="lbl req">Ciudad</label><input type="text" name="ap_avaldom_ciudad" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Estado</label><input type="text" name="ap_avaldom_estado" style="text-transform:uppercase"></div>
-        </div>
-
+        <div class="g2"><div class="fg full"><label class="lbl req">Calle</label><input type="text" name="ap_avaldom_calle" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">No. Ext.</label><input type="text" name="ap_avaldom_noext" style="text-transform:uppercase"></div><div class="fg"><label class="lbl">No. Int.</label><input type="text" name="ap_avaldom_noint" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Colonia</label><input type="text" name="ap_avaldom_colonia" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">C.P.</label><input type="text" name="ap_avaldom_cp" maxlength="5" placeholder="00000"></div><div class="fg"><label class="lbl req">Ciudad</label><input type="text" name="ap_avaldom_ciudad" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Estado</label><input type="text" name="ap_avaldom_estado" style="text-transform:uppercase"></div></div>
         <div class="sep" style="margin-top:.5rem"><span>📋 Contacto para Visita a la Empresa</span></div>
-        <div class="g2">
-          <div class="fg"><label class="lbl req">Nombre</label><input type="text" name="ap_visitapm_nombre" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Puesto</label><input type="text" name="ap_visitapm_puesto" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Teléfono</label>
-            <div class="tel-wr"><select class="lada-sel" id="pm_t5_l"></select><input class="tel-num" type="tel" id="pm_t5_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_visitapm_tel" id="pm_t5_v">
-          </div>
-          <div class="fg"><label class="lbl req">Celular</label>
-            <div class="tel-wr"><select class="lada-sel" id="pm_t6_l"></select><input class="tel-num" type="tel" id="pm_t6_n" placeholder="55 0000 0000"></div>
-            <input type="hidden" name="ap_visitapm_cel" id="pm_t6_v">
-          </div>
-        </div>
-
+        <div class="g2"><div class="fg"><label class="lbl req">Nombre</label><input type="text" name="ap_visitapm_nombre" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Puesto</label><input type="text" name="ap_visitapm_puesto" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Teléfono</label><div class="tel-wr"><select class="lada-sel" id="pm_t5_l"></select><input class="tel-num" type="tel" id="pm_t5_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_visitapm_tel" id="pm_t5_v"></div><div class="fg"><label class="lbl req">Celular</label><div class="tel-wr"><select class="lada-sel" id="pm_t6_l"></select><input class="tel-num" type="tel" id="pm_t6_n" placeholder="55 0000 0000"></div><input type="hidden" name="ap_visitapm_cel" id="pm_t6_v"></div></div>
         <div class="sep" style="margin-top:.5rem"><span>✍️ Firma y Declaración</span></div>
-        <div class="g2">
-          <div class="fg"><label class="lbl req">Lugar y fecha de elaboración</label><input type="text" name="ap_lugar_fecha_pm" placeholder="Ciudad, DD/MM/AAAA" style="text-transform:uppercase"></div>
-          <div class="fg"><label class="lbl req">Nombre del firmante</label><input type="text" name="ap_firmante_pm" style="text-transform:uppercase"></div>
-        </div>
-        <div class="decl" id="pmDecl" onclick="toggleDecl('PM')" style="margin-top:1rem">
-          <div class="decl-inner">
-            <div class="decl-chk-box"><svg viewBox="0 0 16 12" fill="none"><path d="M1 6l4.5 4.5L15 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <div><div class="decl-ttl">Declaración de veracidad y autenticidad</div><div class="decl-txt">Bajo protesta de decir verdad, declaro que toda la información y documentación proporcionada es auténtica. Al marcar esta casilla, manifiesto mi conformidad otorgando a esta acción el mismo valor jurídico que mi firma autógrafa, de conformidad con el artículo 89 del Código de Comercio y la NOM-151-SCFI-2016.</div></div>
-          </div>
-        </div>
-        <button type="button" class="btn-env" id="pmEnviarBtn" onclick="apEnviar('PM')" disabled>
-          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
-          <span id="pmEnviarTxt">Confirma la declaración para enviar</span>
-          <div class="btn-spin" id="pmSpin"></div>
-        </button>
+        <div class="g2"><div class="fg"><label class="lbl req">Lugar y fecha de elaboración</label><input type="text" name="ap_lugar_fecha_pm" placeholder="Ciudad, DD/MM/AAAA" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Nombre del firmante</label><input type="text" name="ap_firmante_pm" style="text-transform:uppercase"></div></div>
+        <div class="decl" id="pmDecl" onclick="toggleDecl('PM')" style="margin-top:1rem"><div class="decl-inner"><div class="decl-chk-box"><svg viewBox="0 0 16 12" fill="none"><path d="M1 6l4.5 4.5L15 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="decl-ttl">Declaración de veracidad y autenticidad</div><div class="decl-txt">Bajo protesta de decir verdad, declaro que toda la información y documentación proporcionada es auténtica. Al marcar esta casilla, manifiesto mi conformidad otorgando a esta acción el mismo valor jurídico que mi firma autógrafa, de conformidad con el artículo 89 del Código de Comercio y la NOM-151-SCFI-2016.</div></div></div></div>
+        <button type="button" class="btn-env" id="pmEnviarBtn" onclick="apEnviar('PM')" disabled><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg><span id="pmEnviarTxt">Confirma la declaración para enviar</span><div class="btn-spin" id="pmSpin"></div></button>
         <p class="legal">Al enviar, tu información será procesada de forma segura y confidencial.</p>
-
-      </div><!-- /apBodyPM -->
-
-    </div><!-- /apForm -->
+      </div>
+    </div>
+    <!-- /apForm -->
 
   </div><!-- /card-body -->
 </div><!-- /card -->
@@ -722,22 +969,46 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
   Los datos son procesados de forma segura y confidencial.<br>
   Para consultas escribe a <a href="mailto:info@anpai.com.mx">info@anpai.com.mx</a>
 </footer>
-
 </div><!-- /wrap -->
 </div><!-- /page -->
 
-<!-- OVERLAY ENVIANDO -->
-<div class="sending-ov" id="sendingOv">
-  <div class="send-ring"></div>
-  <div class="send-msg">Registrando tu trámite…</div>
+<!-- OVERLAYS -->
+<div class="sending-ov" id="sendingOv"><div class="send-ring"></div><div class="send-msg">Registrando tu trámite…</div></div>
+<div class="ca-sending" id="caSendingOv"><div class="ca-send-ring"></div><div class="ca-send-msg">Enviando solicitud de crédito…</div></div>
+
+<!-- MOTIVATIONAL MODALS -->
+<div class="motiv-ov" id="motivModal25"><div class="motiv-crd"><div class="motiv-crd-top"><div class="motiv-deco"></div><span class="motiv-emoji">✨</span><div class="motiv-title">¡Ya vas por un cuarto!</div><div class="motiv-text">25% listo — ¡sigue así! Estás en el camino correcto.</div></div><div class="motiv-crd-bot"><button class="motiv-btn" onclick="closeMotivModal('motivModal25')">¡Adelante! →</button></div></div></div>
+<div class="motiv-ov" id="motivModal50"><div class="motiv-crd"><div class="motiv-crd-top"><div class="motiv-deco"></div><span class="motiv-emoji">📈</span><div class="motiv-title">¡Mitad del camino!</div><div class="motiv-text">50% hecho — ¡estás volando! Ya va la mitad de tu solicitud.</div></div><div class="motiv-crd-bot"><button class="motiv-btn" onclick="closeMotivModal('motivModal50')">¡Vamos por todo! →</button></div></div></div>
+<div class="motiv-ov" id="motivModal75"><div class="motiv-crd"><div class="motiv-crd-top"><div class="motiv-deco"></div><span class="motiv-emoji">🔥</span><div class="motiv-title">¡Ya casi llegas!</div><div class="motiv-text">75% listo — ¡último empuje! Tu crédito vehicular está casi listo.</div></div><div class="motiv-crd-bot"><button class="motiv-btn" onclick="closeMotivModal('motivModal75')">¡Ya falta poco! →</button></div></div></div>
+<div class="motiv-ov" id="motivModal100"><div class="motiv-crd"><div class="motiv-crd-top"><div class="motiv-deco"></div><span class="motiv-emoji">🥳</span><div class="motiv-title">¡LO LOGRASTE!</div><div class="motiv-text">100% listo — solo falta presionar enviar.</div></div><div class="motiv-crd-bot"><button class="motiv-btn" onclick="closeMotivModal('motivModal100');document.getElementById('caBtnSub').scrollIntoView({behavior:'smooth',block:'center'})">¡Enviar ahora! 🚀</button></div></div></div>
+
+<!-- MODAL ÉXITO CRÉDITO -->
+<div class="ca-success-ov" id="caSuccessOv">
+  <div class="ca-success-crd">
+    <div class="ca-success-hdr">
+      <div class="ca-success-chk"><svg viewBox="0 0 36 36" fill="none"><path d="M7 18l7 7L29 11" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="ca-success-ttl">¡Solicitud Enviada!</div>
+      <div class="ca-success-sub">Crédito Vehicular · AVA · ANPAI</div>
+    </div>
+    <div class="ca-success-body">
+      <div class="ca-success-info">
+        <div class="ca-success-info-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+        <div class="ca-success-info-txt"><strong>Siguiente paso</strong>Un ejecutivo revisará tu información y te contactará en 24 a 48 horas hábiles para continuar con tu crédito vehicular.</div>
+      </div>
+      <div class="ca-success-info">
+        <div class="ca-success-info-ico"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
+        <div class="ca-success-info-txt"><strong>Contacto directo</strong>📞 <a href="tel:+525525374608" style="color:var(--gold);font-weight:700">+52 (55) 2537-4608</a><br>✉️ <a href="mailto:info@anpai.com.mx" style="color:var(--gold);font-weight:700">info@anpai.com.mx</a><br>🌐 <a href="https://www.anpai.com.mx" target="_blank" style="color:var(--gold);font-weight:700">www.anpai.com.mx</a></div>
+      </div>
+      <div class="ca-success-divider"></div>
+      <button class="ca-success-close" onclick="caCloseSuccess()">Volver al formulario</button>
+    </div>
+  </div>
 </div>
 
-<!-- MODAL ÉXITO -->
+<!-- MODAL ÉXITO AP -->
 <div class="overlay" id="modalOv">
   <div class="modal">
-    <div class="modal-seal">
-      <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-    </div>
+    <div class="modal-seal"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
     <div class="modal-ttl">¡Solicitud Enviada!</div>
     <div class="modal-folio-lbl">Tu folio asignado</div>
     <div class="modal-folio-val" id="mFolioVal">—</div>
@@ -746,229 +1017,241 @@ select{cursor:pointer;padding-right:2.2rem;background-image:url("data:image/svg+
   </div>
 </div>
 
+<!-- FLOATING PROGRESS (CA) -->
+<div class="ca-prog-float" id="caProgFloat">
+  <div class="ca-prog-pill">
+    <div class="ca-prog-track"><div class="ca-prog-fill" id="caProgFill"></div></div>
+    <span class="ca-prog-txt"><strong id="caProgDone">0</strong> de <span id="caProgTotal">0</span> campos</span>
+  </div>
+</div>
+
 <script>
 (function(){
 'use strict';
 
-var GAS = 'https://script.google.com/macros/s/AKfycbxQuajaissdsDyj9-W53-4rbJK931kgluanfwo_7qdu8X-6VWRN4uXiBUzc81Rk2w6x_g/exec';
-function $id(id){ return document.getElementById(id); }
+var CP_TOKEN='36da398a-1848-44f3-a952-06c9bfb02cc8';
+var GAS='https://script.google.com/macros/s/AKfycbxQuajaissdsDyj9-W53-4rbJK931kgluanfwo_7qdu8X-6VWRN4uXiBUzc81Rk2w6x_g/exec';
+var RECAPTCHA_SITE_KEY='6Lc9zGUsAAAAAG2K5TAav3VrS9obGfFqXO5cnOkV';
+var MAX_ZIP=5*1024*1024;
 
-/* ─── FOLIO ─────────────────────────────────── */
-var nextFolio = 1;
-function buildFolio(sig, n){
-  var d = new Date();
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'-'+sig+'-'+String(n).padStart(2,'0');
-}
-function fetchCounter(cb){
-  fetch(GAS+'?accion=obtenerContador')
-    .then(function(r){ return r.json(); })
-    .then(function(j){ if(j && j.siguienteFolio) nextFolio = j.siguienteFolio; cb && cb(); })
-    .catch(function(){ cb && cb(); });
-}
-fetchCounter();
-function showFolio(sig){
-  var f = buildFolio(sig, nextFolio);
-  $id('folioDisplay').textContent = f;
-  $id('folioDisplay').className = 'folio-txt';
-  $id('folioTopVal').textContent = f;
-  $id('folioTopVal').className = 'folio-val ready';
-  $id('folioStatus').textContent = 'Listo';
-  $id('folioStatus').className = 'folio-status ok';
-  $id('folioStatus').style.display = 'inline-block';
-  $id('folioHidden').value = f;
-}
+function $i(id){return document.getElementById(id);}
+function V(id){var e=$i(id);return e?e.value:'';}
+function show(id){var e=$i(id);if(e)e.style.display='';}
+function hide(id){var e=$i(id);if(e)e.style.display='none';}
+function showf(id){var e=$i(id);if(e)e.style.display='flex';}
+function setErr(id,msg){var e=$i('e'+id);if(e)e.textContent=msg;var i=$i(id);if(i){i.classList.add('bad');i.classList.remove('ok');}}
+function clrErr(id){var e=$i('e'+id);if(e)e.textContent='';var i=$i(id);if(i){i.classList.remove('bad');if(i.value&&i.value.trim())i.classList.add('ok');}}
 
-/* ─── SELECTOR TIPO DE TRÁMITE ──────────────── */
-document.querySelectorAll('#tipoGrid .tipo-card').forEach(function(card){
-  var r = card.querySelector('input[type=radio]');
-  r.addEventListener('change', function(){
-    document.querySelectorAll('#tipoGrid .tipo-card').forEach(function(c){ c.classList.remove('sel'); });
-    card.classList.add('sel');
-    $id('eTipo').textContent = '';
-    // Folio
-    $id('folioStatus').textContent = 'Obteniendo…';
-    $id('folioStatus').className = 'folio-status pen';
-    $id('folioStatus').style.display = 'inline-block';
-    fetchCounter(function(){ showFolio(r.value); });
-    // AP form
-    var ap = $id('apForm');
-    if(r.value === 'AP'){
-      ap.style.display = 'block';
-      setTimeout(function(){ ap.scrollIntoView({behavior:'smooth', block:'start'}); }, 150);
-    } else {
-      ap.style.display = 'none';
-    }
-  });
-});
-
-/* ─── LADAS ─────────────────────────────────── */
+/* ─── LADAS HELPER ───────────────────────────── */
 var LADAS=[
   ['MX','México','+52'],['US','EE.UU.','+1'],['CA','Canadá','+1'],
-  ['GT','Guatemala','+502'],['SV','El Salvador','+503'],['HN','Honduras','+504'],
-  ['NI','Nicaragua','+505'],['CR','Costa Rica','+506'],['PA','Panamá','+507'],
-  ['AR','Argentina','+54'],['CO','Colombia','+57'],['BR','Brasil','+55'],
-  ['CL','Chile','+56'],['PE','Perú','+51'],['ES','España','+34'],
-  ['DE','Alemania','+49'],['FR','Francia','+33'],['GB','R.Unido','+44']
+  ['GT','Guatemala','+502'],['SV','El Salvador','+503'],
+  ['HN','Honduras','+504'],['NI','Nicaragua','+505'],
+  ['CR','Costa Rica','+506'],['PA','Panamá','+507'],
+  ['AR','Argentina','+54'],['CO','Colombia','+57'],
+  ['BR','Brasil','+55'],['CL','Chile','+56'],['PE','Perú','+51'],
+  ['ES','España','+34'],['DE','Alemania','+49'],
+  ['FR','Francia','+33'],['GB','R.Unido','+44']
 ];
-function flag(c){ return Array.from(c).map(function(x){ return String.fromCodePoint(x.charCodeAt(0)-65+0x1F1E6); }).join(''); }
-function fillLada(sel){
-  LADAS.forEach(function(l){
-    var op = document.createElement('option');
-    op.value = l[2]; op.textContent = flag(l[0])+' '+l[1]+' '+l[2];
-    if(l[0]==='MX') op.selected = true;
-    sel.appendChild(op);
-  });
-}
-var TEL_PAIRS = [
-  'pf_t1','pf_t2','pf_t3','pf_t4','pf_t5','pf_t6','pf_t7','pf_t8','pf_t9','pf_t10',
-  'pm_t1','pm_t2','pm_t3','pm_t4','pm_t5','pm_t6'
-];
-TEL_PAIRS.forEach(function(p){
-  var sel = $id(p+'_l'), num = $id(p+'_n'), val = $id(p+'_v');
-  if(!sel) return;
-  fillLada(sel);
-  function sync(){ if(val) val.value = (sel.value+' '+num.value).trim(); }
-  sel.addEventListener('change', sync);
-  if(num) num.addEventListener('input', sync);
-});
+function flag(c){return Array.from(c).map(function(x){return String.fromCodePoint(x.charCodeAt(0)-65+0x1F1E6);}).join('');}
+function fillLada(sel){if(!sel||sel._filled)return;sel._filled=true;LADAS.forEach(function(l){var op=document.createElement('option');op.value=l[2];op.textContent=flag(l[0])+' '+l[1]+' '+l[2];if(l[0]==='MX')op.selected=true;sel.appendChild(op);});}
+function initTelPair(ladaId,numId,hidId,wrId){var sel=$i(ladaId),num=$i(numId),val=$i(hidId),wr=$i(wrId);if(!sel||!num)return;fillLada(sel);function sync(){if(val)val.value=(sel.value+' '+num.value.replace(/\D/g,'')).trim();}function setState(st){if(!wr)return;wr.classList.remove('ok','bad');if(st)wr.classList.add(st);num.classList.remove('ok','bad');}sel.addEventListener('change',sync);num.addEventListener('input',function(){var raw=this.value.replace(/\D/g,'');if(this.value!==raw)this.value=raw;sync();setState(null);var e=$i('e'+numId);if(e)e.textContent='';caUpdateProgress();});num.addEventListener('blur',function(){sync();var n=this.value.replace(/\D/g,'');if(n.length>0&&n.length<7){setState('bad');var e=$i('e'+numId);if(e)e.textContent='Mín. 7 dígitos.';}else if(n.length>=7){setState('ok');var e=$i('e'+numId);if(e)e.textContent='';}});sync();}
 
-/* ─── SELECTOR PF / PM ──────────────────────── */
-document.querySelectorAll('#apTipoGrid .tipo-card').forEach(function(card){
-  var r = card.querySelector('input[type=radio]');
-  r.addEventListener('change', function(){
-    // Resaltar cards
-    document.querySelectorAll('#apTipoGrid .tipo-card').forEach(function(c){ c.classList.remove('sel'); });
+/* init CA tel fields */
+initTelPair('caTelLada','caTelNum','caTelFull','caTelWr');
+initTelPair('caF1TLada','caF1T','caF1TFull','caF1TWr');
+initTelPair('caF2TLada','caF2T','caF2TFull','caF2TWr');
+initTelPair('caA1TLada','caA1T','caA1TFull','caA1TWr');
+initTelPair('caA2TLada','caA2T','caA2TFull','caA2TWr');
+
+/* init AP tel fields */
+var AP_TEL_PAIRS=['pf_t1','pf_t2','pf_t3','pf_t4','pf_t5','pf_t6','pf_t7','pf_t8','pf_t9','pf_t10','pm_t1','pm_t2','pm_t3','pm_t4','pm_t5','pm_t6'];
+AP_TEL_PAIRS.forEach(function(p){var sel=$i(p+'_l'),num=$i(p+'_n'),val=$i(p+'_v');if(!sel)return;fillLada(sel);function sync(){if(val)val.value=(sel.value+' '+(num?num.value:'')).trim();}sel.addEventListener('change',sync);if(num)num.addEventListener('input',sync);});
+
+/* ─── FOLIO ──────────────────────────────────── */
+var nextFolio=1;
+function buildFolio(sig,n){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'-'+sig+'-'+String(n).padStart(2,'0');}
+function fetchCounter(cb){fetch(GAS+'?accion=obtenerContador').then(function(r){return r.json();}).then(function(j){if(j&&j.siguienteFolio)nextFolio=j.siguienteFolio;cb&&cb();}).catch(function(){cb&&cb();});}
+fetchCounter();
+function showFolio(sig){var f=buildFolio(sig,nextFolio);$i('folioDisplay').textContent=f;$i('folioDisplay').className='folio-txt';$i('folioTopVal').textContent=f;$i('folioTopVal').className='folio-val ready';var st=$i('folioStatus');st.textContent='Listo';st.className='folio-status ok-st';st.style.display='inline-block';$i('folioHidden').value=f;}
+
+/* ─── TIPO SELECTOR ──────────────────────────── */
+document.querySelectorAll('#tipoGrid .tipo-card').forEach(function(card){
+  var r=card.querySelector('input[type=radio]');
+  r.addEventListener('change',function(){
+    document.querySelectorAll('#tipoGrid .tipo-card').forEach(function(c){c.classList.remove('sel');});
     card.classList.add('sel');
-    var tipo = r.value; // 'PF' o 'PM'
-    // Mostrar/ocultar banners y body
-    $id('apDocsPF').classList.toggle('on', tipo === 'PF');
-    $id('apDocsPM').classList.toggle('on', tipo === 'PM');
-    $id('apBodyPF').style.display = tipo === 'PF' ? 'block' : 'none';
-    $id('apBodyPM').style.display = tipo === 'PM' ? 'block' : 'none';
-    // Scroll
-    setTimeout(function(){
-      $id(tipo === 'PF' ? 'apDocsPF' : 'apDocsPM').scrollIntoView({behavior:'smooth', block:'start'});
-    }, 80);
+    $i('eTipo').textContent='';
+    $i('folioStatus').textContent='Obteniendo…';
+    $i('folioStatus').className='folio-status pen';
+    $i('folioStatus').style.display='inline-block';
+    fetchCounter(function(){showFolio(r.value);});
+    /* show/hide sub-forms */
+    $i('caForm').style.display=r.value==='CA'?'block':'none';
+    $i('apForm').style.display=r.value==='AP'?'block':'none';
+    if(r.value==='CA'){
+      $i('caProgFloat').classList.add('visible');
+      setTimeout(function(){$i('caForm').scrollIntoView({behavior:'smooth',block:'start'});},150);
+      caUpdateProgress();
+    }else{
+      $i('caProgFloat').classList.remove('visible');
+    }
+    if(r.value==='AP'){setTimeout(function(){$i('apForm').scrollIntoView({behavior:'smooth',block:'start'});},150);}
   });
 });
 
-/* ─── RADIO PILLS ───────────────────────────── */
-window.pickRpill = function(lbl, groupId){
-  document.querySelectorAll('#'+groupId+' .rpill').forEach(function(p){ p.classList.remove('on'); });
-  lbl.classList.add('on');
-  var rb = lbl.querySelector('input[type=radio]');
-  if(rb){ rb.checked = true; }
-};
-
-/* ─── CHECKBOX PILLS ────────────────────────── */
-window.toggleCpill = function(lbl){
-  var cb = lbl.querySelector('input[type=checkbox]');
-  if(!cb) return;
-  setTimeout(function(){
-    lbl.classList.toggle('on', cb.checked);
-    var box = lbl.querySelector('.cbox');
-    if(box) box.textContent = cb.checked ? '✓' : '';
-  }, 0);
-};
-
-/* ─── CÓNYUGE CONDICIONAL ───────────────────── */
-window.showConyuge = function(tipo, show){
-  var ids = tipo === 'PF'
-    ? ['pfConNombre','pfConRfc']
-    : ['pmConNombre','pmConRfc'];
-  ids.forEach(function(id){ $id(id).style.display = show ? '' : 'none'; });
-};
-
-/* ─── TOGGLE INMUEBLE ───────────────────────── */
-window.toggleImm = function(tipo, cual){
-  // PF only (extendible)
-  var btnP = $id(tipo+'ImmP'), btnR = $id(tipo+'ImmR');
-  var divP = $id(tipo.toLowerCase()+'ImmPropio'), divR = $id(tipo.toLowerCase()+'ImmRentado');
-  var esP = cual === 'propio';
-  if(btnP){ btnP.classList.toggle('on', esP); }
-  if(btnR){ btnR.classList.toggle('on', !esP); }
-  if(divP){ divP.style.display = esP ? 'grid' : 'none'; }
-  if(divR){ divR.style.display = esP ? 'none' : 'grid'; }
-};
-
-/* ─── AGREGAR FILAS ─────────────────────────── */
-window.addRow = function(tbodyId, fields, prefix){
-  var tb = $id(tbodyId);
-  if(!tb) return;
-  var n = tb.querySelectorAll('tr').length + 1;
-  var tr = document.createElement('tr');
-  fields.forEach(function(f){
-    var td = document.createElement('td');
-    var inp = document.createElement('input');
-    inp.type = ['pct','exp','anio','valor'].indexOf(f) !== -1 ? 'number' : f === 'tel' ? 'tel' : 'text';
-    inp.name = prefix+n+'_'+f;
-    if(f==='pct'||f==='exp') inp.placeholder = f==='pct' ? '%' : '';
-    if(f==='anio') inp.placeholder = '2025';
-    if(f==='valor') inp.placeholder = '$0';
-    if(f==='plazo') inp.placeholder = 'Meses';
-    if(inp.type !== 'text') inp.style.textTransform = 'none';
-    td.appendChild(inp);
-    tr.appendChild(td);
+/* ─── AP SELECTOR PF/PM ──────────────────────── */
+document.querySelectorAll('#apTipoGrid .tipo-card').forEach(function(card){
+  var r=card.querySelector('input[type=radio]');
+  r.addEventListener('change',function(){
+    document.querySelectorAll('#apTipoGrid .tipo-card').forEach(function(c){c.classList.remove('sel');});
+    card.classList.add('sel');
+    var tipo=r.value;
+    $i('apDocsPF').classList.toggle('on',tipo==='PF');
+    $i('apDocsPM').classList.toggle('on',tipo==='PM');
+    $i('apBodyPF').style.display=tipo==='PF'?'block':'none';
+    $i('apBodyPM').style.display=tipo==='PM'?'block':'none';
+    setTimeout(function(){$i(tipo==='PF'?'apDocsPF':'apDocsPM').scrollIntoView({behavior:'smooth',block:'start'});},80);
   });
-  tb.appendChild(tr);
-};
+});
 
-/* ─── DECLARACIÓN ───────────────────────────── */
-var declOn = {PF: false, PM: false};
-window.toggleDecl = function(tipo){
-  declOn[tipo] = !declOn[tipo];
-  var on = declOn[tipo];
-  $id(tipo==='PF' ? 'pfDecl' : 'pmDecl').classList.toggle('on', on);
-  var btn = $id(tipo==='PF' ? 'pfEnviarBtn' : 'pmEnviarBtn');
-  var txt = $id(tipo==='PF' ? 'pfEnviarTxt' : 'pmEnviarTxt');
-  btn.disabled = !on;
-  txt.textContent = on
-    ? 'Enviar Solicitud de Arrendamiento Puro →'
-    : 'Confirma la declaración para enviar';
-};
+/* ─── AP HELPERS ─────────────────────────────── */
+window.pickRpill=function(lbl,gid){document.querySelectorAll('#'+gid+' .rpill').forEach(function(p){p.classList.remove('on');});lbl.classList.add('on');var rb=lbl.querySelector('input[type=radio]');if(rb)rb.checked=true;};
+window.toggleCpill=function(lbl){var cb=lbl.querySelector('input[type=checkbox]');if(!cb)return;setTimeout(function(){lbl.classList.toggle('on',cb.checked);var box=lbl.querySelector('.cbox');if(box)box.textContent=cb.checked?'✓':'';},0);};
+window.showConyuge=function(tipo,show){var ids=tipo==='PF'?['pfConNombre','pfConRfc']:['pmConNombre','pmConRfc'];ids.forEach(function(id){$i(id).style.display=show?'':'none';});};
+window.toggleImm=function(tipo,cual){var btnP=$i(tipo+'ImmP'),btnR=$i(tipo+'ImmR');var divP=$i(tipo.toLowerCase()+'ImmPropio'),divR=$i(tipo.toLowerCase()+'ImmRentado');var esP=cual==='propio';if(btnP)btnP.classList.toggle('on',esP);if(btnR)btnR.classList.toggle('on',!esP);if(divP)divP.style.display=esP?'grid':'none';if(divR)divR.style.display=esP?'none':'grid';};
+window.addRow=function(tbodyId,fields,prefix){var tb=$i(tbodyId);if(!tb)return;var n=tb.querySelectorAll('tr').length+1;var tr=document.createElement('tr');fields.forEach(function(f){var td=document.createElement('td');var inp=document.createElement('input');inp.type=['pct','exp','anio','valor'].indexOf(f)!==-1?'number':f==='tel'?'tel':'text';inp.name=prefix+n+'_'+f;if(f==='pct'||f==='exp')inp.placeholder=f==='pct'?'%':'';if(f==='anio')inp.placeholder='2025';if(f==='valor')inp.placeholder='$0';if(f==='plazo')inp.placeholder='Meses';if(inp.type!=='text')inp.style.textTransform='none';td.appendChild(inp);tr.appendChild(td);});tb.appendChild(tr);};
 
-/* ─── ENVÍO ─────────────────────────────────── */
-window.apEnviar = function(tipo){
-  if(!declOn[tipo]) return;
-  var btn  = $id(tipo==='PF' ? 'pfEnviarBtn' : 'pmEnviarBtn');
-  var txt  = $id(tipo==='PF' ? 'pfEnviarTxt' : 'pmEnviarTxt');
-  var spin = $id(tipo==='PF' ? 'pfSpin'      : 'pmSpin');
-  var body = $id(tipo==='PF' ? 'apBodyPF'    : 'apBodyPM');
-  btn.disabled = true;
-  txt.textContent = 'Enviando…';
-  spin.style.display = 'inline-block';
-  $id('sendingOv').classList.add('on');
+/* AP DECL / SEND */
+var declOn={PF:false,PM:false};
+window.toggleDecl=function(tipo){declOn[tipo]=!declOn[tipo];var on=declOn[tipo];$i(tipo==='PF'?'pfDecl':'pmDecl').classList.toggle('on',on);var btn=$i(tipo==='PF'?'pfEnviarBtn':'pmEnviarBtn');var txt=$i(tipo==='PF'?'pfEnviarTxt':'pmEnviarTxt');btn.disabled=!on;txt.textContent=on?'Enviar Solicitud de Arrendamiento Puro →':'Confirma la declaración para enviar';};
+window.apEnviar=function(tipo){if(!declOn[tipo])return;var btn=$i(tipo==='PF'?'pfEnviarBtn':'pmEnviarBtn'),txt=$i(tipo==='PF'?'pfEnviarTxt':'pmEnviarTxt'),spin=$i(tipo==='PF'?'pfSpin':'pmSpin'),body=$i(tipo==='PF'?'apBodyPF':'apBodyPM');btn.disabled=true;txt.textContent='Enviando…';spin.style.display='inline-block';$i('sendingOv').classList.add('on');var fd=new FormData();fd.append('folio',$i('folioHidden').value);fd.append('tipo_tramite','Arrendamiento Puro');fd.append('tipo_solicitante',tipo==='PF'?'Persona Física (PFAE)':'Persona Moral');body.querySelectorAll('input[name],select[name],textarea[name]').forEach(function(el){if(el.type==='radio'||el.type==='checkbox'){if(el.checked)fd.append(el.name,el.value);}else if(el.type!=='hidden'){fd.append(el.name,el.value);}else{if(el.value)fd.append(el.name,el.value);}});fetch(GAS,{method:'POST',body:fd}).catch(function(){}).finally(function(){$i('sendingOv').classList.remove('on');spin.style.display='none';btn.disabled=false;txt.textContent='Enviar Solicitud de Arrendamiento Puro →';$i('mFolioVal').textContent=$i('folioHidden').value||'—';$i('mMsg').innerHTML='Tu solicitud de <strong>Arrendamiento Puro ('+(tipo==='PF'?'Persona Física':'Persona Moral')+')</strong> fue enviada exitosamente.<br>Un ejecutivo te contactará en 24–48 horas hábiles.';$i('modalOv').classList.add('on');});};
+$i('mClose').addEventListener('click',function(){$i('modalOv').classList.remove('on');});
+$i('modalOv').addEventListener('click',function(e){if(e.target===$i('modalOv'))$i('modalOv').classList.remove('on');});
 
-  var fd = new FormData();
-  fd.append('folio',            $id('folioHidden').value);
-  fd.append('tipo_tramite',     'Arrendamiento Puro');
-  fd.append('tipo_solicitante', tipo==='PF' ? 'Persona Física (PFAE)' : 'Persona Moral');
-  body.querySelectorAll('input[name],select[name],textarea[name]').forEach(function(el){
-    if(el.type==='radio'||el.type==='checkbox'){
-      if(el.checked) fd.append(el.name, el.value);
-    } else if(el.type !== 'hidden'){
-      fd.append(el.name, el.value);
-    } else {
-      if(el.value) fd.append(el.name, el.value);
-    }
-  });
+/* ════════════════════════════════════════════════
+   CRÉDITO DE AUTO — LÓGICA COMPLETA
+════════════════════════════════════════════════ */
 
-  fetch(GAS, {method:'POST', body: fd})
-    .catch(function(){})
-    .finally(function(){
-      $id('sendingOv').classList.remove('on');
-      spin.style.display = 'none';
-      btn.disabled = false;
-      txt.textContent = 'Enviar Solicitud de Arrendamiento Puro →';
-      $id('mFolioVal').textContent = $id('folioHidden').value || '—';
-      $id('mMsg').innerHTML = 'Tu solicitud de <strong>Arrendamiento Puro ('+(tipo==='PF'?'Persona Física':'Persona Moral')+')</strong> fue enviada exitosamente.<br>Un ejecutivo te contactará en 24–48 horas hábiles.';
-      $id('modalOv').classList.add('on');
-    });
-};
+/* AÑO SELECT */
+(function(){var s=$i('caAnio'),y=new Date().getFullYear();for(var i=y+1;i>=2000;i--){var o=document.createElement('option');o.value=i;o.textContent=i;s.appendChild(o);}})();
 
-/* ─── CERRAR MODAL ──────────────────────────── */
-$id('mClose').addEventListener('click', function(){ $id('modalOv').classList.remove('on'); });
-$id('modalOv').addEventListener('click', function(e){ if(e.target===$id('modalOv')) $id('modalOv').classList.remove('on'); });
+/* RFC / CURP */
+$i('caRFC').addEventListener('input',function(){this.value=this.value.toUpperCase();});
+$i('caCURP').addEventListener('input',function(){this.value=this.value.toUpperCase();});
+$i('caRFC').addEventListener('blur',function(){var v=this.value.trim();if(!v)return;if(!/^[A-ZÑ&]{3,4}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[A-Z\d]{3}$/.test(v))setErr('caRFC','RFC inválido. Verifica el formato.');else clrErr('caRFC');});
+$i('caCURP').addEventListener('blur',function(){var v=this.value.trim();if(!v)return;if(!/^[A-Z]{4}\d{6}[HM][A-Z]{2}[B-DF-HJ-NP-TV-Z]{3}[A-Z0-9]\d$/.test(v))setErr('caCURP','Formato inválido (18 caracteres RENAPO).');else clrErr('caCURP');});
+
+/* EDAD */
+$i('caFNac').addEventListener('change',function(){if(!this.value){$i('caEdad').value='';return;}var b=new Date(this.value),t=new Date(),a=t.getFullYear()-b.getFullYear();if(t.getMonth()<b.getMonth()||(t.getMonth()===b.getMonth()&&t.getDate()<b.getDate()))a--;$i('caEdad').value=a>=0?a+' años':'';caUpdateProgress();});
+
+/* ESTADO CIVIL */
+$i('caEstCivil').addEventListener('change',function(){var blk=$i('caRegimenBlk'),sel=$i('caRegimen');if(this.value==='Casado(a)'){blk.classList.add('open');sel.disabled=false;}else{blk.classList.remove('open');sel.disabled=true;sel.value='';sel.classList.remove('ok','bad');}clrErr('caEstCivil');caUpdateProgress();});
+
+/* DEPENDIENTES */
+var CA_RANGOS=['0–5 años','6–12 años','13–18 años','19+ años'];
+function caBuildDepFields(n){var c=$i('caDepAges');c.innerHTML='';$i('ecaDepAges').textContent='';for(var i=1;i<=n;i++){var id='caDepAge'+i;var item=document.createElement('div');item.className='dep-item';item.innerHTML='<label class="dep-lbl-sm" for="'+id+'">Dependiente '+i+'</label><select id="'+id+'" name="'+id+'"><option value="" disabled selected>Rango de edad</option>'+CA_RANGOS.map(function(r){return'<option value="'+r+'">'+r+'</option>';}).join('')+'<option value="manual">Ingresar edad…</option></select><input type="number" id="'+id+'M" name="'+id+'M" min="0" max="99" placeholder="Edad exacta" style="display:none;margin-top:.3rem"><span class="em" id="e'+id+'"></span>';c.appendChild(item);(function(sId,mId){$i(sId).addEventListener('change',function(){if(this.value==='manual'){show(mId);$i(mId).focus();}else{hide(mId);$i(mId).value='';}caUpdateProgress();});})(id,id+'M');}caUpdateProgress();}
+$i('caTieneDep').addEventListener('change',function(){var blk=$i('caDepBlk'),num=$i('caNumDep');clrErr('caTieneDep');if(this.value==='Si'){blk.classList.add('open');num.disabled=false;}else{blk.classList.remove('open');num.disabled=true;num.value='';$i('caDepAges').innerHTML='';}caUpdateProgress();});
+$i('caNumDep').addEventListener('change',function(){var n=parseInt(this.value);if(n>0)caBuildDepFields(n);clrErr('caNumDep');});
+
+/* MARCA */
+$i('caMarca').addEventListener('change',function(){var blk=$i('caOtraMarcaBlk'),inp=$i('caOtraMarca');if(this.value==='Otra'){blk.style.display='';inp.disabled=false;inp.focus();}else{blk.style.display='none';inp.disabled=true;inp.value='';}clrErr('caMarca');caUpdateProgress();});
+
+/* ENGANCHE */
+var ENG_MIN=0,ENG_MAX=100,ENG_STEP=5,ENG_DEF=10;
+function engGetPct(){var raw=V('caValEng').replace(/[^0-9.]/g,'');var n=parseFloat(raw);return isNaN(n)?ENG_DEF:Math.min(ENG_MAX,Math.max(ENG_MIN,n));}
+function engSetPct(n){n=Math.min(ENG_MAX,Math.max(ENG_MIN,Math.round(n)));$i('caValEng').value=n+'%';clrErr('caValEng');caUpdateProgress();}
+$i('caEngPlus').addEventListener('click',function(){engSetPct(engGetPct()+ENG_STEP);});
+$i('caEngMinus').addEventListener('click',function(){engSetPct(engGetPct()-ENG_STEP);});
+$i('caValEng').addEventListener('input',function(){var raw=this.value.replace(/[^0-9.]/g,''),pos=this.selectionStart;if(raw!==''){this.value=raw+'%';var np=Math.min(pos,raw.length);try{this.setSelectionRange(np,np);}catch(e){}}caUpdateProgress();});
+$i('caValEng').addEventListener('blur',function(){var raw=this.value.replace(/[^0-9.]/g,'');if(raw!=='')this.value=Math.min(ENG_MAX,Math.max(ENG_MIN,parseFloat(raw)||0))+'%';});
+$i('caValEng').addEventListener('focus',function(){var len=this.value.replace('%','').length;setTimeout(function(){$i('caValEng').setSelectionRange(len,len);},0);});
+$i('caValEng').addEventListener('keydown',function(e){if(e.key==='ArrowUp'){e.preventDefault();engSetPct(engGetPct()+ENG_STEP);}if(e.key==='ArrowDown'){e.preventDefault();engSetPct(engGetPct()-ENG_STEP);}});
+document.querySelectorAll('input[name=caEngTipo]').forEach(function(r){r.addEventListener('change',function(){var esPct=(this.value==='porcentaje');$i('caEngPctCtrl').style.display=esPct?'':'none';$i('caEngMonCtrl').style.display=esPct?'none':'';if(esPct&&!V('caValEng'))engSetPct(ENG_DEF);else if(!esPct)$i('caValEngMonto').focus();clrErr('caValEng');caUpdateProgress();});});
+document.querySelectorAll('input[name=caTipoPago]').forEach(function(r){r.addEventListener('change',function(){hide('caPayH');if(this.value==='enganche'){showf('caEngF');hide('caMonF');$i('caValMon').value='';if(!V('caValEng'))engSetPct(ENG_DEF);}else{showf('caMonF');hide('caEngF');$i('caValEng').value='';}caUpdateProgress();});});
+
+/* CP */
+function caCPClear(){hide('caCPSpin');$i('caCP').disabled=false;hide('caCPErrBox');$i('caCPErrBox').textContent='';hide('caCPRetry');hide('caColBlk');$i('caColonia').innerHTML='<option value="" disabled selected>Selecciona tu colonia</option>';$i('caColonia').classList.remove('ok','bad');$i('caColCnt').textContent='';hide('caColSel');$i('caColSel').value='';$i('caMunicipio').value='';$i('caMunicipio').classList.remove('ok','bad','autofill');$i('caEstado').value='';$i('caEstado').classList.remove('ok','bad','autofill');$i('caHCiu').value='';clrErr('caCP');caUpdateProgress();}
+function caCPFail(msg){hide('caCPSpin');$i('caCP').disabled=false;$i('caCPErrBox').textContent=msg;show('caCPErrBox');show('caCPRetry');setErr('caCP',msg);caUpdateProgress();}
+function caCPFetch(cp){caCPClear();show('caCPSpin');$i('caCP').disabled=true;clrErr('caCP');fetch('https://api.copomex.com/query/info_cp/'+cp+'?token='+CP_TOKEN).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(data){hide('caCPSpin');$i('caCP').disabled=false;if(!Array.isArray(data)||data.length===0){caCPFail('Código postal no encontrado.');return;}var first=data[0];if(first.error===true||first.error==='true'){caCPFail(first.error_message||'C.P. no encontrado.');return;}var resp=first.response||{};var mun=resp.municipio||'',est=resp.estado||'',ciu=resp.ciudad||'';if(mun){$i('caMunicipio').value=mun;$i('caMunicipio').classList.add('ok','autofill');}if(est){$i('caEstado').value=est;$i('caEstado').classList.add('ok','autofill');}if(ciu)$i('caHCiu').value=ciu;var seen={},cols=[];data.forEach(function(item){if(!item.error&&item.response&&item.response.asentamiento){var c=(item.response.asentamiento||'').trim();if(c&&!seen[c]){seen[c]=1;cols.push(c);}}});cols.sort(function(a,b){return a.localeCompare(b,'es',{sensitivity:'base'});});if(cols.length===0){caCPFail('No se encontraron colonias para este C.P.');return;}var sel=$i('caColonia');cols.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});$i('caColCnt').textContent=cols.length+' colonia'+(cols.length!==1?'s':'');show('caColBlk');$i('caCP').classList.add('ok');$i('caCP').classList.remove('bad');caUpdateProgress();}).catch(function(err){hide('caCPSpin');$i('caCP').disabled=false;caCPFail(err.message&&err.message.indexOf('HTTP')===0?'Error '+err.message+' al consultar COPOMEX.':'Sin conexión con COPOMEX.');});}
+function caCPTrigger(){var v=$i('caCP').value.replace(/\D/g,'');$i('caCP').value=v;if(v.length===5)caCPFetch(v);else if(v.length>0)setErr('caCP','El código postal debe tener 5 dígitos.');}
+$i('caCP').addEventListener('blur',caCPTrigger);
+$i('caCP').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();caCPTrigger();}});
+$i('caCP').addEventListener('input',function(){var raw=this.value.replace(/\D/g,'').slice(0,5);if(this.value!==raw)this.value=raw;caCPClear();this.classList.remove('ok','bad');});
+$i('caCPRetry').addEventListener('click',function(){var v=$i('caCP').value.replace(/\D/g,'');if(v.length===5)caCPFetch(v);});
+$i('caColonia').addEventListener('change',function(){if(this.value){this.classList.add('ok');this.classList.remove('bad');$i('caColSel').value=this.value;show('caColSel');clrErr('caColonia');}else{$i('caColSel').value='';hide('caColSel');}caUpdateProgress();});
+
+/* ATTACHMENTS */
+var caFiles=[],caZip=null,caCompressing=false,caRunId=null,caStartTime=null,caCompTimers=null;
+function fmtBytes(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB';}
+function fmtSec(s){return s<60?Math.round(s)+'s':Math.floor(s/60)+'m '+Math.round(s%60)+'s';}
+function getFileIcon(name){var ext=name.split('.').pop().toLowerCase();if(['jpg','jpeg','png','gif','webp'].indexOf(ext)>=0)return'🖼️';if(ext==='pdf')return'📄';return'📎';}
+function getToday(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+window.caOnDragOver=function(e){e.preventDefault();$i('caAttachDZ').classList.add('drag-over');};
+window.caOnDragLeave=function(e){$i('caAttachDZ').classList.remove('drag-over');};
+window.caOnDrop=function(e){e.preventDefault();$i('caAttachDZ').classList.remove('drag-over');caHandleFiles(e.dataTransfer.files);};
+window.caHandleFiles=function(fileList){Array.from(fileList).forEach(function(f){var dup=caFiles.some(function(ex){return ex.name===f.name&&ex.size===f.size;});if(!dup)caFiles.push(f);});caZip=null;caRenderFiles();caUpdateCapBar();if(caFiles.length>=1&&typeof JSZip!=='undefined')caScheduleCompress();if(caFiles.length>0){var eu=$i('ecaUpErr');if(eu){eu.textContent='';eu.style.display='none';}}caUpdateProgress();};
+window.caRemoveFile=function(idx){caFiles.splice(idx,1);caZip=null;caRenderFiles();$i('caAttachErr').classList.remove('show');caUpdateCapBar();if(caFiles.length>=1&&typeof JSZip!=='undefined')caScheduleCompress();caUpdateProgress();};
+function caRenderFiles(){var list=$i('caFileList');list.innerHTML='';caFiles.forEach(function(f,i){var item=document.createElement('div');item.className='attach-file-item';item.innerHTML='<span class="attach-file-ico">'+getFileIcon(f.name)+'</span><span class="attach-file-nm">'+f.name+'</span><span class="attach-file-sz">'+fmtBytes(f.size)+'</span><button type="button" class="attach-file-rm" onclick="caRemoveFile('+i+')">×</button>';list.appendChild(item);});}
+function caUpdateCapBar(){var wrap=$i('caCapWrap'),bar=$i('caAttachBar'),val=$i('caCapVal'),dot=$i('caAttachDot'),stxt=$i('caAttachStatusTxt'),stats=$i('caAttachStats'),cnt=$i('caAttachCount'),wt=$i('caAttachWeight'),err=$i('caAttachErr');if(caFiles.length===0){if(wrap)wrap.classList.remove('visible');if(stats)stats.classList.remove('visible');if(err)err.classList.remove('show');if(bar){bar.className='attach-bar-fill bar-ok';bar.style.width='0%';}return;}if(wrap)wrap.classList.add('visible');if(stats)stats.classList.add('visible');if(cnt)cnt.textContent=caFiles.length;if(!caZip){var raw=caFiles.reduce(function(s,f){return s+f.size;},0);var rawPct=Math.min(100,(raw/MAX_ZIP)*100);if(bar){bar.className='attach-bar-fill bar-ok';bar.style.width=rawPct+'%';}if(dot)dot.className='attach-status-dot bar-ok';if(stxt)stxt.textContent=caCompressing?'Comprimiendo archivos…':'ZIP listo';if(val)val.textContent=fmtBytes(raw)+' de 5 MB';if(wt)wt.textContent=fmtBytes(raw);if(err)err.classList.remove('show');return;}var zSize=caZip.size;var pct=Math.min(100,(zSize/MAX_ZIP)*100);if(bar)bar.style.width=pct+'%';if(val)val.textContent=fmtBytes(zSize)+' de 5 MB';if(wt)wt.textContent=fmtBytes(zSize);if(bar)bar.className='attach-bar-fill';if(dot)dot.className='attach-status-dot';if(zSize>=MAX_ZIP){if(bar)bar.classList.add('bar-err');if(dot)dot.classList.add('bar-err');if(stxt)stxt.textContent='ZIP supera 5 MB — elimina archivos';$i('caAttachErrTxt').textContent='El ZIP pesa '+fmtBytes(zSize)+' y supera el límite.';err.classList.add('show');}else{if(bar)bar.classList.add('bar-ok');if(dot)dot.className='attach-status-dot bar-ok';if(stxt)stxt.textContent='ZIP listo — quedan '+fmtBytes(MAX_ZIP-zSize);if(err)err.classList.remove('show');}}
+function caScheduleCompress(){clearTimeout(caCompTimers);caCompTimers=setTimeout(function(){caStartCompress();},80);}
+function caStartCompress(){if(caCompressing)caCompressing=false;if(caFiles.length===0)return;if(!navigator.onLine){$i('caOfflineMsg').classList.add('show');return;}var snapshot=caFiles.slice();var runId=Date.now();var zip=new JSZip();var totalRaw=snapshot.reduce(function(a,f){return a+f.size;},0);var processed=0;caCompressing=true;caRunId=runId;caStartTime=Date.now();$i('caCompressProg').classList.add('show');caUpdateCapBar();var ticker=setInterval(function(){if(!caCompressing||caRunId!==runId){clearInterval(ticker);return;}var el=$i('caCompElapsed');if(el)el.textContent=fmtSec((Date.now()-caStartTime)/1000);},300);function abort(){clearInterval(ticker);caCompressing=false;$i('caCompressProg').classList.remove('show');}function processFile(idx){if(caRunId!==runId||!caCompressing){abort();return;}if(idx>=snapshot.length){$i('caCompInfo').textContent='Generando ZIP…';zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},function(meta){if(caRunId!==runId)return;var pct=Math.round(meta.percent);$i('caCompressPct').textContent=pct+'%';$i('caCompBar').style.width=pct+'%';$i('caCompPctDone').textContent=pct+'% completado';}).then(function(blob){clearInterval(ticker);if(caRunId!==runId){abort();return;}caCompressing=false;caZip=blob;$i('caCompressProg').classList.remove('show');caUpdateCapBar();$i('caAttachHidden').value='ZIP: archivos-'+getToday()+'.zip ('+fmtBytes(blob.size)+')';caUpdateProgress();}).catch(function(){abort();});return;}var f=snapshot[idx];var reader=new FileReader();reader.onload=function(ev){if(caRunId!==runId){abort();return;}zip.file(f.name,ev.target.result);processed+=f.size;var pct=Math.round((processed/totalRaw)*70);$i('caCompressPct').textContent=pct+'%';$i('caCompBar').style.width=pct+'%';$i('caCompDone').textContent=fmtBytes(processed);$i('caCompRem').textContent=fmtBytes(Math.max(0,totalRaw-processed));$i('caCompPctDone').textContent=pct+'% completado';$i('caCompInfo').textContent='Procesando '+caFiles.length+' archivo(s)…';var elapsed=(Date.now()-caStartTime)/1000;$i('caCompEta').textContent=(pct>5&&elapsed>0)?fmtSec((elapsed/pct)*(100-pct)):'—';setTimeout(function(){processFile(idx+1);},0);};reader.onerror=function(){setTimeout(function(){processFile(idx+1);},0);};reader.readAsArrayBuffer(f);}processFile(0);}
+window.addEventListener('online',function(){$i('caOfflineMsg').classList.remove('show');if(caFiles.length>=1)caStartCompress();});
+window.addEventListener('offline',function(){$i('caOfflineMsg').classList.add('show');if(caCompressing){caCompressing=false;}});
+
+/* DECL CA */
+var caDeclChecked=false;
+function caSyncSubmit(){var btn=$i('caBtnSub');if(btn)btn.disabled=!caDeclChecked;}
+$i('caDeclRow').addEventListener('click',function(){caDeclChecked=!caDeclChecked;$i('caDeclChk').classList.toggle('on',caDeclChecked);$i('caDeclBox').classList.toggle('on',caDeclChecked);if(caDeclChecked){$i('caDeclBox').classList.remove('bad');$i('caDeclVal').value='Acepto';var e=$i('ecaDecl');if(e)e.textContent='';}else{$i('caDeclVal').value='';}caSyncSubmit();caUpdateProgress();});
+$i('caDeclRow').addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();$i('caDeclRow').click();}});
+
+/* PROGRESS */
+var motivShown={25:false,50:false,75:false,100:false},lastPct=0;
+function closeMotivModal(id){var el=$i(id);if(el)el.classList.remove('show');}
+window.closeMotivModal=closeMotivModal;
+function showMotivModal(id){var el=$i(id);if(el)el.classList.add('show');}
+
+function caSec5Tokens(){return[{type:'upload'},{type:'decl'}];}
+function caIsTokenFilled(tok){if(tok.type==='field'){var el=$i(tok.id);return el?el.value.trim().length>0:true;}if(tok.type==='tel'){var t=$i(tok.numId);return t?t.value.replace(/\D/g,'').length>=7:true;}if(tok.type==='radio'){return document.querySelector('input[name="'+tok.name+'"]:checked')!==null;}if(tok.type==='condField'){var cf=$i(tok.id);if(!cf||cf.disabled)return false;return cf.value.trim().length>0;}if(tok.type==='condVisible'){var cv=$i(tok.id);if(!cv)return false;return cv.value.trim().length>0;}if(tok.type==='depAge'){var s2=$i('caDepAge'+tok.idx);if(!s2)return true;if(s2.value==='manual'){var m=$i('caDepAge'+tok.idx+'M');return m&&m.value.trim().length>0;}return s2.value.trim().length>0;}if(tok.type==='pagoVal'){var tp=document.querySelector('input[name=caTipoPago]:checked');if(!tp)return false;if(tp.value==='enganche'){var et=document.querySelector('input[name=caEngTipo]:checked');if(et&&et.value==='porcentaje'){var pr=V('caValEng').replace(/[^0-9.]/g,'');return pr.length>0&&parseFloat(pr)>0;}else{var mn=V('caValEngMonto').replace(/[^0-9.]/g,'');return mn.length>0&&parseFloat(mn)>0;}}else{var vm=V('caValMon').replace(/[^0-9.]/g,'');return vm.length>0&&parseFloat(vm)>0;}}if(tok.type==='upload')return caFiles.length>0;if(tok.type==='decl')return caDeclChecked;return true;}
+function caIsTokenActive(tok){if(tok.type==='condField'){var ce=$i(tok.condId);return ce&&ce.value===tok.condVal&&!$i(tok.id).disabled;}if(tok.type==='condVisible'){var cv=$i(tok.visId);return cv&&cv.style.display!=='none';}return true;}
+function caGetTokens(step){if(step===1){var t=[{type:'field',id:'caNombre'},{type:'field',id:'caApellido1'},{type:'field',id:'caApellido2'},{type:'field',id:'caGenero'},{type:'field',id:'caFNac'},{type:'field',id:'caEstCivil'},{type:'condField',id:'caRegimen',condId:'caEstCivil',condVal:'Casado(a)'},{type:'field',id:'caRFC'},{type:'field',id:'caCURP'},{type:'tel',numId:'caTelNum'},{type:'field',id:'caEmail'},{type:'field',id:'caTieneDep'},{type:'condField',id:'caNumDep',condId:'caTieneDep',condVal:'Si'}];if(V('caTieneDep')==='Si'){var nd=parseInt(V('caNumDep'))||0;for(var i=1;i<=nd;i++)t.push({type:'depAge',idx:i});}return t;}if(step===2)return[{type:'field',id:'caCalle'},{type:'field',id:'caNumExt'},{type:'field',id:'caCP'},{type:'condVisible',id:'caColonia',visId:'caColBlk'},{type:'field',id:'caMunicipio'},{type:'field',id:'caEstado'}];if(step===3){var t3=[];['caF1','caF2','caA1','caA2'].forEach(function(p){t3.push({type:'field',id:p+'N'});t3.push({type:'tel',numId:p+'T'});t3.push({type:'field',id:p+'E'});t3.push({type:'field',id:p+'D'});});return t3;}if(step===4)return[{type:'field',id:'caMarca'},{type:'condField',id:'caOtraMarca',condId:'caMarca',condVal:'Otra'},{type:'field',id:'caVersion'},{type:'field',id:'caAnio'},{type:'field',id:'caCosto'},{type:'radio',name:'caTipoPago'},{type:'pagoVal'}];if(step===5)return[{type:'upload'},{type:'decl'}];return[];}
+function caUpdateProgress(){var toks=caGetTokens(caCurStep);var total=0,done=0;toks.forEach(function(t){if(!caIsTokenActive(t))return;total++;if(caIsTokenFilled(t))done++;});var pct=total>0?Math.floor((done/total)*100):0;$i('caProgFill').style.width=pct+'%';$i('caProgDone').textContent=done;$i('caProgTotal').textContent=total;var allTotal=0,allDone=0;for(var s=1;s<=5;s++){caGetTokens(s).forEach(function(t){if(!caIsTokenActive(t))return;allTotal++;if(caIsTokenFilled(t))allDone++;});}var gPct=allTotal>0?Math.floor((allDone/allTotal)*100):0;if(gPct>=100&&lastPct<100&&!motivShown[100]){motivShown[100]=true;setTimeout(function(){showMotivModal('motivModal100');},400);}else if(gPct>=75&&lastPct<75&&!motivShown[75]){motivShown[75]=true;setTimeout(function(){showMotivModal('motivModal75');},400);}else if(gPct>=50&&lastPct<50&&!motivShown[50]){motivShown[50]=true;setTimeout(function(){showMotivModal('motivModal50');},400);}else if(gPct>=25&&lastPct<25&&!motivShown[25]){motivShown[25]=true;setTimeout(function(){showMotivModal('motivModal25');},400);}lastPct=gPct;}
+
+/* STEPPER */
+var caCurStep=1,CA_TOTAL=5;
+function caSlideTo(n){document.querySelectorAll('.ca-sec').forEach(function(s){s.classList.remove('active');});$i('ca-s'+n).classList.add('active');document.querySelectorAll('.ca-step').forEach(function(s,i){s.classList.remove('active','done');if(i+1<n)s.classList.add('done');if(i+1===n)s.classList.add('active');});$i('caCurS').textContent=n;$i('caBtnPrev').disabled=(n===1);var last=(n===CA_TOTAL);$i('caBtnNext').style.display=last?'none':'inline-flex';$i('caBtnSub').style.display=last?'inline-flex':'none';if(last)caBuildSummary();caCurStep=n;caUpdateProgress();window.scrollTo({top:$i('caProg').offsetTop-20,behavior:'smooth'});}
+document.querySelectorAll('.ca-step').forEach(function(s){s.addEventListener('click',function(){var t=parseInt(s.dataset.cs);if(t<=caCurStep)caSlideTo(t);});});
+$i('caBtnNext').addEventListener('click',function(){if(caValidateStep(caCurStep)){if(caCurStep<CA_TOTAL)caSlideTo(caCurStep+1);}else{var f=$i('ca-s'+caCurStep).querySelector('.bad,.tel-wr.bad');if(f)f.scrollIntoView({behavior:'smooth',block:'center'});}});
+$i('caBtnPrev').addEventListener('click',function(){if(caCurStep>1)caSlideTo(caCurStep-1);});
+$i('caBtnSub').addEventListener('click',function(){if(!caValidateAll()){var found=false;for(var s=1;s<=CA_TOTAL;s++){if(!caValidateStep(s)){caSlideTo(s);found=true;break;}}return;}caDoSubmit();});
+
+/* VALIDATION */
+function caIsEmpty(v){return!v||!String(v).trim();}
+function caIsName(v){return/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]{2,}$/.test((v||'').trim());}
+function caIsEmail(v){return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v||'').trim());}
+function caValidateStep(n){if(n===1)return caVS1();if(n===2)return caVS2();if(n===3)return caVS3();if(n===4)return caVS4();if(n===5)return caVS5();return true;}
+function caValidateAll(){var ok=true;for(var s=1;s<=CA_TOTAL;s++){if(!caValidateStep(s))ok=false;}return ok;}
+function req(id,msg){if(caIsEmpty(V(id))){setErr(id,msg||'Campo requerido.');return false;}clrErr(id);return true;}
+function caVS1(){var ok=true;function chk(id,fn,msg){if(!fn(V(id))){setErr(id,msg);ok=false;}else clrErr(id);}chk('caNombre',caIsName,'Solo letras, mín. 2 caracteres.');chk('caApellido1',caIsName,'Solo letras, mín. 2 caracteres.');chk('caApellido2',caIsName,'Solo letras, mín. 2 caracteres.');if(!req('caGenero','Selecciona una opción.'))ok=false;if(caIsEmpty(V('caFNac'))){setErr('caFNac','Selecciona tu fecha de nacimiento.');ok=false;}else{var b=new Date(V('caFNac')),t=new Date(),a=t.getFullYear()-b.getFullYear();if(t.getMonth()<b.getMonth()||(t.getMonth()===b.getMonth()&&t.getDate()<b.getDate()))a--;if(a<18){setErr('caFNac','Debes ser mayor de 18 años.');ok=false;}else clrErr('caFNac');}if(!req('caEstCivil','Selecciona tu estado civil.'))ok=false;if(V('caEstCivil')==='Casado(a)'&&!req('caRegimen','Selecciona el régimen.'))ok=false;var rfcV=V('caRFC').toUpperCase();if(!/^[A-ZÑ&]{3,4}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[A-Z\d]{3}$/.test(rfcV)){setErr('caRFC','RFC inválido.');ok=false;}else clrErr('caRFC');var cv=V('caCURP').toUpperCase();if(!/^[A-Z]{4}\d{6}[HM][A-Z]{2}[B-DF-HJ-NP-TV-Z]{3}[A-Z0-9]\d$/.test(cv)){setErr('caCURP','Formato inválido (18 caracteres).');ok=false;}else clrErr('caCURP');var tNum=(V('caTelNum')||'').replace(/\D/g,'');if(tNum.length<7){setErr('caTelNum','Mín. 7 dígitos.');$i('caTelWr').classList.add('bad');$i('caTelWr').classList.remove('ok');ok=false;}else{$i('ecaTelNum').textContent='';$i('caTelWr').classList.add('ok');$i('caTelWr').classList.remove('bad');}if(caIsEmpty(V('caEmail'))||!caIsEmail(V('caEmail'))){setErr('caEmail','Correo inválido.');ok=false;}else clrErr('caEmail');if(!req('caTieneDep','Indica si tienes dependientes.'))ok=false;if(V('caTieneDep')==='Si'){if(!req('caNumDep','Indica el número de dependientes.'))ok=false;var n=parseInt(V('caNumDep'));if(n>0){var allOk=true;for(var i=1;i<=n;i++){var sEl=$i('caDepAge'+i),mEl=$i('caDepAge'+i+'M');if(!sEl)continue;if(sEl.value==='manual'){if(caIsEmpty(mEl?mEl.value:'')){var e1=$i('ecaDepAge'+i);if(e1)e1.textContent='Ingresa la edad.';sEl.classList.add('bad');allOk=false;}else{var e2=$i('ecaDepAge'+i);if(e2)e2.textContent='';sEl.classList.remove('bad');}}else if(caIsEmpty(sEl.value)){var e3=$i('ecaDepAge'+i);if(e3)e3.textContent='Selecciona un rango.';sEl.classList.add('bad');allOk=false;}else{var e4=$i('ecaDepAge'+i);if(e4)e4.textContent='';sEl.classList.remove('bad');sEl.classList.add('ok');}}if(!allOk){$i('ecaDepAges').textContent='Completa la edad de todos los dependientes.';ok=false;}else $i('ecaDepAges').textContent='';}}return ok;}
+function caVS2(){var ok=true;if(!req('caCalle','Ingresa la calle o avenida.'))ok=false;if(!req('caNumExt','Ingresa el número exterior.'))ok=false;if(!/^\d{5}$/.test(V('caCP').trim())){setErr('caCP','Ingresa un C.P. de 5 dígitos.');ok=false;}else clrErr('caCP');if($i('caColBlk').style.display!=='none'){if(caIsEmpty(V('caColonia'))){setErr('caColonia','Selecciona una colonia.');ok=false;}else clrErr('caColonia');}if(caIsEmpty(V('caMunicipio'))){setErr('caMunicipio','Campo requerido.');ok=false;}else clrErr('caMunicipio');if(caIsEmpty(V('caEstado'))){setErr('caEstado','Campo requerido.');ok=false;}else clrErr('caEstado');return ok;}
+function caVS3(){var ok=true;function chkRef(nId,tId,tWrId,eId,dId){if(!caIsName(V(nId))){setErr(nId,'Nombre inválido.');ok=false;}else clrErr(nId);var tNum=(V(tId)||'').replace(/\D/g,'');if(tNum.length<7){var te=$i('e'+tId);if(te)te.textContent='Teléfono inválido.';var tw=$i(tWrId);if(tw){tw.classList.add('bad');tw.classList.remove('ok');}ok=false;}else{var te2=$i('e'+tId);if(te2)te2.textContent='';var tw2=$i(tWrId);if(tw2){tw2.classList.add('ok');tw2.classList.remove('bad');}}if(!caIsEmail(V(eId))){setErr(eId,'Correo inválido.');ok=false;}else clrErr(eId);if(caIsEmpty(V(dId))){setErr(dId,'Campo requerido.');ok=false;}else clrErr(dId);}chkRef('caF1N','caF1T','caF1TWr','caF1E','caF1D');chkRef('caF2N','caF2T','caF2TWr','caF2E','caF2D');chkRef('caA1N','caA1T','caA1TWr','caA1E','caA1D');chkRef('caA2N','caA2T','caA2TWr','caA2E','caA2D');return ok;}
+function caVS4(){var ok=true;if(!req('caMarca','Selecciona la marca.'))ok=false;if(V('caMarca')==='Otra'&&!req('caOtraMarca','Escribe la marca.'))ok=false;if(!req('caVersion','Ingresa la versión.'))ok=false;if(!req('caAnio','Selecciona el año.'))ok=false;var c=parseFloat(V('caCosto').replace(/[^0-9.]/g,''));if(!c||c<=0){setErr('caCosto','Ingresa el costo del vehículo.');ok=false;}else clrErr('caCosto');var tp=document.querySelector('input[name=caTipoPago]:checked');if(!tp){setErr('caTipoPago','Selecciona el tipo de pago inicial.');ok=false;}else{clrErr('caTipoPago');if(tp.value==='enganche'){var ePct=document.querySelector('input[name=caEngTipo]:checked');if(ePct&&ePct.value==='porcentaje'){var pr=V('caValEng').replace(/[^0-9.]/g,'');if(caIsEmpty(pr)||parseFloat(pr)<=0){setErr('caValEng','Ingresa el porcentaje.');ok=false;}else clrErr('caValEng');}else{var mE=parseFloat(V('caValEngMonto').replace(/[^0-9.]/g,''));if(!mE||mE<=0){setErr('caValEng','Ingresa el monto.');ok=false;}else clrErr('caValEng');}}else{var m=parseFloat(V('caValMon').replace(/[^0-9.]/g,''));if(!m||m<=0){setErr('caValMon','Ingresa el monto inicial.');ok=false;}else clrErr('caValMon');}}return ok;}
+function caVS5(){var ok=true;if(caFiles.length===0){var eu=$i('ecaUpErr');eu.textContent='Debes adjuntar al menos un documento (INE requerido).';eu.style.display='block';$i('caAttachDZ').style.borderColor='var(--err)';ok=false;}else{var eu2=$i('ecaUpErr');eu2.textContent='';eu2.style.display='none';$i('caAttachDZ').style.borderColor='';}if(caZip&&caZip.size>=MAX_ZIP){$i('ecaUpErr').textContent='El ZIP excede 5 MB. Elimina algunos archivos.';$i('ecaUpErr').style.display='block';ok=false;}if(!caDeclChecked){var e=$i('ecaDecl');if(e)e.textContent='Debes aceptar la declaración para enviar.';$i('caDeclBox').classList.add('bad');ok=false;}else{var e2=$i('ecaDecl');if(e2)e2.textContent='';$i('caDeclBox').classList.remove('bad');}return ok;}
+
+/* SUMMARY */
+function caBuildSummary(){var box=$i('caSumBox');var cont=$i('caSumCont');if(!box||!cont)return;function mkRow(k,id,v,chip){var empty=!v||!String(v).trim();var vHtml;if(empty){vHtml='<span class="ca-sum-v empty" id="csv-'+id+'">—</span>';}else if(chip){vHtml='<span class="ca-sum-chip '+chip+'" id="csv-'+id+'">'+String(v).toUpperCase()+'</span>';}else{vHtml='<span class="ca-sum-v" id="csv-'+id+'">'+String(v).toUpperCase()+'</span>';}return'<div class="ca-sum-row"><span class="ca-sum-k">'+k+':</span>'+vHtml+'</div>';}function mkGrp(ico,ttl,rows){return'<div class="ca-sum-grp"><div class="ca-sum-grp-lbl"><span class="ca-sum-grp-ico">'+ico+'</span><span class="ca-sum-grp-txt">'+ttl+'</span></div>'+rows+'</div>';}var nombre=[V('caNombre'),V('caNombre2'),V('caApellido1'),V('caApellido2')].filter(Boolean).join(' ').replace(/\s+/,' ').trim();var depStr='No';if(V('caTieneDep')==='Si'){var nd=parseInt(V('caNumDep'))||0;if(nd>0){var ages=[];for(var i=1;i<=nd;i++){var sv=V('caDepAge'+i);var mv=V('caDepAge'+i+'M');ages.push('D'+i+': '+(sv==='manual'?mv+' años':sv));}depStr='Sí ('+nd+') — '+ages.join(', ');}else depStr='Sí';}var marcaF=V('caMarca')==='Otra'?'Otra ('+V('caOtraMarca')+')':V('caMarca');var tp=document.querySelector('input[name="caTipoPago"]:checked');var pago='';if(tp){if(tp.value==='enganche'){var et=document.querySelector('input[name="caEngTipo"]:checked');pago=(et&&et.value==='porcentaje')?'Enganche '+V('caValEng'):'Enganche MX$ '+V('caValEngMonto');}else pago='Monto Inicial MX$ '+V('caValMon');}var archStr=caFiles.length>0?caFiles.length+' archivo(s)'+(caZip?' — ZIP: '+fmtBytes(caZip.size):''):'';var g1=mkGrp('👤','Datos Personales',mkRow('Nombre completo','nombre',nombre)+mkRow('Género','genero',V('caGenero'))+mkRow('Fecha nac.','fnac',V('caFNac'))+mkRow('Edad','edad',V('caEdad'))+mkRow('Estado civil','estcivil',V('caEstCivil'))+(V('caEstCivil')==='Casado(a)'?mkRow('Régimen','regimen',V('caRegimen')):''));var g2=mkGrp('🪪','Identificación',mkRow('RFC','rfc',V('caRFC'))+mkRow('CURP','curp',V('caCURP'))+mkRow('Teléfono','tel',V('caTelFull')||V('caTelNum'))+mkRow('Correo','email',V('caEmail'))+mkRow('Dependientes','dep',depStr));var g3=mkGrp('📍','Domicilio',mkRow('Calle','calle',V('caCalle'))+mkRow('Número','num',V('caNumExt')+(V('caNumInt')?' Int. '+V('caNumInt'):''))+mkRow('C.P.','cp',V('caCP'))+mkRow('Colonia','col',V('caColSel')||V('caColonia'))+mkRow('Municipio','mun',V('caMunicipio'))+mkRow('Estado','est',V('caEstado')));var g4=mkGrp('🚗','Vehículo y Financiamiento',mkRow('Marca','marca',marcaF)+mkRow('Versión','ver',V('caVersion'))+mkRow('Año','anio',V('caAnio'))+mkRow('Costo total','costo','MX$ '+V('caCosto'),'amount')+mkRow('Pago inicial','pago',pago,'amount'));var g5=mkGrp('📎','Documentos',mkRow('Archivos','arch',archStr,'files'));cont.innerHTML=g1+g2+g3+g4+g5;box.style.display='';var allTotal=0,allDone=0;for(var s=1;s<=5;s++){caGetTokens(s).forEach(function(t){if(!caIsTokenActive(t))return;allTotal++;if(caIsTokenFilled(t))allDone++;});}var gPct=allTotal>0?Math.floor((allDone/allTotal)*100):0;var badge=$i('caSumBadge'),btxt=$i('caSumBadgeTxt');badge.classList.remove('pending','warn','ok');if(gPct>=100){badge.classList.add('ok');btxt.textContent='Listo';}else if(gPct>=30){badge.classList.add('warn');btxt.textContent='Incompleto';}else{badge.classList.add('pending');btxt.textContent='Pendiente';}}
+
+/* SUBMIT */
+function caDoSubmit(){$i('caSendingOv').classList.add('on');$i('caBtnSub').disabled=true;var doSubmit=function(){var fd=new FormData();fd.append('tipo_tramite','Crédito de Auto');fd.append('folio',$i('folioHidden').value);var fields=['caNombre','caNombre2','caApellido1','caApellido2','caGenero','caFNac','caEdad','caEstCivil','caRegimen','caRFC','caCURP','caTelFull','caEmail','caTieneDep','caNumDep','caCalle','caNumExt','caNumInt','caCP','coloniaSeleccionada','caMunicipio','caEstado','ciudad','caF1N','caF1TFull','caF1E','caF1D','caF2N','caF2TFull','caF2E','caF2D','caA1N','caA1TFull','caA1E','caA1D','caA2N','caA2TFull','caA2E','caA2D','caMarca','caOtraMarca','caVersion','caAnio','caCosto','caValEng','caValEngMonto','caValMon','declaracion_aceptada','Archivos_adjuntos_info'];var nm=[V('caNombre'),V('caNombre2'),V('caApellido1'),V('caApellido2')].filter(Boolean).join(' ').trim();fields.forEach(function(f){var el=document.querySelector('[name="'+f+'"]');if(el&&el.value)fd.append(f,el.value);});var tpEl=document.querySelector('input[name=caTipoPago]:checked');if(tpEl)fd.append('tipoPago',tpEl.value);fd.set('_subject','Solicitud Crédito de Auto — '+nm);fetch('https://formsubmit.co/info@anpai.com.mx',{method:'POST',body:fd}).catch(function(){}).finally(function(){$i('caSendingOv').classList.remove('on');$i('caBtnSub').disabled=false;$i('caSuccessOv').classList.add('show');});};if(typeof grecaptcha!=='undefined'){grecaptcha.ready(function(){grecaptcha.execute(RECAPTCHA_SITE_KEY,{action:'submit_credito_ca'}).then(function(token){var el=document.getElementById('rcToken');if(!el){el=document.createElement('input');el.type='hidden';el.name='g-recaptcha-response';el.id='rcToken';document.body.appendChild(el);}el.value=token;doSubmit();}).catch(function(){doSubmit();});});}else{doSubmit();};}
+function caCloseSuccess(){$i('caSuccessOv').classList.remove('show');motivShown={25:false,50:false,75:false,100:false};lastPct=0;caCurStep=1;caSlideTo(1);caFiles=[];caZip=null;caCompressing=false;$i('caFileList').innerHTML='';$i('caCompressProg').classList.remove('show');caUpdateCapBar();document.querySelectorAll('#caForm input:not([type=hidden]),#caForm select,#caForm textarea').forEach(function(el){if(!el.disabled)el.value='';el.classList.remove('ok','bad');});document.querySelectorAll('#caForm .em').forEach(function(e){e.textContent='';});$i('caRegimenBlk').classList.remove('open');$i('caDepBlk').classList.remove('open');$i('caDepAges').innerHTML='';hide('caColBlk');$i('caMunicipio').value='';$i('caEstado').value='';caDeclChecked=false;$i('caDeclChk').classList.remove('on');$i('caDeclBox').classList.remove('on','bad');$i('caDeclVal').value='';caSyncSubmit();caUpdateProgress();window.scrollTo({top:0,behavior:'smooth'});}
+window.caCloseSuccess=caCloseSuccess;
+
+/* Attach input listeners for live progress */
+$i('caForm').addEventListener('input',caUpdateProgress);
+$i('caForm').addEventListener('change',caUpdateProgress);
+
+caSyncSubmit();
+caSlideTo(1);
 
 })();
 </script>
