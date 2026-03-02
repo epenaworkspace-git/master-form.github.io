@@ -346,7 +346,7 @@ textarea { resize: vertical; min-height: 72px; }
   animation: floatBtn 3s ease-in-out infinite;
 }
 .tramite-float  { top: 50px;  background: linear-gradient(135deg,#0A1F44,#1a3a6e); }
-.docs-float     { top: 155px; background: linear-gradient(135deg,#7b3f00,#c0762a); }
+.docs-float     { top: 50%; transform: translateY(-50%); background: linear-gradient(135deg,#7b3f00,#c0762a); display: none; }
 .whatsapp-float { bottom: 50px; background: linear-gradient(135deg,#25d366,#128c7e); top:auto; }
 
 .tramite-float::before, .docs-float::before, .whatsapp-float::before {
@@ -358,6 +358,9 @@ textarea { resize: vertical; min-height: 72px; }
   transform: scale(1.2) translateY(-5px);
   box-shadow: 0 20px 40px rgba(0,0,0,.5);
   animation: none;
+}
+.docs-float:hover {
+  transform: translateY(calc(-50% - 5px)) scale(1.2);
 }
 
 /* tooltip */
@@ -419,7 +422,7 @@ textarea { resize: vertical; min-height: 72px; }
 <!-- ── Botón: Documentos Oficiales (solo activo en AP) ── -->
 <a href="https://www.anpai.com.mx/documentos-oficiales"
    id="docsOfiBtn"
-   class="docs-float disabled"
+   class="docs-float"
    target="_blank"
    rel="noopener noreferrer"
    aria-label="Documentos oficiales ANPAI">
@@ -835,6 +838,13 @@ textarea { resize: vertical; min-height: 72px; }
             <div id="pfImmPropio" class="g2"><div class="fg full"><label class="lbl req">A nombre de quién está registrado</label><input type="text" name="ap_ip_titular" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Tipo de inmueble</label><input type="text" name="ap_ip_tipo" placeholder="Planta, oficina…" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Tamaño (m²)</label><input type="number" name="ap_ip_m2" placeholder="0" min="0"></div></div>
             <div id="pfImmRentado" class="g2" style="display:none"><div class="fg full"><label class="lbl req">Nombre del arrendador</label><input type="text" name="ap_ir_arrendador" style="text-transform:uppercase"></div><div class="fg"><label class="lbl req">Inicio contrato</label><input type="date" name="ap_ir_inicio"></div><div class="fg"><label class="lbl req">Término contrato</label><input type="date" name="ap_ir_termino"></div></div>
           </div>
+          <div id="apPfSumBox" class="sumbox" style="display:none">
+            <div class="sum-hdr">
+              <div class="sum-hdr-left"><div class="sum-icon">📄</div><div class="sum-title">Resumen de Solicitud</div></div>
+              <div class="sum-badge ok" id="apPfSumBadge">Listo para enviar</div>
+            </div>
+            <div id="apPfSumCont"></div>
+          </div>
           <div class="decl" id="pfDecl" style="cursor:pointer">
             <div class="decl-inner" onclick="toggleDeclAP('PF')">
               <div class="decl-chk" id="pfDeclChk"></div>
@@ -873,6 +883,13 @@ textarea { resize: vertical; min-height: 72px; }
           </div>
           <div class="sep"><span>Equipos / Vehículos Solicitados</span></div>
           <div class="fg"><table class="ap-tbl"><thead><tr><th>Descripción</th><th>Año</th><th>Valor (IVA incl.)</th><th>Plazo</th><th>Usuario</th></tr></thead><tbody id="pmTbEquipos"><tr><td><input type="text" name="pm_eq1_desc"></td><td><input type="number" name="pm_eq1_anio" placeholder="2025"></td><td><input type="number" name="pm_eq1_valor" placeholder="$0"></td><td><input type="text" name="pm_eq1_plazo" placeholder="Meses"></td><td><input type="text" name="pm_eq1_usuario"></td></tr></tbody></table><button type="button" class="add-row" onclick="addRow('pmTbEquipos',['desc','anio','valor','plazo','usuario'],'pm_eq')">+ Agregar equipo</button></div>
+          <div id="apPmSumBox" class="sumbox" style="display:none">
+            <div class="sum-hdr">
+              <div class="sum-hdr-left"><div class="sum-icon">📄</div><div class="sum-title">Resumen de Solicitud</div></div>
+              <div class="sum-badge ok" id="apPmSumBadge">Listo para enviar</div>
+            </div>
+            <div id="apPmSumCont"></div>
+          </div>
           <div class="decl" id="pmDecl" style="cursor:pointer">
             <div class="decl-inner" onclick="toggleDeclAP('PM')">
               <div class="decl-chk" id="pmDeclChk"></div>
@@ -954,6 +971,13 @@ textarea { resize: vertical; min-height: 72px; }
           </div>
           <div id="saFileList" class="file-list"></div>
           <span class="em" id="esaFiles" style="display:block;margin-top:.4rem"></span>
+          <div id="saSumBox" class="sumbox" style="display:none">
+            <div class="sum-hdr">
+              <div class="sum-hdr-left"><div class="sum-icon">📄</div><div class="sum-title">Resumen de Solicitud</div></div>
+              <div class="sum-badge ok">Listo para enviar</div>
+            </div>
+            <div id="saSumCont"></div>
+          </div>
           <div class="decl" id="saDeclBox">
             <div class="decl-inner" id="saDeclRow" tabindex="0" role="checkbox">
               <div class="decl-chk" id="saDeclChk"></div>
@@ -1021,6 +1045,13 @@ textarea { resize: vertical; min-height: 72px; }
           </div>
           <div id="tvAFileList" class="file-list"></div>
           <span class="em" id="etvAFiles" style="display:block;margin-top:.4rem"></span>
+          <div id="tvASumBox" class="sumbox" style="display:none">
+            <div class="sum-hdr">
+              <div class="sum-hdr-left"><div class="sum-icon">📄</div><div class="sum-title">Resumen de Solicitud</div></div>
+              <div class="sum-badge ok">Listo para enviar</div>
+            </div>
+            <div id="tvASumCont"></div>
+          </div>
           <div class="decl" id="tvADeclBox" style="margin-top:.85rem"><div class="decl-inner" id="tvADeclRow" tabindex="0" role="checkbox"><div class="decl-chk" id="tvADeclChk"></div><div class="decl-body"><div class="decl-title">Declaración de veracidad</div><div class="decl-text">Declaro que la información es verídica y autorizo el procesamiento de mis datos para este trámite vehicular en Morelos.</div></div></div></div>
           <input type="hidden" id="tvADeclVal">
           <span class="em" id="etvADecl" style="display:block;margin-top:.4rem"></span>
@@ -1056,6 +1087,13 @@ textarea { resize: vertical; min-height: 72px; }
           </div>
           <div id="tvRFileList" class="file-list"></div>
           <span class="em" id="etvRFiles" style="display:block;margin-top:.4rem"></span>
+          <div id="tvRSumBox" class="sumbox" style="display:none">
+            <div class="sum-hdr">
+              <div class="sum-hdr-left"><div class="sum-icon">📄</div><div class="sum-title">Resumen de Solicitud</div></div>
+              <div class="sum-badge ok">Listo para enviar</div>
+            </div>
+            <div id="tvRSumCont"></div>
+          </div>
           <div class="decl" id="tvRDeclBox" style="margin-top:.85rem"><div class="decl-inner" id="tvRDeclRow" tabindex="0" role="checkbox"><div class="decl-chk" id="tvRDeclChk"></div><div class="decl-body"><div class="decl-title">Declaración de veracidad</div><div class="decl-text">Declaro que la información es verídica y autorizo el procesamiento de mis datos para este refrendo vehicular en Morelos.</div></div></div></div>
           <input type="hidden" id="tvRDeclVal">
           <span class="em" id="etvRDecl" style="display:block;margin-top:.4rem"></span>
@@ -1110,6 +1148,13 @@ textarea { resize: vertical; min-height: 72px; }
         </div>
         <div id="pcFileList" class="file-list"></div>
         <span class="em" id="epcFiles" style="display:block;margin-top:.4rem"></span>
+        <div id="pcSumBox" class="sumbox" style="display:none">
+          <div class="sum-hdr">
+            <div class="sum-hdr-left"><div class="sum-icon">📄</div><div class="sum-title">Resumen de Solicitud</div></div>
+            <div class="sum-badge ok">Listo para enviar</div>
+          </div>
+          <div id="pcSumCont"></div>
+        </div>
         <div class="decl" id="pcDeclBox" style="margin-top:.85rem"><div class="decl-inner" id="pcDeclRow" tabindex="0" role="checkbox"><div class="decl-chk" id="pcDeclChk"></div><div class="decl-body"><div class="decl-title">Declaración de veracidad</div><div class="decl-text">Declaro que la información es verídica y autorizo el procesamiento de mis datos para gestionar el permiso de circulación en Guerrero.</div></div></div></div>
         <input type="hidden" id="pcDeclVal">
         <span class="em" id="epcDecl" style="display:block;margin-top:.4rem"></span>
@@ -1427,14 +1472,12 @@ document.querySelectorAll('#tipoGrid .tipo-card').forEach(card => {
     if (r.value === 'SA') saInit();
     if (r.value === 'TV') tvInit();
     if (r.value === 'PC') pcInit();
-    // Habilitar botón de documentos oficiales solo en AP
+    // Mostrar botón de documentos oficiales solo en AP
     const docsBtn = document.getElementById('docsOfiBtn');
     if (r.value === 'AP') {
-      docsBtn.classList.remove('disabled');
-      docsBtn.style.pointerEvents = '';
+      docsBtn.style.display = 'flex';
     } else {
-      docsBtn.classList.add('disabled');
-      docsBtn.style.pointerEvents = 'none';
+      docsBtn.style.display = 'none';
     }
     setTimeout(() => { const f=$(r.value.toLowerCase()+'Form'); if(f) f.scrollIntoView({behavior:'smooth',block:'start'}); }, 150);
   });
@@ -1648,6 +1691,22 @@ function caBuildSummary() {
   box.style.display='';
 }
 
+// ── buildSummary helpers (shared) ──────────────────────────────
+function _R(k,v){return`<div class="sum-row"><span class="sum-k">${k}:</span><span class="sum-v ${(!v||!String(v).trim())?'empty':''}">${v||'—'}</span></div>`;}
+function _G(ico,ttl,rows){return`<div class="sum-grp"><div class="sum-grp-lbl">${ico} ${ttl}</div>${rows}</div>`;}
+
+function apPfBuildSummary(){const box=$('apPfSumBox'),cont=$('apPfSumCont');if(!box||!cont)return;const nombre=document.querySelector('[name=ap_nombre]')?.value||'';const rfc=document.querySelector('[name=ap_rfc]')?.value||'';const actividad=document.querySelector('[name=ap_actividad]')?.value||'';const regimen=document.querySelector('[name=ap_regimen]')?.value||'';const nombreCom=document.querySelector('[name=ap_nombre_comercial]')?.value||'';const clabe=document.querySelector('[name=ap_clabe]')?.value||'';const banco=document.querySelector('[name=ap_banco]')?.value||'';const email=document.querySelector('[name=ap_email]')?.value||'';const tel=$('apPfT1V')?.value||'';const cel=$('apPfT2V')?.value||'';const calle=document.querySelector('[name=ap_f_calle]')?.value||'';const cp=document.querySelector('[name=ap_f_cp]')?.value||'';const ciudad=document.querySelector('[name=ap_f_ciudad]')?.value||'';const estado=document.querySelector('[name=ap_f_estado]')?.value||'';const ref1=document.querySelector('[name=ap_ref1_nombre]')?.value||'';const ref2=document.querySelector('[name=ap_ref2_nombre]')?.value||'';const sectores=[...document.querySelectorAll('[name=ap_sector]:checked')].map(c=>c.value).join(', ')||'—';const rows=document.querySelectorAll('#pfTbEquipos tr');let eqs='';rows.forEach(r=>{const ins=r.querySelectorAll('input');if(ins[0]?.value)eqs+=(eqs?' · ':'')+ins[0].value+(ins[2]?.value?' $'+ins[2].value:'');});cont.innerHTML=_G('💼','Negocio / PFAE',_R('Nombre/PFAE',nombre)+_R('RFC',rfc)+_R('Actividad',actividad)+_R('Régimen',regimen)+_R('Nombre comercial',nombreCom)+_R('Sectores',sectores))+_G('💰','Finanzas y Contacto',_R('CLABE',clabe)+_R('Banco',banco)+_R('Correo',email)+_R('Teléfono',tel)+_R('Celular',cel))+_G('📍','Domicilio Fiscal',_R('Calle',calle)+_R('C.P.',cp)+_R('Ciudad',ciudad)+_R('Estado',estado))+_G('👥','Referencias',_R('Referencia 1',ref1)+_R('Referencia 2',ref2))+_G('🚗','Equipos/Vehículos',_R('Descripción(es)',eqs||'—'));box.style.display='';}
+
+function apPmBuildSummary(){const box=$('apPmSumBox'),cont=$('apPmSumCont');if(!box||!cont)return;const razon=document.querySelector('[name=ap_razon_social]')?.value||'';const rfc=document.querySelector('[name=ap_rfc_pm]')?.value||'';const actividad=document.querySelector('[name=ap_actividad_pm]')?.value||'';const clabe=document.querySelector('[name=ap_clabe_pm]')?.value||'';const banco=document.querySelector('[name=ap_banco_pm]')?.value||'';const email=document.querySelector('[name=ap_email_empresa]')?.value||'';const tel=$('apPmT1V')?.value||'';const aval=document.querySelector('[name=ap_aval_nombre]')?.value||'';const avalRfc=document.querySelector('[name=ap_aval_rfc]')?.value||'';const avalPuesto=document.querySelector('[name=ap_aval_puesto]')?.value||'';const rows=document.querySelectorAll('#pmTbEquipos tr');let eqs='';rows.forEach(r=>{const ins=r.querySelectorAll('input');if(ins[0]?.value)eqs+=(eqs?' · ':'')+ins[0].value+(ins[2]?.value?' $'+ins[2].value:'');});cont.innerHTML=_G('🏢','Datos Empresa',_R('Razón social',razon)+_R('RFC',rfc)+_R('Actividad',actividad))+_G('💰','Finanzas y Contacto',_R('CLABE',clabe)+_R('Banco',banco)+_R('Correo',email)+_R('Teléfono',tel))+_G('👤','Aval / Accionista',_R('Nombre',aval)+_R('RFC aval',avalRfc)+_R('Cargo',avalPuesto))+_G('🚗','Equipos/Vehículos',_R('Descripción(es)',eqs||'—'));box.style.display='';}
+
+function saBuildSummary(){const box=$('saSumBox'),cont=$('saSumCont');if(!box||!cont)return;const nombre=[V('saNombre'),V('saNombre2'),V('saAp1'),V('saAp2')].filter(Boolean).join(' ');const marca=V('saMarca')==='Otra'?'Otra ('+V('saOtraMarca')+')':V('saMarca');const files=saAttach?saAttach.getFiles():[];cont.innerHTML=_G('👤','Datos Personales',_R('Nombre',nombre)+_R('Género',V('saGenero'))+_R('Fecha Nac.',V('saFNac'))+_R('RFC',V('saRFC'))+_R('CURP',V('saCURP'))+_R('Teléfono',V('saTelFull'))+_R('Correo',V('saEmail')))+_G('📍','Domicilio',_R('C.P.',V('saCP'))+_R('Colonia',V('saColonia'))+_R('Municipio',V('saMunicipio'))+_R('Estado',V('saEstado')))+_G('🚗','Vehículo',_R('Condición',V('saCondicion'))+_R('Marca',marca)+_R('Versión',V('saVersion'))+_R('Año',V('saAnio'))+_R('NIV',V('saNIV'))+_R('Valor','MX$ '+V('saValor'))+_R('Costo seguro',V('saCostoTotal')))+_G('📎','Documentos',_R('Archivos',files.length?files.length+' archivo(s)':'—'));box.style.display='';}
+
+function tvABuildSummary(){const box=$('tvASumBox'),cont=$('tvASumCont');if(!box||!cont)return;const nombre=[V('tvANombre'),V('tvAAp1'),V('tvAAp2')].filter(Boolean).join(' ');const files=tvAAttach?tvAAttach.getFiles():[];cont.innerHTML=_G('👤','Propietario',_R('Nombre',nombre)+_R('RFC',V('tvARFC'))+_R('CURP',V('tvACURP'))+_R('Teléfono',V('tvATelFull'))+_R('Correo',V('tvAEmail')))+_G('📍','Domicilio',_R('C.P.',V('tvACP'))+_R('Municipio',V('tvAMunicipio'))+_R('Estado',V('tvAEstado')))+_G('🚗','Vehículo',_R('Marca',V('tvAMarca'))+_R('Versión',V('tvAVersion'))+_R('Año',V('tvAAnio'))+_R('Valor','MX$ '+V('tvAValor'))+_R('Costo trámite',V('tvACostoTotal')))+_G('📎','Documentos',_R('Archivos',files.length?files.length+' archivo(s)':'—'));box.style.display='';}
+
+function tvRBuildSummary(){const box=$('tvRSumBox'),cont=$('tvRSumCont');if(!box||!cont)return;const nombre=[V('tvRNombre'),V('tvRAp1'),V('tvRAp2')].filter(Boolean).join(' ');const files=tvRAttach?tvRAttach.getFiles():[];const tipoUnidad=$('tvRTipoUnidad')?.options[$('tvRTipoUnidad').selectedIndex]?.text||V('tvRTipoUnidad');cont.innerHTML=_G('👤','Propietario',_R('Nombre',nombre)+_R('RFC',V('tvRRFC'))+_R('Teléfono',V('tvRTelFull'))+_R('Correo',V('tvREmail')))+_G('🔄','Refrendo',_R('Tipo de unidad',tipoUnidad)+_R('Costo refrendo',V('tvRCostoTotal')))+_G('📎','Documentos',_R('Archivos',files.length?files.length+' archivo(s)':'—'));box.style.display='';}
+
+function pcBuildSummary(){const box=$('pcSumBox'),cont=$('pcSumCont');if(!box||!cont)return;const nombre=[V('pcNombre'),V('pcNombre2'),V('pcAp1'),V('pcAp2')].filter(Boolean).join(' ');const marca=V('pcMarca')==='Otra'?'Otra ('+V('pcOtraMarca')+')':V('pcMarca');const files=pcAttach?pcAttach.getFiles():[];cont.innerHTML=_G('👤','Datos Personales',_R('Nombre',nombre)+_R('Género',V('pcGenero'))+_R('Fecha Nac.',V('pcFNac'))+_R('CURP',V('pcCURP'))+_R('RFC',V('pcRFC'))+_R('Teléfono',V('pcTelFull'))+_R('Correo',V('pcEmail')))+_G('📍','Domicilio',_R('C.P.',V('pcCP'))+_R('Municipio',V('pcMunicipio'))+_R('Estado',V('pcEstado')))+_G('🚗','Vehículo',_R('Tipo',V('pcTipoVeh'))+_R('Marca',marca)+_R('Versión',V('pcVersion'))+_R('Año',V('pcAnio'))+_R('No. Serie',V('pcNSerie'))+_R('No. Motor',V('pcNMotor')))+_G('📎','Documentos',_R('Archivos',files.length?files.length+' archivo(s)':'—'));box.style.display='';}
+
 function caSubmitNow() {
   for(let s=1;s<=CA_TOTAL;s++){if(!caValidate(s)){caGoto(s);return;}}
   const files=caAttach?caAttach.getFiles():[];
@@ -1708,6 +1767,8 @@ window.toggleDeclAP = function(tipo) {
   if(declEl) declEl.classList.toggle('on',on);
   if(chkEl) { chkEl.classList.toggle('on',on); }
   if(btnEl) btnEl.disabled=!on;
+  // Build summary on first toggle
+  if(on) { if(tipo==='PF') apPfBuildSummary(); else apPmBuildSummary(); }
 };
 
 window.toggleImm = function(tipo, cual) {
@@ -1820,6 +1881,7 @@ window.saNext = function(cur) {
     if(isEmpty(V('saValor'))){setErr('saValor','Ingresa el valor.');ok=false;}else clrErr('saValor');
   }
   if(ok&&cur<3) saGoto(cur+1);
+  if(ok&&cur===2) saBuildSummary();
 };
 
 window.saSubmit = function() {
@@ -1893,6 +1955,10 @@ function tvInit() {
   tvRAttach=buildAttach('tvRAttachZone','tvRAttachLink','tvRFileInput','tvRFileList','etvRFiles');
   tvADecl=makeDecl('tvADeclRow','tvADeclChk','tvADeclBox','tvADeclVal','tvABtnSub','etvADecl');
   tvRDecl=makeDecl('tvRDeclRow','tvRDeclChk','tvRDeclBox','tvRDeclVal','tvRBtnSub','etvRDecl');
+  // Build summary on decl click
+  const tvARow=$('tvADeclRow'), tvRRow=$('tvRDeclRow');
+  if(tvARow) tvARow.addEventListener('click',()=>{ setTimeout(tvABuildSummary,50); });
+  if(tvRRow) tvRRow.addEventListener('click',()=>{ setTimeout(tvRBuildSummary,50); });
 }
 
 window.tvSubmit = function(tipo) {
@@ -1946,6 +2012,9 @@ function pcInit() {
   // Attach + Decl
   pcAttach=buildAttach('pcAttachZone','pcAttachLink','pcFileInput','pcFileList','epcFiles');
   pcDeclState=makeDecl('pcDeclRow','pcDeclChk','pcDeclBox','pcDeclVal','pcBtnSub','epcDecl');
+  // Build summary on decl click
+  const pcRow=$('pcDeclRow');
+  if(pcRow) pcRow.addEventListener('click',()=>{ setTimeout(pcBuildSummary,50); });
 }
 
 window.pcSubmit = function() {
