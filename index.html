@@ -304,11 +304,17 @@
   .success-close:hover { background: var(--gold); color: var(--ink); }
 
   /* FLOATING BUTTONS */
-  .float-btn { position: fixed; left: 50px; width: 75px; height: 75px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,.3); cursor: pointer; z-index: 1000; text-decoration: none; border: 4px solid white; overflow: hidden; transition: transform .2s, box-shadow .2s; }
+  .float-btn { position: fixed; left: 50px; width: 75px; height: 75px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,.3); cursor: pointer; z-index: 1000; text-decoration: none; border: 4px solid white; overflow: hidden; transition: all 0.4s cubic-bezier(0.4,0,.2,1); animation: floatBounce 3s ease-in-out infinite; }
+  .float-btn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,.2) 50%, transparent 70%); animation: shine 3s infinite; }
   .float-btn-top { top: 50px; background: linear-gradient(135deg,#0A1F44,#1a3a6e); }
   .float-btn-wa  { bottom: 40px; background: linear-gradient(135deg,#25d366,#128c7e); }
   .float-btn svg { width: 36px; height: 36px; fill: white; position: relative; z-index: 1; }
-  .float-btn:hover { transform: scale(1.15); box-shadow: 0 20px 40px rgba(0,0,0,.4); }
+  .float-btn:hover { transform: scale(1.2) translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,.4); animation: none; }
+  @keyframes floatBounce {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    25%      { transform: translateY(-15px) rotate(2deg); }
+    75%      { transform: translateY(-5px) rotate(-2deg); }
+  }
 
   /* Botón flotante - Documentación Oficial AP */
   .tramite-float {
